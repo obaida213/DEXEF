@@ -22,8 +22,8 @@ color:#1E293B;
 }
 
 .header{
-background:#071633;
-padding:60px 20px;
+background:linear-gradient(135deg,#071633,#0E2A5A);
+padding:70px 20px;
 text-align:center;
 color:white;
 }
@@ -31,40 +31,69 @@ color:white;
 .header h1{
 font-size:42px;
 font-weight:800;
-margin-bottom:10px;
+margin-bottom:12px;
 }
 
 .header p{
 font-size:18px;
-opacity:.8;
+opacity:.85;
+}
+
+.search-box{
+max-width:700px;
+margin:-30px auto 40px;
+padding:0 20px;
+}
+
+.search-box input{
+width:100%;
+padding:18px 22px;
+border:none;
+border-radius:16px;
+background:#fff;
+box-shadow:0 12px 30px rgba(0,0,0,.08);
+font-size:16px;
+outline:none;
 }
 
 .container{
 max-width:1200px;
 margin:auto;
-padding:50px 20px;
+padding:0 20px 60px;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
 gap:24px;
 }
 
 .card{
 background:white;
-border-radius:18px;
-padding:30px;
+border-radius:20px;
+padding:28px;
 text-decoration:none;
 color:inherit;
-box-shadow:0 8px 24px rgba(0,0,0,.06);
-transition:.25s;
+position:relative;
+overflow:hidden;
 border:1px solid #E5EAF3;
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+transition:.25s ease;
+}
+
+.card::before{
+content:'';
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:5px;
+background:#2563EB;
 }
 
 .card:hover{
 transform:translateY(-6px);
-box-shadow:0 16px 35px rgba(0,0,0,.1);
+box-shadow:0 18px 40px rgba(0,0,0,.12);
 }
 
 .icon{
@@ -74,12 +103,14 @@ margin-bottom:18px;
 
 .card h3{
 font-size:22px;
-margin-bottom:8px;
+margin-bottom:10px;
+font-weight:700;
 }
 
 .card p{
+font-size:14px;
+line-height:1.7;
 color:#64748B;
-line-height:1.6;
 }
 
 .footer{
@@ -89,71 +120,98 @@ color:#64748B;
 font-size:14px;
 }
 
+@media(max-width:768px){
+
+.header h1{
+font-size:30px;
+}
+
+.header p{
+font-size:16px;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="header">
 <h1>DEXEF Knowledge Center</h1>
-<p>Departments Guides & Internal Documentation</p>
+<p>Everything your team needs in one place</p>
+</div>
+
+<div class="search-box">
+<input type="text" placeholder="Search departments...">
 </div>
 
 <div class="container">
 
 <div class="grid">
 
+<a class="card" href="operations-workflow-guide.html">
+<div class="icon">⚙️</div>
+<h3>Operations</h3>
+<p>Workflows, SOPs and operational procedures.</p>
+</a>
+
+<a class="card" href="sales-department-guide.html">
+<div class="icon">🤝</div>
+<h3>Sales</h3>
+<p>Sales process, lead handling and client acquisition.</p>
+</a>
+
+<a class="card" href="account-management-department-guide.html">
+<div class="icon">📋</div>
+<h3>Account Management</h3>
+<p>Client communication, reporting and follow-up systems.</p>
+</a>
+
 <a class="card" href="copywriting-department-guide.html">
 <div class="icon">✍️</div>
 <h3>Copywriting</h3>
-<p>Writing standards, workflows and content guidelines.</p>
+<p>Content writing standards, frameworks and workflows.</p>
 </a>
 
 <a class="card" href="design-department-guide.html">
 <div class="icon">🎨</div>
 <h3>Design</h3>
-<p>Design process, quality standards and assets workflow.</p>
+<p>Creative process, asset management and quality control.</p>
 </a>
 
 <a class="card" href="video-department-guide.html">
 <div class="icon">🎬</div>
 <h3>Video</h3>
-<p>Video production workflow and editing procedures.</p>
-</a>
-
-<a class="card" href="social-media-department-guide.html">
-<div class="icon">📱</div>
-<h3>Social Media</h3>
-<p>Publishing workflow and account management standards.</p>
+<p>Editing workflows, production standards and delivery process.</p>
 </a>
 
 <a class="card" href="publishing-department-guide.html">
 <div class="icon">📢</div>
 <h3>Publishing</h3>
-<p>Publishing schedules, approvals and delivery process.</p>
+<p>Scheduling, approvals and publishing procedures.</p>
 </a>
 
 <a class="card" href="paidads-department-guide.html">
 <div class="icon">📈</div>
 <h3>Paid Ads</h3>
-<p>Campaign setup, optimization and reporting process.</p>
-</a>
-
-<a class="card" href="operations-workflow-guide.html">
-<div class="icon">⚙️</div>
-<h3>Operations</h3>
-<p>Complete operational workflow and team procedures.</p>
+<p>Campaign setup, optimization and reporting guidelines.</p>
 </a>
 
 <a class="card" href="finance-department-guide.html">
 <div class="icon">💰</div>
 <h3>Finance</h3>
-<p>Financial processes, invoices and accounting workflow.</p>
+<p>Invoices, financial operations and accounting procedures.</p>
 </a>
 
 <a class="card" href="hr-department-guide.html">
 <div class="icon">👥</div>
 <h3>HR</h3>
-<p>Human resources policies and internal processes.</p>
+<p>Recruitment, onboarding and internal team policies.</p>
 </a>
 
 </div>
@@ -161,7 +219,7 @@ font-size:14px;
 </div>
 
 <div class="footer">
-DEXEF © 2026
+Built for the DEXEF Team • Knowledge Center
 </div>
 
 </body>
