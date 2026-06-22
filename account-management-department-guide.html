@@ -211,6 +211,54 @@ textarea.form-control{resize:vertical;min-height:90px}
 .renew-card.urgent{border-right:4px solid #DC2626}
 .renew-card.warn{border-right:4px solid #D97706}
 .renew-days{font-size:24px;font-weight:900;text-align:center;min-width:50px}
+@media (max-width: 768px){
+
+.sidebar{
+position:relative !important;
+width:100% !important;
+height:auto !important;
+}
+
+.main{
+margin-right:0 !important;
+}
+
+.stats-grid,
+.two-col,
+.three-col,
+.detail-layout,
+.form-grid{
+grid-template-columns:1fr !important;
+}
+
+.topbar{
+flex-wrap:wrap;
+gap:10px;
+padding:12px !important;
+}
+
+.content{
+padding:12px !important;
+}
+
+.page-header{
+flex-direction:column;
+align-items:flex-start !important;
+gap:10px;
+}
+
+table{
+display:block;
+overflow-x:auto;
+white-space:nowrap;
+}
+
+.modal{
+width:95% !important;
+}
+
+}
+
 </style>
 </head>
 <body>
