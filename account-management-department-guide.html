@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام إدارة الأكونت مانيجمنت</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:#F1F5F9;color:#1E293B;font-size:14px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;background:#0F172A;color:white;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:50}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:#7C3AED;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700}.logo-sub{font-size:11px;color:#64748B}
+.sidebar-section{padding:16px 12px 4px;font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;color:#94A3B8;transition:all .15s;border-radius:8px;margin:2px 8px}
+.nav-item:hover{background:#1E293B;color:white}
+.nav-item.active{background:#7C3AED;color:white}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-right:auto;background:#DC2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.nav-badge.amber{background:#D97706}
+.sidebar-user{padding:16px;border-top:1px solid #1E293B;display:flex;align-items:center;gap:10px;margin-top:auto}
+.s-avatar{width:34px;height:34px;background:#7C3AED;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:white}.user-role{font-size:11px;color:#64748B}
+.main{flex:1;margin-right:230px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:white;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:18px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.notif-btn{position:relative;cursor:pointer;background:#F1F5F9;border-radius:8px;padding:8px;font-size:16px}
+.notif-dot{position:absolute;top:6px;left:6px;width:8px;height:8px;background:#DC2626;border-radius:50%;border:2px solid white}
+.content{flex:1;padding:24px}
+.screen{display:none}.screen.active{display:block}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-purple{background:#F5F3FF}.si-green{background:#F0FDF4}.si-amber{background:#FFFBEB}.si-red{background:#FEF2F2}.si-blue{background:#EFF6FF}
+.stat-label{font-size:12px;color:#64748B;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:900;line-height:1}
+.sv-purple{color:#7C3AED}.sv-green{color:#16A34A}.sv-amber{color:#D97706}.sv-red{color:#DC2626}.sv-blue{color:#2563EB}
+.stat-sub{font-size:12px;color:#64748B;margin-top:3px}
+/* Alerts */
+.alert{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;margin-bottom:8px;font-size:13px}
+.a-red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.a-amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.a-blue{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+.a-green{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.a-purple{background:#F5F3FF;border:1px solid #DDD6FE;color:#5B21B6}
+.alert-icon{font-size:16px;flex-shrink:0}.alert-text{flex:1}
+.alert-action{font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;white-space:nowrap}
+/* Card */
+.card{background:white;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+/* Table */
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:right;padding:10px 14px;background:#F8FAFC;color:#64748B;font-weight:600;font-size:12px;border-bottom:1px solid #E2E8F0;white-space:nowrap}
+.table td{padding:12px 14px;border-bottom:1px solid #F8FAFC;vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tbody tr:hover td{background:#FAFBFE;cursor:pointer}
+.tw{overflow-x:auto}
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.b-active{background:#F0FDF4;color:#15803D}.b-active::before{background:#16A34A}
+.b-onboard{background:#F5F3FF;color:#6D28D9}.b-onboard::before{background:#7C3AED}
+.b-pending{background:#FFFBEB;color:#B45309}.b-pending::before{background:#D97706}
+.b-approved{background:#F0FDF4;color:#15803D}.b-approved::before{background:#16A34A}
+.b-rejected{background:#FEF2F2;color:#B91C1C}.b-rejected::before{background:#DC2626}
+.b-draft{background:#F8FAFC;color:#475569}.b-draft::before{background:#94A3B8}
+.b-published{background:#EFF6FF;color:#1D4ED8}.b-published::before{background:#2563EB}
+.b-renew{background:#FFF7ED;color:#C2410C}.b-renew::before{background:#EA580C}
+.b-done{background:#F0FDF4;color:#15803D}.b-done::before{background:#16A34A}
+/* Buttons */
+.btn{padding:9px 18px;border-radius:8px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-purple{background:#7C3AED;color:white}.btn-purple:hover{background:#6D28D9}
+.btn-primary{background:#2563EB;color:white}.btn-primary:hover{background:#1D4ED8}
+.btn-success{background:#16A34A;color:white}.btn-success:hover{background:#15803D}
+.btn-danger{background:#DC2626;color:white}.btn-danger:hover{background:#B91C1C}
+.btn-outline{background:white;color:#374151;border:1px solid #E2E8F0}.btn-outline:hover{background:#F8FAFC}
+.btn-ghost{background:transparent;color:#64748B;padding:8px 12px}.btn-ghost:hover{background:#F1F5F9}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px}
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#374151}
+.req{color:#DC2626}
+.form-control{width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;color:#1E293B;background:white;transition:border-color .2s}
+.form-control:focus{outline:none;border-color:#7C3AED;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+textarea.form-control{resize:vertical;min-height:90px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-section{font-size:12px;font-weight:700;color:#64748B;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid #F1F5F9;text-transform:uppercase;letter-spacing:.3px}
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-header h2{font-size:20px;font-weight:700}
+.ph-sub{font-size:13px;color:#64748B;margin-top:2px}
+/* Misc */
+.divider{height:1px;background:#F1F5F9;margin:16px 0}
+.text-muted{color:#94A3B8;font-size:12px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;background:#F1F5F9;color:#475569;margin:2px}
+.info-label{font-size:11px;color:#94A3B8;margin-bottom:3px;font-weight:600;text-transform:uppercase}
+.info-value{font-size:14px;font-weight:600}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* Task card */
+.task-card{background:white;border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:10px;border-right:3px solid transparent;cursor:pointer;transition:all .15s}
+.task-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.task-card.tc-design{border-right-color:#7C3AED}
+.task-card.tc-copy{border-right-color:#2563EB}
+.task-card.tc-review{border-right-color:#D97706}
+.task-card.tc-done{border-right-color:#16A34A;opacity:.7}
+.task-card.tc-urgent{border-right-color:#DC2626}
+.tc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.tc-title{font-size:13px;font-weight:700}
+.tc-meta{font-size:12px;color:#64748B;display:flex;gap:10px;flex-wrap:wrap}
+.tc-client{font-size:12px;font-weight:600;color:#7C3AED}
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-day-header{text-align:center;font-size:12px;font-weight:700;color:#64748B;padding:6px}
+.cal-day{min-height:80px;background:#F8FAFC;border-radius:8px;padding:6px;cursor:pointer;transition:all .15s}
+.cal-day:hover{background:#F1F5F9}
+.cal-day.today{background:#EFF6FF;border:1.5px solid #BFDBFE}
+.cal-date{font-size:12px;font-weight:700;color:#64748B;margin-bottom:4px}
+.cal-post{font-size:11px;padding:2px 5px;border-radius:4px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-design{background:#F5F3FF;color:#6D28D9}
+.cp-approved{background:#F0FDF4;color:#15803D}
+.cp-published{background:#EFF6FF;color:#1D4ED8}
+.cp-pending{background:#FFFBEB;color:#B45309}
+/* Onboarding checklist */
+.check-section{margin-bottom:20px}
+.check-section-title{font-size:13px;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all .15s;border:1.5px solid #E2E8F0;background:white}
+.check-item:hover{border-color:#DDD6FE}
+.check-item.done{background:#F8FAFC;border-color:#E2E8F0}
+.check-item.done .ci-text{text-decoration:line-through;color:#94A3B8}
+.ci-box{width:20px;height:20px;border-radius:5px;border:2px solid #E2E8F0;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.check-item.done .ci-box{background:#16A34A;border-color:#16A34A;color:white;font-size:11px}
+.ci-text{font-size:13px;font-weight:600;flex:1}
+.ci-owner{font-size:11px;color:#94A3B8}
+.progress-pill{display:flex;align-items:center;gap:8px}
+.progress-track{background:#F1F5F9;border-radius:4px;height:8px;flex:1}
+.progress-fill{height:8px;border-radius:4px;background:#7C3AED}
+/* Client card */
+.client-card{background:white;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;gap:14px;margin-bottom:12px;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.client-card:hover{border-color:#DDD6FE;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.cc-avatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.cc-name{font-size:14px;font-weight:700}
+.cc-sub{font-size:12px;color:#64748B}
+.cc-stats{display:flex;gap:16px;margin-right:auto}
+.cc-stat{text-align:center}
+.cc-stat-val{font-size:15px;font-weight:700}
+.cc-stat-lbl{font-size:10px;color:#94A3B8}
+.cc-deadline{font-size:12px;font-weight:600}
+/* Detail layout */
+.detail-layout{display:grid;grid-template-columns:1fr 300px;gap:20px}
+/* Timeline */
+.tl-item{display:flex;gap:12px;margin-bottom:16px;position:relative}
+.tl-item:not(:last-child)::after{content:'';position:absolute;right:17px;top:36px;width:2px;height:calc(100% - 12px);background:#F1F5F9}
+.tl-icon{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;border:2px solid #F1F5F9;background:white;position:relative;z-index:1}
+.tl-content{flex:1}
+.tl-title{font-size:13px;font-weight:700}
+.tl-text{font-size:13px;color:#475569;margin-top:2px;line-height:1.5}
+.tl-date{font-size:11px;color:#94A3B8;margin-top:3px}
+/* Action items */
+.action-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:6px;border:1.5px solid transparent;transition:all .15s}
+.ai-purple{background:#F5F3FF;color:#5B21B6;border-color:#DDD6FE}.ai-purple:hover{background:#EDE9FE}
+.ai-blue{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}.ai-blue:hover{background:#DBEAFE}
+.ai-green{background:#F0FDF4;color:#15803D;border-color:#BBF7D0}.ai-green:hover{background:#DCFCE7}
+.ai-amber{background:#FFFBEB;color:#B45309;border-color:#FDE68A}.ai-amber:hover{background:#FEF3C7}
+.ai-red{background:#FEF2F2;color:#B91C1C;border-color:#FECACA}.ai-red:hover{background:#FEE2E2}
+/* Approval cards */
+.approval-card{background:white;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px;border-right:4px solid #D97706}
+.approval-card.urgent{border-right-color:#DC2626}
+.ac-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.ac-title{font-size:14px;font-weight:700}
+.ac-client{font-size:12px;color:#7C3AED;font-weight:600}
+.ac-preview{background:#F8FAFC;border-radius:8px;padding:10px;font-size:12px;color:#475569;line-height:1.7;margin:10px 0}
+.ac-footer{display:flex;justify-content:space-between;align-items:center}
+.ac-days{font-size:12px;font-weight:600}
+/* Report */
+.metric-card{background:white;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);text-align:center}
+.metric-val{font-size:28px;font-weight:900;margin-bottom:4px}
+.metric-lbl{font-size:12px;color:#64748B}
+.metric-change{font-size:12px;margin-top:4px}
+.up{color:#16A34A}.down{color:#DC2626}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:16px;padding:24px;width:520px;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8}
+.modal-close:hover{color:#1E293B}
+.modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #F1F5F9}
+/* Platform row */
+.platform-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;margin-bottom:8px}
+.platform-name{font-size:13px;font-weight:700}
+.platform-count{font-size:12px;color:#64748B}
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#F1F5F9}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+/* filter bar */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-select{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;color:#374151;cursor:pointer}
+.search-input{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;min-width:200px}
+.search-input:focus{outline:none;border-color:#7C3AED}
+/* Renewal */
+.renew-card{background:white;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.renew-card.urgent{border-right:4px solid #DC2626}
+.renew-card.warn{border-right:4px solid #D97706}
+.renew-days{font-size:24px;font-weight:900;text-align:center;min-width:50px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">👤</div>
+    <div><div class="logo-text">SocialPro</div><div class="logo-sub">الأكونت مانيجمنت</div></div>
+  </div>
+  <div class="sidebar-section">العمليات</div>
+  <div class="nav-item active" onclick="show('dashboard')"><span class="nav-icon">🏠</span> الرئيسية</div>
+  <div class="nav-item" onclick="show('clients')"><span class="nav-icon">👥</span> العملاء النشطون</div>
+  <div class="nav-item" onclick="show('onboarding')"><span class="nav-icon">🚀</span> أونبوردينج<span class="nav-badge amber">2</span></div>
+  <div class="nav-item" onclick="show('materials')"><span class="nav-icon">🗂️</span> إدارة الماتريال<span class="nav-badge amber">4</span></div>
+  <div class="nav-item" onclick="show('calendar')"><span class="nav-icon">📅</span> تخطيط المحتوى</div>
+  <div class="nav-item" onclick="show('tasks')"><span class="nav-icon">✏️</span> التاسكات<span class="nav-badge">7</span></div>
+  <div class="sidebar-section">الموافقات والنشر</div>
+  <div class="nav-item" onclick="show('approval')"><span class="nav-icon">✅</span> موافقة العميل<span class="nav-badge">5</span></div>
+  <div class="nav-item" onclick="show('publishing')"><span class="nav-icon">📤</span> الجدولة والنشر</div>
+  <div class="sidebar-section">المتابعة</div>
+  <div class="nav-item" onclick="show('reports')"><span class="nav-icon">📊</span> تقارير الأداء</div>
+  <div class="nav-item" onclick="show('renewal')"><span class="nav-icon">🔄</span> تجديد العقود<span class="nav-badge">3</span></div>
+  <div class="nav-item" onclick="show('manager')"><span class="nav-icon">👨‍💼</span> لوحة المدير</div>
+  <div class="sidebar-user">
+    <div class="s-avatar">م</div>
+    <div><div class="user-name">مي حسن</div><div class="user-role">أكونت مانيجر</div></div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">الرئيسية</div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="openModal('notif-modal')">🔔<div class="notif-dot"></div></div>
+      <button class="btn btn-purple btn-sm" onclick="show('onboarding')">🚀 أونبوردينج جديد</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div id="screen-dashboard" class="screen active">
+      <div style="margin-bottom:16px">
+        <div class="alert a-red"><span class="alert-icon">🔴</span><span class="alert-text"><strong>3 عملاء</strong> لم يعتمدوا المحتوى — الموعد أقل من 48 ساعة</span><span class="alert-action" onclick="show('approval')">افتح الموافقات ←</span></div>
+        <div class="alert a-amber"><span class="alert-icon">⚠️</span><span class="alert-text"><strong>شركة النيل</strong> — تقرير الشهر لم يُرسل بعد (المفروض أمس)</span><span class="alert-action" onclick="show('reports')">إنشاء التقرير ←</span></div>
+        <div class="alert a-purple"><span class="alert-icon">🚀</span><span class="alert-text"><strong>عميل جديد "مطعم الأصيل"</strong> وصل من المبيعات — ابدأ الأونبوردينج</span><span class="alert-action" onclick="show('onboarding')">ابدأ ←</span></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-purple">👥</div><div><div class="stat-label">عملاء نشطون</div><div class="stat-value sv-purple">18</div><div class="stat-sub">عميل هذا الشهر</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">⏳</div><div><div class="stat-label">محتوى ينتظر موافقة</div><div class="stat-value sv-amber">5</div><div class="stat-sub"><span class="down">3 متأخرة</span></div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">بوستات نُشرت الشهر</div><div class="stat-value sv-green">143</div><div class="stat-sub">من أصل 160 مخططة</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">🔄</div><div><div class="stat-label">عقود تُجدَّد قريباً</div><div class="stat-value sv-red">3</div><div class="stat-sub"><span class="down">أقل من 30 يوم</span></div></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📅 مهام اليوم</div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:6px;height:36px;border-radius:3px;background:#DC2626;flex-shrink:0"></div>
+              <div style="width:50px;background:#F8FAFC;border-radius:6px;padding:4px 6px;text-align:center;font-size:12px;color:#64748B">9:00 ص</div>
+              <div><div style="font-size:13px;font-weight:600">إرسال تقرير — شركة التك</div><div style="font-size:12px;color:#64748B">تقرير يونيو — متأخر يوم</div></div>
+              <button class="btn btn-outline btn-sm" style="margin-right:auto" onclick="show('reports')">إنشاء</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:6px;height:36px;border-radius:3px;background:#DC2626;flex-shrink:0"></div>
+              <div style="width:50px;background:#F8FAFC;border-radius:6px;padding:4px 6px;text-align:center;font-size:12px;color:#64748B">10:00 ص</div>
+              <div><div style="font-size:13px;font-weight:600">اتصال فولو أب — مطعم الأصيل</div><div style="font-size:12px;color:#64748B">متابعة الأونبوردينج — أسبوع أول</div></div>
+              <button class="btn btn-outline btn-sm" style="margin-right:auto" onclick="openModal('log-modal')">سجّل</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:6px;height:36px;border-radius:3px;background:#D97706;flex-shrink:0"></div>
+              <div style="width:50px;background:#F8FAFC;border-radius:6px;padding:4px 6px;text-align:center;font-size:12px;color:#64748B">12:00 م</div>
+              <div><div style="font-size:13px;font-weight:600">مراجعة محتوى — بوتيك لونا</div><div style="font-size:12px;color:#64748B">12 بوست لشهر يوليو</div></div>
+              <button class="btn btn-outline btn-sm" style="margin-right:auto" onclick="show('tasks')">افتح</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+              <div style="width:6px;height:36px;border-radius:3px;background:#16A34A;flex-shrink:0"></div>
+              <div style="width:50px;background:#F8FAFC;border-radius:6px;padding:4px 6px;text-align:center;font-size:12px;color:#64748B">3:00 م</div>
+              <div><div style="font-size:13px;font-weight:600">جلسة بريف — مجموعة الإبداع</div><div style="font-size:12px;color:#64748B">عميل جديد — جمع بيانات</div></div>
+              <button class="btn btn-outline btn-sm" style="margin-right:auto" onclick="show('onboarding')">افتح</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">📊 حالة المحتوى هذا الشهر</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>✅ نُشر</span><strong style="color:#16A34A">143 بوست</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#16A34A;height:8px;border-radius:4px;width:89%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>⏳ ينتظر موافقة</span><strong style="color:#D97706">12 بوست</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#D97706;height:8px;border-radius:4px;width:7%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>✏️ قيد التصميم</span><strong style="color:#7C3AED">5 بوست</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#7C3AED;height:8px;border-radius:4px;width:3%"></div></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🏆 نسبة رضا العملاء</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>بوتيك لونا</span><div style="display:flex;align-items:center;gap:8px"><div style="background:#F1F5F9;border-radius:4px;height:8px;width:80px"><div style="background:#16A34A;height:8px;border-radius:4px;width:95%"></div></div><strong>95%</strong></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>شركة التك</span><div style="display:flex;align-items:center;gap:8px"><div style="background:#F1F5F9;border-radius:4px;height:8px;width:80px"><div style="background:#2563EB;height:8px;border-radius:4px;width:80%"></div></div><strong>80%</strong></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>مطعم الأصيل</span><div style="display:flex;align-items:center;gap:8px"><div style="background:#F1F5F9;border-radius:4px;height:8px;width:80px"><div style="background:#D97706;height:8px;border-radius:4px;width:60%"></div></div><strong style="color:#D97706">60%</strong></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CLIENTS ══ -->
+    <div id="screen-clients" class="screen">
+      <div class="page-header">
+        <div><h2>👥 العملاء النشطون</h2><div class="ph-sub">18 عميل — 2 في الأونبوردينج</div></div>
+        <button class="btn btn-purple" onclick="show('onboarding')">🚀 عميل جديد</button>
+      </div>
+      <div class="filter-bar">
+        <input class="search-input" placeholder="🔍 ابحث باسم العميل...">
+        <select class="filter-select"><option>كل الأكونتس</option><option>مي حسن</option><option>عمرو صلاح</option><option>نور الهدى</option></select>
+        <select class="filter-select"><option>كل الحالات</option><option>نشط</option><option>أونبوردينج</option><option>تجديد قريب</option></select>
+      </div>
+
+      <div class="client-card" onclick="show('client-detail')">
+        <div class="cc-avatar" style="background:#EDE9FE;color:#6D28D9">ب</div>
+        <div><div class="cc-name">بوتيك لونا</div><div class="cc-sub">Facebook + Instagram · 3,500 ج/ش · مي حسن</div></div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#16A34A">12/12</div><div class="cc-stat-lbl">بوست نُشر</div></div>
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#D97706">0</div><div class="cc-stat-lbl">ينتظر</div></div>
+          <div class="cc-stat"><div class="cc-stat-val">95%</div><div class="cc-stat-lbl">رضا</div></div>
+        </div>
+        <span class="badge b-active">نشط</span>
+        <div class="cc-deadline" style="color:#64748B;min-width:90px;text-align:center">ينتهي 1 يناير</div>
+      </div>
+
+      <div class="client-card" onclick="show('client-detail')">
+        <div class="cc-avatar" style="background:#DBEAFE;color:#1D4ED8">ت</div>
+        <div><div class="cc-name">شركة التك</div><div class="cc-sub">Facebook + Instagram + TikTok · 5,000 ج/ش · مي حسن</div></div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#16A34A">10/16</div><div class="cc-stat-lbl">بوست نُشر</div></div>
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#D97706">3</div><div class="cc-stat-lbl">ينتظر</div></div>
+          <div class="cc-stat"><div class="cc-stat-val">80%</div><div class="cc-stat-lbl">رضا</div></div>
+        </div>
+        <span class="badge b-active">نشط</span>
+        <div class="cc-deadline" style="color:#D97706;min-width:90px;text-align:center">⚠️ تجديد 20 يوليو</div>
+      </div>
+
+      <div class="client-card" onclick="show('onboarding')">
+        <div class="cc-avatar" style="background:#FEF3C7;color:#92400E">م</div>
+        <div><div class="cc-name">مطعم الأصيل</div><div class="cc-sub">Facebook + Instagram · 3,000 ج/ش · مي حسن</div></div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#7C3AED">0/0</div><div class="cc-stat-lbl">بوست نُشر</div></div>
+          <div class="cc-stat"><div class="cc-stat-val">4/10</div><div class="cc-stat-lbl">أونبوردينج</div></div>
+          <div class="cc-stat"><div class="cc-stat-val">—</div><div class="cc-stat-lbl">رضا</div></div>
+        </div>
+        <span class="badge b-onboard">أونبوردينج</span>
+        <div class="cc-deadline" style="color:#7C3AED;min-width:90px;text-align:center">بدأ 15 يونيو</div>
+      </div>
+
+      <div class="client-card" onclick="show('client-detail')">
+        <div class="cc-avatar" style="background:#FEF2F2;color:#B91C1C">ك</div>
+        <div><div class="cc-name">كافيه ريلاكس</div><div class="cc-sub">Facebook + Instagram · 2,500 ج/ش · عمرو صلاح</div></div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#16A34A">8/12</div><div class="cc-stat-lbl">بوست نُشر</div></div>
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#DC2626">2</div><div class="cc-stat-lbl">⚠️ متأخر</div></div>
+          <div class="cc-stat"><div class="cc-stat-val" style="color:#D97706">70%</div><div class="cc-stat-lbl">رضا</div></div>
+        </div>
+        <span class="badge b-renew">تجديد 5 أيام</span>
+        <div class="cc-deadline" style="color:#DC2626;min-width:90px;text-align:center;font-weight:700">⚠️ ينتهي 23 يونيو</div>
+      </div>
+    </div>
+
+    <!-- ══ CLIENT DETAIL ══ -->
+    <div id="screen-client-detail" class="screen">
+      <div class="page-header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="btn btn-ghost btn-sm" onclick="show('clients')">← رجوع</button>
+          <div><h2>بوتيك لونا</h2><div class="ph-sub">عميل نشط · بدأ 1 يناير 2025 · مي حسن</div></div>
+        </div>
+        <div class="btn-group">
+          <span class="badge b-active" style="font-size:13px;padding:6px 14px">نشط</span>
+          <button class="btn btn-purple" onclick="show('calendar')">📅 تخطيط المحتوى</button>
+        </div>
+      </div>
+
+      <div class="detail-layout">
+        <div>
+          <div class="card">
+            <div class="card-title"><span>👤 بيانات العميل</span><button class="btn btn-outline btn-sm">✏️ تعديل</button></div>
+            <div class="info-grid">
+              <div><div class="info-label">الشركة</div><div class="info-value">بوتيك لونا للأزياء</div></div>
+              <div><div class="info-label">المسؤول</div><div class="info-value">هالة إبراهيم</div></div>
+              <div><div class="info-label">الهاتف</div><div class="info-value" style="direction:ltr">01098765432</div></div>
+              <div><div class="info-label">الإيميل</div><div class="info-value">hala@luna.com</div></div>
+              <div><div class="info-label">المنصات</div><div class="info-value"><span class="tag">Facebook</span><span class="tag">Instagram</span></div></div>
+              <div><div class="info-label">قيمة العقد</div><div class="info-value" style="color:#7C3AED">3,500 ج/شهر</div></div>
+              <div><div class="info-label">بداية العقد</div><div class="info-value">1 يناير 2025</div></div>
+              <div><div class="info-label">نهاية العقد</div><div class="info-value">31 ديسمبر 2025</div></div>
+            </div>
+            <div class="divider"></div>
+            <div class="info-label">Tone of Voice</div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px;font-size:13px;color:#475569;margin-top:6px;line-height:1.7">
+              أنثوي — راقي — عصري. تجنب الأسلوب الرسمي. اللون الرئيسي: وردي وذهبي. هاشتاج ثابت: #لونا_للأزياء
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span>📊 أداء الشهر الحالي</span><button class="btn btn-outline btn-sm" onclick="show('reports')">تقرير كامل</button></div>
+            <div class="three-col" style="gap:12px">
+              <div class="metric-card"><div class="metric-val" style="color:#16A34A">12</div><div class="metric-lbl">بوست نُشر</div><div class="metric-change up">↑ 100%</div></div>
+              <div class="metric-card"><div class="metric-val" style="color:#2563EB">4,250</div><div class="metric-lbl">Reach</div><div class="metric-change up">↑ 18%</div></div>
+              <div class="metric-card"><div class="metric-val" style="color:#7C3AED">312</div><div class="metric-lbl">Engagement</div><div class="metric-change up">↑ 24%</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span>📝 سجل التواصل</span><button class="btn btn-purple btn-sm" onclick="openModal('log-modal')">➕ إضافة</button></div>
+            <div class="tl-item">
+              <div class="tl-icon">📞</div>
+              <div class="tl-content"><div class="tl-title">مكالمة مراجعة شهرية</div><div class="tl-text">العميلة سعيدة جداً بالأداء — طلبت إضافة ستوريز إضافية الشهر القادم</div><div class="tl-date">18 يونيو 11:00 ص · مي حسن</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-icon">✅</div>
+              <div class="tl-content"><div class="tl-title">اعتمدت محتوى يوليو كامل</div><div class="tl-text">اعتمدت 12 بوست دفعة واحدة بدون تعديلات</div><div class="tl-date">15 يونيو 2:30 م · مي حسن</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-icon">📊</div>
+              <div class="tl-content"><div class="tl-title">تم إرسال تقرير يونيو</div><div class="tl-text">تقرير PDF كامل + ملخص واتساب</div><div class="tl-date">1 يونيو 9:00 ص · مي حسن</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">⚡ إجراءات</div>
+            <div class="action-item ai-purple" onclick="show('calendar')"><span>📅</span> تخطيط محتوى الشهر القادم</div>
+            <div class="action-item ai-blue" onclick="show('approval')"><span>✅</span> إرسال محتوى للموافقة</div>
+            <div class="action-item ai-green" onclick="show('reports')"><span>📊</span> إنشاء تقرير الأداء</div>
+            <div class="action-item ai-amber" onclick="openModal('log-modal')"><span>📞</span> تسجيل تواصل</div>
+            <div class="action-item ai-red" onclick="show('renewal')"><span>🔄</span> بدء إجراءات التجديد</div>
+          </div>
+          <div class="card">
+            <div class="card-title">📋 الخدمات المتعاقد عليها</div>
+            <div class="platform-row"><div><div class="platform-name">Facebook</div><div class="platform-count">12 بوست شهرياً</div></div><span class="badge b-active">نشط</span></div>
+            <div class="platform-row"><div><div class="platform-name">Instagram</div><div class="platform-count">12 بوست + 8 ستوريز</div></div><span class="badge b-active">نشط</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ONBOARDING ══ -->
+    <div id="screen-onboarding" class="screen">
+      <div class="page-header">
+        <div><h2>🚀 أونبوردينج — مطعم الأصيل</h2><div class="ph-sub">بدأ 15 يونيو 2025 · المسؤول: مي حسن</div></div>
+        <div class="btn-group">
+          <div class="progress-pill" style="gap:10px">
+            <span style="font-size:13px;font-weight:700;color:#7C3AED">4 / 10 خطوات</span>
+            <div class="progress-track" style="width:120px"><div class="progress-fill" style="width:40%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="check-section-title" style="font-size:15px;font-weight:700;margin-bottom:16px">📋 قائمة مهام الأونبوردينج</div>
+
+            <div class="check-section">
+              <div class="check-section-title">1️⃣ الاستلام من المبيعات</div>
+              <div class="check-item done" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text">استلام ملف العميل من السيلز</div><div class="ci-owner">مي حسن</div></div>
+              <div class="check-item done" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text">مراجعة العرض والخدمات المتفق عليها</div><div class="ci-owner">مي حسن</div></div>
+              <div class="check-item done" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text">إرسال إيميل ترحيب للعميل</div><div class="ci-owner">مي حسن</div></div>
+            </div>
+
+            <div class="check-section">
+              <div class="check-section-title">2️⃣ جلسة البريف</div>
+              <div class="check-item done" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text">جدولة اجتماع البريف مع العميل</div><div class="ci-owner">مي حسن</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box"></div><div class="ci-text">ملء نموذج البريف الكامل</div><div class="ci-owner">مي حسن</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box"></div><div class="ci-text">الحصول على Brand Guide / لوجو</div><div class="ci-owner">العميل</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box"></div><div class="ci-text">تحديد Tone of Voice والأسلوب</div><div class="ci-owner">مي حسن</div></div>
+            </div>
+
+            <div class="check-section">
+              <div class="check-section-title">3️⃣ إعداد الحسابات</div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box"></div><div class="ci-text">الحصول على Admin Access للصفحات</div><div class="ci-owner">العميل</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box"></div><div class="ci-text">إضافة الحسابات على أدوات الجدولة</div><div class="ci-owner">متخصص سوشيال</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box"></div><div class="ci-text">إنشاء مجلد العميل على Google Drive</div><div class="ci-owner">مي حسن</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">📝 نموذج البريف</div>
+            <div class="form-group"><label class="form-label">اسم العلامة التجارية <span class="req">*</span></label><input type="text" class="form-control" value="مطعم الأصيل"></div>
+            <div class="form-group"><label class="form-label">طبيعة النشاط</label><input type="text" class="form-control" placeholder="مطعم مأكولات مصرية تقليدية"></div>
+            <div class="form-group"><label class="form-label">الجمهور المستهدف</label><textarea class="form-control" placeholder="العمر، الجنس، الاهتمامات...">عائلات مصرية، 25-45 سنة، يحبون الأكل الشعبي الأصيل</textarea></div>
+            <div class="form-group"><label class="form-label">الـ Tone of Voice</label>
+              <select class="form-control"><option>ودود وقريب</option><option>رسمي واحترافي</option><option>عصري وشبابي</option><option>فخامة وراقي</option></select>
+            </div>
+            <div class="form-group"><label class="form-label">المنافسون الرئيسيون</label><input type="text" class="form-control" placeholder="اذكر 2-3 منافسين"></div>
+            <div class="form-group"><label class="form-label">الأهداف من السوشيال ميديا</label>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" checked> زيادة الوعي بالعلامة التجارية</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" checked> جذب عملاء جدد</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox"> زيادة المبيعات الأونلاين</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox"> بناء مجتمع متفاعل</label>
+              </div>
+            </div>
+            <button class="btn btn-purple" style="width:100%;justify-content:center">💾 حفظ البريف</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CALENDAR ══ -->
+    <div id="screen-calendar" class="screen">
+      <div class="page-header">
+        <div><h2>📅 تخطيط المحتوى</h2><div class="ph-sub">يوليو 2025 — بوتيك لونا</div></div>
+        <div class="btn-group">
+          <select class="filter-select"><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option></select>
+          <button class="btn btn-purple" onclick="openModal('new-post-modal')">➕ إضافة بوست</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <button class="btn btn-ghost">← السابق</button>
+          <div style="font-size:16px;font-weight:700">يوليو 2025</div>
+          <button class="btn btn-ghost">التالي →</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day-header">أحد</div><div class="cal-day-header">إثنين</div><div class="cal-day-header">ثلاثاء</div><div class="cal-day-header">أربعاء</div><div class="cal-day-header">خميس</div><div class="cal-day-header">جمعة</div><div class="cal-day-header">سبت</div>
+
+          <div class="cal-day" style="background:#F8FAFC;opacity:.4"><div class="cal-date">29</div></div>
+          <div class="cal-day" style="background:#F8FAFC;opacity:.4"><div class="cal-date">30</div></div>
+          <div class="cal-day today" onclick="openModal('new-post-modal')"><div class="cal-date" style="color:#2563EB">1</div><div class="cal-post cp-published">📤 أهلاً بيوليو</div></div>
+          <div class="cal-day"><div class="cal-date">2</div></div>
+          <div class="cal-day"><div class="cal-date">3</div><div class="cal-post cp-approved">✅ بوست منتج</div></div>
+          <div class="cal-day"><div class="cal-date">4</div></div>
+          <div class="cal-day"><div class="cal-date">5</div><div class="cal-post cp-approved">✅ ستوري عروض</div></div>
+
+          <div class="cal-day"><div class="cal-date">6</div></div>
+          <div class="cal-day"><div class="cal-date">7</div><div class="cal-post cp-pending">⏳ ريلز جديد</div></div>
+          <div class="cal-day"><div class="cal-date">8</div></div>
+          <div class="cal-day"><div class="cal-date">9</div><div class="cal-post cp-design">✏️ بوست تصميم</div></div>
+          <div class="cal-day"><div class="cal-date">10</div><div class="cal-post cp-approved">✅ كوتيشن</div></div>
+          <div class="cal-day"><div class="cal-date">11</div></div>
+          <div class="cal-day"><div class="cal-date">12</div><div class="cal-post cp-pending">⏳ بوست أسبوعي</div></div>
+
+          <div class="cal-day"><div class="cal-date">13</div></div>
+          <div class="cal-day"><div class="cal-date">14</div><div class="cal-post cp-design">✏️ قيد التصميم</div></div>
+          <div class="cal-day"><div class="cal-date">15</div></div>
+          <div class="cal-day"><div class="cal-date">16</div></div>
+          <div class="cal-day"><div class="cal-date">17</div></div>
+          <div class="cal-day"><div class="cal-date">18</div></div>
+          <div class="cal-day"><div class="cal-date">19</div></div>
+
+          <div class="cal-day"><div class="cal-date">20</div></div>
+          <div class="cal-day"><div class="cal-date">21</div></div>
+          <div class="cal-day"><div class="cal-date">22</div></div>
+          <div class="cal-day"><div class="cal-date">23</div></div>
+          <div class="cal-day"><div class="cal-date">24</div></div>
+          <div class="cal-day"><div class="cal-date">25</div></div>
+          <div class="cal-day"><div class="cal-date">26</div></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:12px;font-size:12px;flex-wrap:wrap">
+          <span><span class="cal-post cp-published" style="display:inline-block;margin-left:4px">■</span> نُشر</span>
+          <span><span class="cal-post cp-approved" style="display:inline-block;margin-left:4px">■</span> معتمد</span>
+          <span><span class="cal-post cp-pending" style="display:inline-block;margin-left:4px">■</span> ينتظر موافقة</span>
+          <span><span class="cal-post cp-design" style="display:inline-block;margin-left:4px">■</span> قيد التصميم</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>📋 ملخص يوليو — بوتيك لونا</span><button class="btn btn-purple btn-sm" onclick="show('approval')">إرسال للموافقة</button></div>
+        <div class="three-col" style="gap:12px">
+          <div class="metric-card"><div class="metric-val sv-green">5</div><div class="metric-lbl">معتمد ✅</div></div>
+          <div class="metric-card"><div class="metric-val sv-amber">2</div><div class="metric-lbl">ينتظر ⏳</div></div>
+          <div class="metric-card"><div class="metric-val sv-purple">2</div><div class="metric-lbl">قيد التصميم ✏️</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TASKS ══ -->
+    <div id="screen-tasks" class="screen">
+      <div class="page-header">
+        <div><h2>✏️ إدارة التاسكات</h2><div class="ph-sub">7 تاسكات مفتوحة</div></div>
+        <button class="btn btn-purple" onclick="openModal('new-task-modal')">➕ تاسك جديد</button>
+      </div>
+
+      <div class="filter-bar">
+        <select class="filter-select"><option>كل العملاء</option><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option></select>
+        <select class="filter-select"><option>كل الأنواع</option><option>تصميم</option><option>كوبي</option><option>مراجعة</option></select>
+        <select class="filter-select"><option>كل الفريق</option><option>مصمم 1</option><option>كوبي رايتر 1</option></select>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#DC2626;margin-bottom:10px">🔴 عاجل — Deadline اليوم أو تجاوزه</div>
+          <div class="task-card tc-urgent" onclick="openModal('task-detail-modal')">
+            <div class="tc-header">
+              <div><div class="tc-client">بوتيك لونا</div><div class="tc-title">بوست ريلز — عرض الصيف</div></div>
+              <span class="badge b-draft">قيد التصميم</span>
+            </div>
+            <div class="tc-meta">
+              <span>🎨 مصمم: أحمد كريم</span><span>📅 Deadline: <strong style="color:#DC2626">اليوم 3م ⚠️</strong></span><span>📱 Instagram</span>
+            </div>
+          </div>
+          <div class="task-card tc-copy" onclick="openModal('task-detail-modal')">
+            <div class="tc-header">
+              <div><div class="tc-client">شركة التك</div><div class="tc-title">كوبي 4 بوستات — أغسطس</div></div>
+              <span class="badge b-draft">قيد الكتابة</span>
+            </div>
+            <div class="tc-meta">
+              <span>✍️ كوبي: سارة علي</span><span>📅 Deadline: <strong style="color:#DC2626">أمس ⚠️</strong></span><span>📱 Facebook</span>
+            </div>
+          </div>
+
+          <div style="font-size:13px;font-weight:700;color:#D97706;margin:16px 0 10px">🟡 هذا الأسبوع</div>
+          <div class="task-card tc-design" onclick="openModal('task-detail-modal')">
+            <div class="tc-header">
+              <div><div class="tc-client">مطعم الأصيل</div><div class="tc-title">تصميم 12 بوست — أول شهر</div></div>
+              <span class="badge b-draft">قيد التصميم</span>
+            </div>
+            <div class="tc-meta">
+              <span>🎨 مصمم: خالد مصطفى</span><span>📅 Deadline: 22 يونيو</span><span>📱 Facebook + Instagram</span>
+            </div>
+          </div>
+          <div class="task-card tc-copy" onclick="openModal('task-detail-modal')">
+            <div class="tc-header">
+              <div><div class="tc-client">كافيه ريلاكس</div><div class="tc-title">كوبي منشورات يوليو كاملة</div></div>
+              <span class="badge b-pending">مراجعة داخلية</span>
+            </div>
+            <div class="tc-meta">
+              <span>✍️ كوبي: سارة علي</span><span>📅 Deadline: 24 يونيو</span><span>📱 Facebook</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#16A34A;margin-bottom:10px">✅ مكتمل — ينتظر المراجعة الداخلية</div>
+          <div class="task-card tc-review" onclick="openModal('task-detail-modal')">
+            <div class="tc-header">
+              <div><div class="tc-client">بوتيك لونا</div><div class="tc-title">12 بوست يوليو — كوبي</div></div>
+              <span class="badge b-pending">مراجعة داخلية</span>
+            </div>
+            <div class="tc-meta">
+              <span>✍️ كوبي: سارة علي</span><span>📅 سُلِّم 18 يونيو</span><span>✅ في الوقت</span>
+            </div>
+          </div>
+          <div class="task-card tc-done" onclick="openModal('task-detail-modal')">
+            <div class="tc-header">
+              <div><div class="tc-client">بوتيك لونا</div><div class="tc-title">12 بوست يوليو — تصميم</div></div>
+              <span class="badge b-approved">معتمد</span>
+            </div>
+            <div class="tc-meta">
+              <span>🎨 مصمم: أحمد كريم</span><span>📅 سُلِّم 17 يونيو</span><span style="color:#16A34A">✅ بدون تعديلات</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ APPROVAL ══ -->
+    <div id="screen-approval" class="screen">
+      <div class="page-header">
+        <div><h2>✅ موافقة العميل</h2><div class="ph-sub">5 محتوى ينتظر — 3 متأخرة</div></div>
+      </div>
+
+      <div class="alert a-red" style="margin-bottom:16px">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-text">بعض المحتوى تجاوز 48 ساعة بدون رد من العميل — اتصل فوراً</span>
+      </div>
+
+      <div class="approval-card urgent">
+        <div class="ac-header">
+          <div><div class="ac-client">بوتيك لونا</div><div class="ac-title">ريلز — عرض الصيف على الفساتين</div></div>
+          <span class="badge b-pending">ينتظر منذ 3 أيام ⚠️</span>
+        </div>
+        <div class="ac-preview">
+          <strong>الكوبي:</strong> صيفك فيه لونا 🌸 كولكشن الصيف وصل بألوان تشرح قلبك — من 299 جنيه فقط! تعالي شوفي والباقي عليك 💕 #لونا_للأزياء #موضة_صيف
+        </div>
+        <div style="margin-bottom:10px;font-size:12px;color:#64748B">📱 Instagram Reel · 30 يونيو 6م</div>
+        <div class="ac-footer">
+          <div class="ac-days" style="color:#DC2626">⏰ الموعد كان أمس!</div>
+          <div class="btn-group">
+            <button class="btn btn-success btn-sm">✅ اعتماد</button>
+            <button class="btn btn-danger btn-sm">✏️ طلب تعديل</button>
+            <button class="btn btn-outline btn-sm" onclick="openModal('log-modal')">📞 اتصل بالعميل</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="approval-card">
+        <div class="ac-header">
+          <div><div class="ac-client">شركة التك</div><div class="ac-title">بوست تعريفي — خدمة جديدة</div></div>
+          <span class="badge b-pending">ينتظر يومين</span>
+        </div>
+        <div class="ac-preview">
+          <strong>الكوبي:</strong> خدمة جديدة وصلت 🚀 دلوقتي مع شركة التك تقدر تدير كل حاجة تقنية في شركتك من مكان واحد. اعرف أكتر ← رابط في البايو
+        </div>
+        <div style="margin-bottom:10px;font-size:12px;color:#64748B">📱 Facebook + Instagram · 28 يونيو 12م</div>
+        <div class="ac-footer">
+          <div class="ac-days" style="color:#D97706">⏰ باقي يوم للـ Deadline</div>
+          <div class="btn-group">
+            <button class="btn btn-success btn-sm">✅ اعتماد</button>
+            <button class="btn btn-danger btn-sm">✏️ طلب تعديل</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="approval-card" style="border-right-color:#16A34A">
+        <div class="ac-header">
+          <div><div class="ac-client">بوتيك لونا</div><div class="ac-title">بوست تشجيعي — نهاية الأسبوع</div></div>
+          <span class="badge b-approved">معتمد ✅</span>
+        </div>
+        <div class="ac-preview">
+          <strong>الكوبي:</strong> الجمعة عليكي بـ لونا! 💛 اختاري اللي يعبر عنك وروحي تتألقي
+        </div>
+        <div style="margin-bottom:10px;font-size:12px;color:#64748B">📱 Instagram Story · 27 يونيو 10ص</div>
+        <div class="ac-footer">
+          <div class="ac-days" style="color:#16A34A">✅ اعتمدت 18 يونيو</div>
+          <div class="btn-group">
+            <button class="btn btn-primary btn-sm" onclick="show('publishing')">📤 جدولة للنشر</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PUBLISHING ══ -->
+    <div id="screen-publishing" class="screen">
+      <div class="page-header">
+        <div><h2>📤 الجدولة والنشر</h2><div class="ph-sub">محتوى معتمد جاهز للجدولة</div></div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="table">
+          <thead><tr><th>البوست</th><th>العميل</th><th>المنصة</th><th>تاريخ النشر</th><th>الوقت</th><th>الحالة</th><th>إجراء</th></tr></thead>
+          <tbody>
+            <tr><td><strong>أهلاً بيوليو 🎉</strong><div class="text-muted">بوست ترحيبي</div></td><td><span style="color:#7C3AED;font-weight:600">بوتيك لونا</span></td><td><span class="tag">Facebook</span><span class="tag">Instagram</span></td><td>1 يوليو</td><td>6:00 م</td><td><span class="badge b-published">مجدول ✓</span></td><td><button class="btn btn-ghost btn-sm">عرض</button></td></tr>
+            <tr><td><strong>بوست منتج — فستان صيفي</strong><div class="text-muted">بوست منتج</div></td><td><span style="color:#7C3AED;font-weight:600">بوتيك لونا</span></td><td><span class="tag">Instagram</span></td><td>3 يوليو</td><td>7:00 م</td><td><span class="badge b-approved">معتمد — جاهز</span></td><td><button class="btn btn-primary btn-sm">📤 جدوله الآن</button></td></tr>
+            <tr><td><strong>ستوري عروض الأسبوع</strong></td><td><span style="color:#7C3AED;font-weight:600">بوتيك لونا</span></td><td><span class="tag">Instagram Story</span></td><td>5 يوليو</td><td>12:00 م</td><td><span class="badge b-approved">معتمد — جاهز</span></td><td><button class="btn btn-primary btn-sm">📤 جدوله الآن</button></td></tr>
+            <tr><td><strong>كوتيشن تشجيعي</strong></td><td><span style="color:#2563EB;font-weight:600">شركة التك</span></td><td><span class="tag">LinkedIn</span><span class="tag">Facebook</span></td><td>10 يوليو</td><td>9:00 ص</td><td><span class="badge b-published">مجدول ✓</span></td><td><button class="btn btn-ghost btn-sm">عرض</button></td></tr>
+            <tr><td><strong>بوست تعريفي — خدمة جديدة</strong></td><td><span style="color:#2563EB;font-weight:600">شركة التك</span></td><td><span class="tag">Facebook</span><span class="tag">Instagram</span></td><td>28 يونيو</td><td>12:00 م</td><td><span class="badge b-pending">ينتظر موافقة</span></td><td><button class="btn btn-outline btn-sm">انتظر</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ REPORTS ══ -->
+    <div id="screen-reports" class="screen">
+      <div class="page-header">
+        <div><h2>📊 تقارير الأداء</h2></div>
+        <div class="btn-group">
+          <select class="filter-select"><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option></select>
+          <select class="filter-select"><option>يونيو 2025</option><option>مايو 2025</option></select>
+          <button class="btn btn-purple">📤 إرسال للعميل</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="metric-card stat-card"><div class="stat-icon si-blue">👁</div><div><div class="stat-label">Reach الإجمالي</div><div class="stat-value sv-blue">42,500</div><div class="stat-sub up">↑ 18% عن الشهر السابق</div></div></div>
+        <div class="metric-card stat-card"><div class="stat-icon si-purple">❤️</div><div><div class="stat-label">Engagement</div><div class="stat-value sv-purple">3,120</div><div class="stat-sub up">↑ 24%</div></div></div>
+        <div class="metric-card stat-card"><div class="stat-icon si-green">👥</div><div><div class="stat-label">متابعين جدد</div><div class="stat-value sv-green">+287</div><div class="stat-sub up">↑ 12%</div></div></div>
+        <div class="metric-card stat-card"><div class="stat-icon si-amber">📝</div><div><div class="stat-label">بوستات نُشرت</div><div class="stat-value sv-amber">24</div><div class="stat-sub">من أصل 24 مخططة ✓</div></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📱 أداء كل منصة</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="padding:12px;background:#F8FAFC;border-radius:8px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>Facebook</strong><span class="badge b-active">12 بوست</span></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+                <div><div style="font-weight:700;color:#2563EB">24,300</div><div class="text-muted">Reach</div></div>
+                <div><div style="font-weight:700;color:#7C3AED">1,850</div><div class="text-muted">Engagement</div></div>
+                <div><div style="font-weight:700;color:#16A34A">4.2%</div><div class="text-muted">معدل تفاعل</div></div>
+              </div>
+            </div>
+            <div style="padding:12px;background:#F8FAFC;border-radius:8px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:8px"><strong>Instagram</strong><span class="badge b-active">12 بوست</span></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+                <div><div style="font-weight:700;color:#2563EB">18,200</div><div class="text-muted">Reach</div></div>
+                <div><div style="font-weight:700;color:#7C3AED">1,270</div><div class="text-muted">Engagement</div></div>
+                <div><div style="font-weight:700;color:#16A34A">5.8%</div><div class="text-muted">معدل تفاعل</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">💬 ملاحظات التقرير</div>
+          <div class="form-group"><label class="form-label">أبرز إنجازات الشهر</label><textarea class="form-control">- ارتفاع الـ Reach بنسبة 18% مقارنة بالشهر السابق
+- أفضل بوست: "عرض الصيف" حقق 5,200 Reach
+- زيادة 287 متابع جديد على Instagram</textarea></div>
+          <div class="form-group"><label class="form-label">توصيات الشهر القادم</label><textarea class="form-control">- زيادة محتوى الـ Reels لأنه يحقق أعلى Reach
+- استخدام الـ Collabs مع حسابات الموضة
+- اقتراح حملة Giveaway في يوليو</textarea></div>
+          <button class="btn btn-purple" style="width:100%;justify-content:center">📤 إرسال التقرير للعميل</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RENEWAL ══ -->
+    <!-- ══ MATERIALS ══ -->
+    <div id="screen-materials" class="screen">
+      <div class="page-header">
+        <div><h2>🗂️ إدارة الماتريال</h2><div class="ph-sub">المسؤول عن الطلب والاستلام: الأكونت مانيجر فقط</div></div>
+        <button class="btn btn-purple" onclick="openModal('request-material-modal')">➕ طلب ماتريال جديد</button>
+      </div>
+
+      <div class="alert a-red" style="margin-bottom:8px">
+        <span class="alert-icon">🔴</span>
+        <span class="alert-text"><strong>بوتيك لونا</strong> — صور المنتجات لم تصل منذ 3 أيام — النشر متوقف</span>
+        <span class="alert-action" onclick="openModal('log-modal')">اتصل بالعميل ←</span>
+      </div>
+      <div class="alert a-amber" style="margin-bottom:16px">
+        <span class="alert-icon">⚠️</span>
+        <span class="alert-text"><strong>مطعم الأصيل</strong> — Brand Guide مطلوب لإكمال الأونبوردينج</span>
+        <span class="alert-action" onclick="openModal('log-modal')">تذكير ←</span>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>العميل</th>
+              <th>الماتريال المطلوب</th>
+              <th>النوع</th>
+              <th>تاريخ الطلب</th>
+              <th>مطلوب قبل</th>
+              <th>الحالة</th>
+              <th>الرابط</th>
+              <th>إجراء</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:#7C3AED">بوتيك لونا</strong></td>
+              <td><strong>صور منتجات يوليو</strong><div class="text-muted">20 صورة للكولكشن الجديد</div></td>
+              <td><span class="tag">📸 صور</span></td>
+              <td class="text-muted">15 يونيو</td>
+              <td style="color:#DC2626;font-weight:700">18 يونيو ⚠️</td>
+              <td><span class="badge b-rejected">لم يصل</span></td>
+              <td class="text-muted">—</td>
+              <td>
+                <button class="btn btn-danger btn-sm" onclick="openModal('log-modal')">📞 اتصل</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong style="color:#D97706">مطعم الأصيل</strong></td>
+              <td><strong>Brand Guide + لوجو</strong><div class="text-muted">ملفات الهوية البصرية</div></td>
+              <td><span class="tag">🎨 هوية</span></td>
+              <td class="text-muted">15 يونيو</td>
+              <td style="color:#D97706;font-weight:600">20 يونيو</td>
+              <td><span class="badge b-pending">ينتظر</span></td>
+              <td class="text-muted">—</td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="openModal('log-modal')">تذكير</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong style="color:#D97706">مطعم الأصيل</strong></td>
+              <td><strong>قائمة الأكلات + الأسعار</strong><div class="text-muted">للبوستات التعريفية الأولى</div></td>
+              <td><span class="tag">📄 نصوص</span></td>
+              <td class="text-muted">15 يونيو</td>
+              <td style="color:#D97706;font-weight:600">22 يونيو</td>
+              <td><span class="badge b-pending">ينتظر</span></td>
+              <td class="text-muted">—</td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="openModal('log-modal')">تذكير</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong style="color:#2563EB">شركة التك</strong></td>
+              <td><strong>عروض وأسعار أغسطس</strong><div class="text-muted">قائمة الخدمات الجديدة</div></td>
+              <td><span class="tag">📄 نصوص</span></td>
+              <td class="text-muted">17 يونيو</td>
+              <td>25 يونيو</td>
+              <td><span class="badge b-pending">ينتظر</span></td>
+              <td class="text-muted">—</td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="openModal('log-modal')">تذكير</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong style="color:#7C3AED">بوتيك لونا</strong></td>
+              <td><strong>صور يونيو — كولكشن الربيع</strong></td>
+              <td><span class="tag">📸 صور</span></td>
+              <td class="text-muted">1 يونيو</td>
+              <td class="text-muted">5 يونيو</td>
+              <td><span class="badge b-done">وصل ✓</span></td>
+              <td><a href="#" style="color:#7C3AED;font-size:12px;font-weight:600">🔗 Drive</a></td>
+              <td><button class="btn btn-ghost btn-sm">عرض</button></td>
+            </tr>
+            <tr>
+              <td><strong style="color:#2563EB">شركة التك</strong></td>
+              <td><strong>لوجو + Brand Guide</strong></td>
+              <td><span class="tag">🎨 هوية</span></td>
+              <td class="text-muted">1 يناير</td>
+              <td class="text-muted">5 يناير</td>
+              <td><span class="badge b-done">وصل ✓</span></td>
+              <td><a href="#" style="color:#7C3AED;font-size:12px;font-weight:600">🔗 Drive</a></td>
+              <td><button class="btn btn-ghost btn-sm">عرض</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- SOP Box -->
+      <div class="card">
+        <div class="card-title">📋 SOP — قواعد إدارة الماتريال</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#374151">📥 أنواع الماتريال وموعد طلبها</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+              <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:6px">
+                <span>🎨 لوجو + Brand Guide</span><span class="tag">في الأونبوردينج</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:6px">
+                <span>📸 صور المنتجات</span><span class="tag">أول كل شهر</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:6px">
+                <span>💰 عروض وأسعار</span><span class="tag">قبل 10 أيام من النشر</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:6px">
+                <span>🎬 فيديوهات تصوير</span><span class="tag">بعد الجلسة مباشرة</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:6px">
+                <span>📢 أخبار طارئة</span><span class="tag">فور ما تحصل</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#374151">⚠️ لو الماتريال متأخر</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="padding:10px 12px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706">
+                <div style="font-weight:700;color:#92400E;margin-bottom:3px">يوم 1 تأخير</div>
+                <div style="color:#475569">تذكير واتساب للعميل</div>
+              </div>
+              <div style="padding:10px 12px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626">
+                <div style="font-weight:700;color:#991B1B;margin-bottom:3px">يوم 2 تأخير</div>
+                <div style="color:#475569">مكالمة هاتفية + تسجيل في السيستم كـ "تأخير من العميل"</div>
+              </div>
+              <div style="padding:10px 12px;background:#F5F3FF;border-radius:8px;border-right:3px solid #7C3AED">
+                <div style="font-weight:700;color:#5B21B6;margin-bottom:3px">يوم 3+</div>
+                <div style="color:#475569">إبلاغ المدير + تأجيل الـ Deadline رسمياً</div>
+              </div>
+            </div>
+            <div style="margin-top:10px;padding:10px 12px;background:#F0FDF4;border-radius:8px;font-size:12px;color:#166534;border-right:3px solid #16A34A">
+              ✅ التأخير بسبب العميل لا يُحسب على الأكونت مانيجر في التقييم
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-renewal" class="screen">
+      <div class="page-header"><h2>🔄 تجديد العقود</h2><div class="ph-sub">3 عقود تحتاج متابعة</div></div>
+
+      <div class="alert a-red" style="margin-bottom:16px">
+        <span class="alert-icon">🔴</span>
+        <span class="alert-text"><strong>كافيه ريلاكس</strong> ينتهي عقده خلال 5 أيام — لم يُتواصل للتجديد بعد</span>
+        <span class="alert-action" onclick="openModal('log-modal')">تواصل الآن ←</span>
+      </div>
+
+      <div class="renew-card urgent">
+        <div class="renew-days" style="color:#DC2626">5<div style="font-size:11px;color:#DC2626">يوم</div></div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700">كافيه ريلاكس</div>
+          <div style="font-size:12px;color:#64748B">2,500 ج/ش · Facebook + Instagram · عمرو صلاح</div>
+          <div style="font-size:12px;margin-top:4px;color:#DC2626">⚠️ لم يُتواصل للتجديد — عاجل</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-success btn-sm">✅ تم التجديد</button>
+          <button class="btn btn-outline btn-sm" onclick="openModal('log-modal')">📞 اتصل</button>
+        </div>
+      </div>
+
+      <div class="renew-card warn">
+        <div class="renew-days" style="color:#D97706">20<div style="font-size:11px;color:#D97706">يوم</div></div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700">شركة التك</div>
+          <div style="font-size:12px;color:#64748B">5,000 ج/ش · 3 منصات · مي حسن</div>
+          <div style="font-size:12px;margin-top:4px;color:#D97706">جاري التواصل — اجتماع الأسبوع القادم</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-success btn-sm">✅ تم التجديد</button>
+          <button class="btn btn-outline btn-sm" onclick="openModal('log-modal')">📞 متابعة</button>
+        </div>
+      </div>
+
+      <div class="renew-card" style="border-right:4px solid #16A34A">
+        <div class="renew-days" style="color:#16A34A">30<div style="font-size:11px;color:#16A34A">يوم</div></div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700">بوتيك لونا</div>
+          <div style="font-size:12px;color:#64748B">3,500 ج/ش · Facebook + Instagram · مي حسن</div>
+          <div style="font-size:12px;margin-top:4px;color:#16A34A">العميلة راضية جداً — توقع تجديد</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-success btn-sm">✅ تم التجديد</button>
+          <button class="btn btn-outline btn-sm" onclick="openModal('log-modal')">📞 تواصل</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MANAGER ══ -->
+    <div id="screen-manager" class="screen">
+      <div class="page-header"><h2>👨‍💼 لوحة تحكم المدير</h2></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-purple">👥</div><div><div class="stat-label">إجمالي العملاء</div><div class="stat-value sv-purple">18</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">بوستات نُشرت</div><div class="stat-value sv-green">143</div><div class="stat-sub">89% من المخطط</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">⏳</div><div><div class="stat-label">ينتظر موافقة</div><div class="stat-value sv-amber">5</div><div class="stat-sub down">3 متأخرة</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">🔄</div><div><div class="stat-label">تجديدات قريبة</div><div class="stat-value sv-red">3</div></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📊 أداء الأكونت مانيجرز</div>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:36px;height:36px;border-radius:50%;background:#EDE9FE;color:#6D28D9;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">م</div>
+              <div style="flex:1.5"><div style="font-size:13px;font-weight:700">مي حسن</div><div style="font-size:11px;color:#64748B">أكونت مانيجر أول</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#7C3AED">8</div><div style="font-size:10px;color:#94A3B8">عملاء</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#16A34A">95%</div><div style="font-size:10px;color:#94A3B8">رضا</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#D97706">1</div><div style="font-size:10px;color:#94A3B8">تأخير</div></div>
+              <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#F0FDF4;color:#15803D">A</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:36px;height:36px;border-radius:50%;background:#DBEAFE;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">ع</div>
+              <div style="flex:1.5"><div style="font-size:13px;font-weight:700">عمرو صلاح</div><div style="font-size:11px;color:#64748B">أكونت مانيجر</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#7C3AED">6</div><div style="font-size:10px;color:#94A3B8">عملاء</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#D97706">78%</div><div style="font-size:10px;color:#94A3B8">رضا</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#DC2626">3</div><div style="font-size:10px;color:#94A3B8">تأخير</div></div>
+              <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#FFFBEB;color:#B45309">B</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
+              <div style="width:36px;height:36px;border-radius:50%;background:#F0FDF4;color:#15803D;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">ن</div>
+              <div style="flex:1.5"><div style="font-size:13px;font-weight:700">نور الهدى</div><div style="font-size:11px;color:#64748B">أكونت مانيجر</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#7C3AED">4</div><div style="font-size:10px;color:#94A3B8">عملاء</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#16A34A">88%</div><div style="font-size:10px;color:#94A3B8">رضا</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#16A34A">0</div><div style="font-size:10px;color:#94A3B8">تأخير</div></div>
+              <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#F0FDF4;color:#15803D">A-</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">🚨 تنبيهات للمدير</div>
+            <div class="alert a-red"><span class="alert-icon">🔴</span><span class="alert-text"><strong>عمرو صلاح</strong> — 3 تأخيرات في تسليم تقارير العملاء</span></div>
+            <div class="alert a-amber"><span class="alert-icon">⚠️</span><span class="alert-text"><strong>كافيه ريلاكس</strong> — 5 أيام للتجديد ولم يُتواصل</span></div>
+            <div class="alert a-blue"><span class="alert-icon">📊</span><span class="alert-text">معدل رضا العملاء الشهر: <strong>84%</strong> — هدف 90%</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">📋 SOP — معايير التقييم</div>
+            <div style="font-size:13px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between"><span>التسليم في الوقت</span><strong>30%</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>رضا العملاء</span><strong>30%</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>نسبة التجديد</span><strong>20%</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>جودة المحتوى (تعديلات)</span><strong>20%</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<div class="modal-overlay" id="request-material-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🗂️ طلب ماتريال من عميل</div><button class="modal-close" onclick="closeModal('request-material-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">العميل <span class="req">*</span></label>
+        <select class="form-control"><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">نوع الماتريال <span class="req">*</span></label>
+        <select class="form-control"><option>📸 صور منتجات</option><option>🎬 فيديوهات</option><option>🎨 لوجو / Brand Guide</option><option>📄 نصوص / أسعار / عروض</option><option>📢 خبر / إعلان طارئ</option><option>🔑 Access للصفحات</option><option>أخرى</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">وصف المطلوب بالتفصيل <span class="req">*</span></label>
+      <textarea class="form-control" placeholder="مثال: 20 صورة لكولكشن الصيف — خلفية بيضاء — بدون ووترمارك"></textarea>
+    </div>
+    <div class="form-group"><label class="form-label">المطلوب قبل تاريخ <span class="req">*</span></label>
+      <input type="date" class="form-control">
+    </div>
+    <div class="form-group"><label class="form-label">سبب الطلب / مرتبط بإيه؟</label>
+      <input type="text" class="form-control" placeholder="مثال: بوستات يوليو — موعد التصميم 25 يونيو">
+    </div>
+    <div class="form-group"><label class="form-label">طريقة إرسال التذكير للعميل</label>
+      <select class="form-control"><option>💬 واتساب</option><option>📧 إيميل</option><option>📞 مكالمة</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-purple" onclick="closeModal('request-material-modal')">📤 إرسال الطلب للعميل</button>
+      <button class="btn btn-outline" onclick="closeModal('request-material-modal')">💾 حفظ بدون إرسال</button>
+      <button class="btn btn-ghost" onclick="closeModal('request-material-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="log-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📞 تسجيل تواصل مع العميل</div><button class="modal-close" onclick="closeModal('log-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">العميل</label><select class="form-control"><option>بوتيك لونا — هالة إبراهيم</option><option>شركة التك — أحمد الشرقاوي</option><option>كافيه ريلاكس</option></select></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">نوع التواصل</label><select class="form-control"><option>📞 مكالمة</option><option>💬 واتساب</option><option>📧 إيميل</option><option>🤝 اجتماع</option></select></div>
+      <div class="form-group"><label class="form-label">الموضوع</label><select class="form-control"><option>موافقة على محتوى</option><option>تقرير أداء</option><option>شكوى / ملاحظة</option><option>تجديد العقد</option><option>طلب إضافي</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملخص التواصل <span class="req">*</span></label><textarea class="form-control" placeholder="إيه اللي اتكلمتوا فيه؟"></textarea></div>
+    <div class="form-group"><label class="form-label">الخطوة الجاية</label><input type="text" class="form-control" placeholder="مثال: إرسال تقرير يوم الخميس"></div>
+    <div class="modal-footer">
+      <button class="btn btn-purple" onclick="closeModal('log-modal')">💾 حفظ</button>
+      <button class="btn btn-outline" onclick="closeModal('log-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="new-post-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">➕ إضافة بوست للكونتنت بلان</div><button class="modal-close" onclick="closeModal('new-post-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">العميل <span class="req">*</span></label><select class="form-control"><option>بوتيك لونا</option><option>شركة التك</option></select></div>
+      <div class="form-group"><label class="form-label">المنصة <span class="req">*</span></label><select class="form-control"><option>Facebook</option><option>Instagram</option><option>TikTok</option><option>Instagram Story</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">عنوان البوست <span class="req">*</span></label><input type="text" class="form-control" placeholder="وصف قصير للبوست"></div>
+    <div class="form-group"><label class="form-label">نوع المحتوى</label><select class="form-control"><option>بوست عادي</option><option>Reel / فيديو</option><option>Story</option><option>Carousel</option><option>Offer / عرض</option></select></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">تاريخ النشر</label><input type="date" class="form-control"></div>
+      <div class="form-group"><label class="form-label">وقت النشر</label><input type="time" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><textarea class="form-control" placeholder="تعليمات للمصمم أو الكوبي رايتر..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-purple" onclick="closeModal('new-post-modal')">💾 إضافة للبلان</button>
+      <button class="btn btn-success" onclick="closeModal('new-post-modal')">💾 إضافة + إنشاء تاسك</button>
+      <button class="btn btn-outline" onclick="closeModal('new-post-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="new-task-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">✏️ تاسك جديد</div><button class="modal-close" onclick="closeModal('new-task-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">العميل <span class="req">*</span></label><select class="form-control"><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option></select></div>
+      <div class="form-group"><label class="form-label">النوع <span class="req">*</span></label><select class="form-control"><option>🎨 تصميم</option><option>✍️ كوبي رايتنج</option><option>🎬 مونتاج فيديو</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">وصف التاسك <span class="req">*</span></label><textarea class="form-control" placeholder="إيه المطلوب بالضبط؟"></textarea></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">المسؤول</label><select class="form-control"><option>أحمد كريم (مصمم)</option><option>خالد مصطفى (مصمم)</option><option>سارة علي (كوبي)</option></select></div>
+      <div class="form-group"><label class="form-label">Deadline <span class="req">*</span></label><input type="datetime-local" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><textarea class="form-control" placeholder="أي تعليمات خاصة..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-purple" onclick="closeModal('new-task-modal')">💾 إنشاء التاسك</button>
+      <button class="btn btn-outline" onclick="closeModal('new-task-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="task-detail-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📋 تفاصيل التاسك</div><button class="modal-close" onclick="closeModal('task-detail-modal')">×</button></div>
+    <div style="background:#F5F3FF;border-radius:8px;padding:14px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:#7C3AED;margin-bottom:4px">بوتيك لونا</div>
+      <div style="font-size:15px;font-weight:700">بوست ريلز — عرض الصيف</div>
+    </div>
+    <div class="info-grid" style="margin-bottom:16px">
+      <div><div class="info-label">النوع</div><div class="info-value">🎨 تصميم</div></div>
+      <div><div class="info-label">المسؤول</div><div class="info-value">أحمد كريم</div></div>
+      <div><div class="info-label">المنصة</div><div class="info-value">Instagram Reel</div></div>
+      <div><div class="info-label">Deadline</div><div class="info-value" style="color:#DC2626">اليوم 3م ⚠️</div></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><div style="background:#F8FAFC;border-radius:8px;padding:10px;font-size:13px;color:#475569">ريلز 30 ثانية — ألوان الصيف (وردي وأصفر) — موسيقى خفيفة — نهاية بـ CTA واضح</div></div>
+    <div class="form-group"><label class="form-label">تحديث الحالة</label><select class="form-control"><option>قيد التصميم</option><option>تم — ينتظر مراجعة داخلية</option><option>اعتُمد داخلياً — أرسل للعميل</option></select></div>
+    <div class="form-group"><label class="form-label">ملاحظة التعديل</label><textarea class="form-control" placeholder="اكتب أي ملاحظة أو تعديل مطلوب..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-success" onclick="closeModal('task-detail-modal')">✅ تم — أرسل للمراجعة</button>
+      <button class="btn btn-danger" onclick="closeModal('task-detail-modal')">✏️ تعديل مطلوب</button>
+      <button class="btn btn-outline" onclick="closeModal('task-detail-modal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal" style="width:400px">
+    <div class="modal-header"><div class="modal-title">🔔 الإشعارات</div><button class="modal-close" onclick="closeModal('notif-modal')">×</button></div>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔴</div><div><div style="font-size:13px;line-height:1.5"><strong>بوتيك لونا</strong> — لم تعتمد محتوى الريلز منذ 3 أيام</div><div style="font-size:11px;color:#94A3B8">منذ 3 ساعات</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0">⚠️</div><div><div style="font-size:13px;line-height:1.5"><strong>كافيه ريلاكس</strong> — العقد ينتهي خلال 5 أيام</div><div style="font-size:11px;color:#94A3B8">منذ ساعة</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#F5F3FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">🚀</div><div><div style="font-size:13px;line-height:1.5">عميل جديد وصل من المبيعات: <strong>مطعم الأصيل</strong></div><div style="font-size:11px;color:#94A3B8">اليوم 9:00 ص</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:36px;height:36px;border-radius:50%;background:#F0FDF4;display:flex;align-items:center;justify-content:center;flex-shrink:0">✅</div><div><div style="font-size:13px;line-height:1.5"><strong>شركة التك</strong> اعتمدت المحتوى الشهري كامل</div><div style="font-size:11px;color:#94A3B8">أمس 4:20 م</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var titles = {
+  dashboard:'الرئيسية', clients:'العملاء النشطون', 'client-detail':'تفاصيل العميل',
+  onboarding:'أونبوردينج — مطعم الأصيل', calendar:'تخطيط المحتوى', tasks:'إدارة التاسكات',
+  approval:'موافقة العميل', publishing:'الجدولة والنشر', reports:'تقارير الأداء',
+  materials:'إدارة الماتريال', renewal:'تجديد العقود', manager:'لوحة تحكم المدير'
+};
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  var s = document.getElementById('screen-' + id);
+  if(s) s.classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(function(el){
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+function toggleCheck(el){
+  el.classList.toggle('done');
+  var box = el.querySelector('.ci-box');
+  if(el.classList.contains('done')){box.textContent='✓';}else{box.textContent='';}
+}
+</script>
+</body>
+</html>

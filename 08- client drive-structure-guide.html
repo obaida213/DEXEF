@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل هيكل Drive — البيانات والماتريال لكل فولدر</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+:root {
+  --bg:     #F5F7FA;
+  --white:  #FFFFFF;
+  --border: #E2E8F0;
+  --text:   #1A2535;
+  --muted:  #64748B;
+  --faint:  #94A3B8;
+  --accent: #1E3A5F;
+  --gold:   #D97706;
+  --green:  #15803D;
+  --red:    #B91C1C;
+  --r: 10px;
+
+  /* folders */
+  --f0: #475569; /* Admin */
+  --f1: #0369A1; /* Brand Assets */
+  --f2: #6D28D9; /* Strategy */
+  --f3: #0891B2; /* Content */
+  --f4: #15803D; /* Reports */
+
+  --f0-bg: #F8FAFC;
+  --f1-bg: #F0F9FF;
+  --f2-bg: #F5F3FF;
+  --f3-bg: #ECFEFF;
+  --f4-bg: #F0FDF4;
+
+  --f0-b: #CBD5E1;
+  --f1-b: #BAE6FD;
+  --f2-b: #DDD6FE;
+  --f3-b: #A5F3FC;
+  --f4-b: #BBF7D0;
+}
+
+body { font-family:'Segoe UI',system-ui,sans-serif; direction:rtl; background:var(--bg); color:var(--text); font-size:14px; line-height:1.8; -webkit-font-smoothing:antialiased }
+::-webkit-scrollbar { width:5px } ::-webkit-scrollbar-thumb { background:#CBD5E1; border-radius:3px }
+
+/* TOPBAR */
+.topbar { height:54px; background:var(--white); border-bottom:1px solid var(--border); position:fixed; top:0; right:0; left:0; z-index:200; display:flex; align-items:center; padding:0 24px; gap:14px }
+.tb-chip { font-size:10.5px; font-weight:800; background:var(--accent); color:#fff; padding:3px 10px; border-radius:6px; letter-spacing:.5px }
+.tb-title { font-size:13px; font-weight:600; color:var(--muted) }
+.tb-print { margin-right:auto; border:1px solid var(--border); background:none; color:var(--faint); font-size:12px; padding:5px 14px; border-radius:7px; cursor:pointer; font-family:inherit; transition:.15s }
+.tb-print:hover { border-color:var(--accent); color:var(--accent) }
+
+/* SIDEBAR */
+.sidebar { width:210px; position:fixed; top:54px; right:0; bottom:0; background:var(--white); border-left:1px solid var(--border); overflow-y:auto; padding:18px 0 60px }
+.nav-label { font-size:10px; font-weight:700; color:var(--faint); letter-spacing:1.5px; text-transform:uppercase; padding:10px 20px 4px; display:block }
+.nav-link  { display:flex; align-items:center; gap:9px; padding:7px 20px; font-size:12.5px; color:var(--muted); cursor:pointer; transition:.12s; border-right:2px solid transparent }
+.nav-link:hover { color:var(--text); background:#F8FAFD }
+.nav-link.on { color:var(--accent); border-right-color:var(--accent); font-weight:600 }
+.nav-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
+
+/* LAYOUT */
+.wrap { display:flex; margin-top:54px }
+.main { margin-right:210px; padding:44px 52px 100px; max-width:900px; width:100% }
+
+/* FOLDER SECTION */
+.folder { margin-bottom:72px }
+.fh-top { display:flex; align-items:flex-start; gap:16px; margin-bottom:10px }
+.fh-icon { width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0 }
+.fh-h2  { font-size:21px; font-weight:800; margin-bottom:4px }
+.fh-path { font-size:12px; font-family:monospace; background:var(--bg); border:1px solid var(--border); padding:3px 10px; border-radius:5px; color:var(--muted); display:inline-block; margin-bottom:6px }
+.fh-sub { font-size:13.5px; color:var(--muted) }
+.fh-divider { height:1px; background:var(--border); margin:16px 0 24px }
+
+/* BLOCK */
+.block { margin-bottom:28px }
+.block-title { font-size:10.5px; font-weight:700; color:var(--faint); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px }
+
+/* FILE TREE */
+.tree { background:var(--text); border-radius:var(--r); padding:20px 24px; font-family:monospace; font-size:13px; line-height:2; color:#94A3B8; overflow-x:auto }
+.tree .root { color:#F8FAFC; font-weight:700 }
+.tree .folder-line { color:#93C5FD }
+.tree .file-line { color:#6EE7B7 }
+.tree .comment { color:#475569 }
+
+/* SOURCE CARDS */
+.src-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px }
+.src-card { border-radius:var(--r); padding:16px 18px; border:1px solid var(--border) }
+.src-card.client { background:#FFFBEB; border-color:#FDE68A }
+.src-card.team   { background:#F0FDF4; border-color:#BBF7D0 }
+.src-card h4 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px }
+.src-card.client h4 { color:#92400E }
+.src-card.team   h4 { color:#166534 }
+
+/* ITEM LIST */
+.ilist { display:flex; flex-direction:column; gap:0 }
+.iitem { display:flex; gap:11px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--border) }
+.iitem:last-child { border-bottom:none }
+.iitem input { width:15px; height:15px; margin-top:3px; flex-shrink:0; cursor:pointer; accent-color:var(--accent) }
+.iitem:has(input:checked) .ii-title { color:var(--faint); text-decoration:line-through }
+.ii-title { font-size:13.5px; font-weight:600; color:var(--text) }
+.ii-sub   { font-size:12.5px; color:var(--muted); line-height:1.5 }
+.ii-tag   { display:inline-block; font-size:10.5px; font-weight:700; padding:1px 8px; border-radius:20px; margin-top:3px; color:#fff }
+.ii-tag.c { background:#D97706 }
+.ii-tag.t { background:#15803D }
+.ii-tag.d { background:#0369A1 }
+
+/* NAMING BOX */
+.naming { background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:16px 20px }
+.naming h4 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--faint); margin-bottom:10px }
+.name-list { display:flex; flex-direction:column; gap:8px }
+.name-row { display:flex; align-items:center; gap:10px }
+.name-code { font-family:monospace; font-size:12.5px; font-weight:700; background:var(--white); border:1px solid var(--border); padding:4px 10px; border-radius:6px; color:var(--text); white-space:nowrap }
+.name-desc { font-size:12.5px; color:var(--muted) }
+
+/* NOTE */
+.note { font-size:13px; color:var(--muted); padding-right:12px; border-right:3px solid var(--border); margin-top:14px; line-height:1.65 }
+.note.warn   { border-color:var(--red);   color:var(--red) }
+.note.good   { border-color:var(--green); color:var(--green) }
+.note.info   { border-color:var(--accent); color:var(--accent) }
+.note.caution{ border-color:var(--gold); color:#92400E }
+
+/* TAG PILLS */
+.tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:6px }
+.pill { font-size:11.5px; font-weight:600; padding:3px 12px; border-radius:20px; background:var(--bg); border:1px solid var(--border); color:var(--muted) }
+
+/* TABLE */
+.tbl { width:100%; border-collapse:collapse; font-size:13px }
+.tbl th { font-size:11px; font-weight:700; color:var(--faint); letter-spacing:.8px; text-transform:uppercase; padding:9px 14px; text-align:right; border-bottom:2px solid var(--border) }
+.tbl td { padding:11px 14px; border-bottom:1px solid var(--border); color:var(--text); line-height:1.6; vertical-align:top }
+.tbl tr:last-child td { border-bottom:none }
+.tbl-wrap { background:var(--white); border-radius:var(--r); border:1px solid var(--border); overflow:hidden }
+
+/* SEP */
+.sep { display:flex; align-items:center; gap:14px; margin:56px 0 48px }
+.sep::before, .sep::after { content:''; flex:1; height:1px; background:var(--border) }
+.sep span { font-size:10.5px; font-weight:800; color:var(--accent); letter-spacing:2px; text-transform:uppercase; white-space:nowrap }
+
+/* INTRO BANNER */
+.intro-banner { background:var(--accent); color:#fff; border-radius:var(--r); padding:24px 28px; margin-bottom:48px }
+.intro-banner h2 { font-size:17px; font-weight:800; margin-bottom:6px }
+.intro-banner p  { font-size:13.5px; opacity:.8; line-height:1.7 }
+.intro-folders { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px }
+.if-chip { display:flex; align-items:center; gap:7px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; padding:6px 14px; font-size:12.5px; font-weight:600 }
+.if-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
+
+/* folder accent strips */
+.f0 .fh-h2 { color:var(--f0) } .f0 .fh-icon { background:var(--f0-bg); border:1px solid var(--f0-b) }
+.f1 .fh-h2 { color:var(--f1) } .f1 .fh-icon { background:var(--f1-bg); border:1px solid var(--f1-b) }
+.f2 .fh-h2 { color:var(--f2) } .f2 .fh-icon { background:var(--f2-bg); border:1px solid var(--f2-b) }
+.f3 .fh-h2 { color:var(--f3) } .f3 .fh-icon { background:var(--f3-bg); border:1px solid var(--f3-b) }
+.f4 .fh-h2 { color:var(--f4) } .f4 .fh-icon { background:var(--f4-bg); border:1px solid var(--f4-b) }
+
+@media print {
+  .sidebar,.topbar { display:none!important }
+  .main { margin:0!important; padding:20px!important }
+  .folder { page-break-inside:avoid }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="tb-chip">DRIVE</span>
+  <span class="tb-title">دليل هيكل Google Drive — البيانات والماتريال لكل فولدر</span>
+  <button class="tb-print" onclick="window.print()">طباعة</button>
+</div>
+
+<div class="wrap">
+<nav class="sidebar">
+  <span class="nav-label">الفولدرات</span>
+  <div class="nav-link on"  onclick="go('overview')"><span class="nav-dot" style="background:#94A3B8"></span>نظرة عامة</div>
+  <div class="nav-link"     onclick="go('f0')"><span class="nav-dot" style="background:var(--f0)"></span>00_Admin</div>
+  <div class="nav-link"     onclick="go('f1')"><span class="nav-dot" style="background:var(--f1)"></span>01_Brand Assets</div>
+  <div class="nav-link"     onclick="go('f2')"><span class="nav-dot" style="background:var(--f2)"></span>02_Strategy</div>
+  <div class="nav-link"     onclick="go('f3')"><span class="nav-dot" style="background:var(--f3)"></span>03_Content</div>
+  <div class="nav-link"     onclick="go('f4')"><span class="nav-dot" style="background:var(--f4)"></span>04_Reports</div>
+  <span class="nav-label" style="margin-top:12px">مرجع</span>
+  <div class="nav-link"     onclick="go('naming')"><span class="nav-dot" style="background:#94A3B8"></span>قواعد التسمية</div>
+  <div class="nav-link"     onclick="go('checklist')"><span class="nav-dot" style="background:#94A3B8"></span>Checklist الاستلام</div>
+</nav>
+
+<div class="main">
+
+<!-- INTRO -->
+<div class="intro-banner" id="overview">
+  <h2>📁 فولدر العميل على Google Drive</h2>
+  <p>كل عميل ليه فولدر خاص بيه — نفس الهيكل لكل العملاء — سهل تلاقي أي حاجة في ثانية</p>
+  <div class="intro-folders">
+    <div class="if-chip"><div class="if-dot" style="background:#94A3B8"></div>00_Admin</div>
+    <div class="if-chip"><div class="if-dot" style="background:var(--f1)"></div>01_Brand Assets</div>
+    <div class="if-chip"><div class="if-dot" style="background:var(--f2)"></div>02_Strategy</div>
+    <div class="if-chip"><div class="if-dot" style="background:var(--f3)"></div>03_Content</div>
+    <div class="if-chip"><div class="if-dot" style="background:var(--f4)"></div>04_Reports</div>
+  </div>
+</div>
+
+<!-- TREE -->
+<div class="block" style="margin-bottom:48px">
+  <div class="block-title">الهيكل الكامل</div>
+  <div class="tree">
+    <div><span class="root">📁 [اسم العميل]/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 00_Admin/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Contract.pdf</span>  <span class="comment">← العقد الموقع</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Onboarding_Form.pdf</span>  <span class="comment">← نموذج الاستيعاب</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Internal_Brief.pdf</span>  <span class="comment">← ملخص الفريق الداخلي</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Access_Log.txt</span>  <span class="comment">← سجل الوصول والبيانات</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 01_Brand Assets/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Logo/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">Logo_Original.ai / .psd</span>  <span class="comment">← من العميل</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">Logo_Color.png</span>  <span class="comment">← نصنعها نحن</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">Logo_White.png</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">Logo_Dark.png</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">Logo_Square.png</span>  <span class="comment">← للبروفايل</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Fonts/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Colors.txt</span>  <span class="comment">← كودات Hex</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Photos/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Products/</span>  &nbsp;<span class="folder-line">📂 Team/</span>  &nbsp;<span class="folder-line">📂 Location/</span>  &nbsp;<span class="folder-line">📂 General/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 02_Strategy/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Competitor_Analysis.pdf</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Content_Strategy_M01.pdf</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Style_Guide.pdf</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 03_Content/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Month_01/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📊 Content_Calendar.xlsx</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Designs/</span>  →  <span class="folder-line">Posts/</span>  &nbsp;<span class="folder-line">Stories/</span>  &nbsp;<span class="folder-line">Ads/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Approved/</span>  <span class="comment">← النسخ النهائية الموافق عليها</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 04_Reports/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📄 Report_Month_01.pdf</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder-line">📂 Ads_Data/</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file-line">📊 Month_01_Ads.xlsx</span>  <span class="comment">← تصدير من Ads Manager</span></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- 00_ADMIN -->
+<!-- ══════════════════════════════════════ -->
+<div class="folder f0" id="f0">
+  <div class="fh-top">
+    <div class="fh-icon">🗂️</div>
+    <div>
+      <div class="fh-path">📁 [اسم العميل] / 00_Admin</div>
+      <div class="fh-h2">00_Admin</div>
+      <div class="fh-sub">كل الوثائق الإدارية والتعاقدية — مش بيشوفه العميل</div>
+    </div>
+  </div>
+  <div class="fh-divider"></div>
+
+  <div class="block">
+    <div class="block-title">محتوى الفولدر</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">Contract.pdf</span><span class="ii-sub">العقد الموقع من العميل</span><span class="ii-tag c">من العميل</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">Onboarding_Form.pdf أو رابط Google Form</span><span class="ii-sub">نموذج الاستيعاب اللي بيملاه العميل في أول يوم</span><span class="ii-tag c">من العميل</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">Internal_Brief.pdf</span><span class="ii-sub">الملخص الداخلي للفريق — بيكتبه مدير الحساب من المعلومات اللي جابها من العميل</span><span class="ii-tag t">الفريق يصنعه</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">Access_Log.txt</span><span class="ii-sub">سجل كل بيانات الوصول: صفحة فيسبوك، BM، أد أكاونت، إنستجرام<br>مش بنحط فيه passwords — بس بنحط مين وصّله ومتى وإيه صلاحياته</span><span class="ii-tag t">الفريق يصنعه</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">Payment_Receipt.pdf (اختياري)</span><span class="ii-sub">إيصال استلام الدفعة الأولى — لو الشركة بتحتفظ بيه في Drive</span><span class="ii-tag c">من العميل</span></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">البيانات المطلوبة من العميل لهذا الفولدر</div>
+    <div class="src-grid">
+      <div class="src-card client">
+        <h4>📥 من العميل</h4>
+        <div class="ilist">
+          <div class="iitem"><input type="checkbox"><div><span class="ii-title">العقد الموقع</span><span class="ii-sub">PDF أو صورة واضحة</span></div></div>
+          <div class="iitem"><input type="checkbox"><div><span class="ii-title">نموذج الاستيعاب معبي</span><span class="ii-sub">اسم الشركة / النشاط / الهدف / الجمهور / المنافسين / ما يعجبهم وما لا يعجبهم</span></div></div>
+        </div>
+      </div>
+      <div class="src-card team">
+        <h4>✍️ الفريق يصنعه</h4>
+        <div class="ilist">
+          <div class="iitem"><input type="checkbox"><div><span class="ii-title">Internal Brief</span><span class="ii-sub">مدير الحساب يكتبه في أول يوم</span></div></div>
+          <div class="iitem"><input type="checkbox"><div><span class="ii-title">Access Log</span><span class="ii-sub">يتحدث كل ما اتغيرت صلاحية</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note warn">00_Admin مشاركة داخلية فقط — لا يتشارك أي ملف منه مع العميل</p>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- 01_BRAND ASSETS -->
+<!-- ══════════════════════════════════════ -->
+<div class="folder f1" id="f1">
+  <div class="fh-top">
+    <div class="fh-icon">🎨</div>
+    <div>
+      <div class="fh-path">📁 [اسم العميل] / 01_Brand Assets</div>
+      <div class="fh-h2">01_Brand Assets</div>
+      <div class="fh-sub">كل أصول الهوية البصرية — أول حاجة بيحتاجها المصمم</div>
+    </div>
+  </div>
+  <div class="fh-divider"></div>
+
+  <div class="block">
+    <div class="block-title">البيانات المطلوبة من العميل</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">اللوجو — الملف الأصلي</span>
+        <span class="ii-sub">الأفضل: AI أو PSD أو SVG — مقبول: PNG عالي الجودة (فوق 1000px)<br>لو مش عنده الأصلي: نطلب أكبر حجم موجود عنده</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Brand Guidelines (لو موجودة)</span>
+        <span class="ii-sub">بعض الشركات عندهم ملف كامل بالألوان والفونتات والاستخدام الصح للوجو — نطلبه</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">كودات الألوان (لو يعرفها)</span>
+        <span class="ii-sub">Hex أو RGB أو PANTONE — لو مش عارفها المصمم بيستخرجها من اللوجو</span>
+        <span class="ii-tag c">من العميل (لو عارف)</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">اسم الفونت المستخدم (لو يعرفه)</span>
+        <span class="ii-sub">لو مش عارف: المصمم بيستخدم WhatTheFont ويطابق</span>
+        <span class="ii-tag c">من العميل (لو عارف)</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">صور المنتجات / الخدمات</span>
+        <span class="ii-sub">أعلى جودة متاحة — بترفعها في Photos/Products<br>لو صور موبايل: تتحول لـ PNG عالي الجودة أحسن من JPEG</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">صور الفريق (لو الباقة تشمل محتوى إنساني)</span>
+        <span class="ii-sub">صور بروفيشنال أحسن — لو مش متاح: موبايل في إضاءة كويسة بيكفي</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">صور المحل / الفرع / المقر</span>
+        <span class="ii-sub">للمحلات والمطاعم والعيادات — بتضيف مصداقية</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">فيديوهات (لو متاحة)</span>
+        <span class="ii-sub">أي فيديو عنده — للـ Reels أو الـ Ads — حتى لو خام وغير معدل</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">ما يصنعه الفريق بعد استلام الأصول</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Logo Pack — ٤ نسخ</span>
+        <span class="ii-sub">
+          Logo_Color.png — على خلفية بيضاء أو شفافة<br>
+          Logo_White.png — أبيض على خلفية شفافة (للبنرات الداكنة)<br>
+          Logo_Dark.png — داكن على خلفية شفافة (للبنرات الفاتحة)<br>
+          Logo_Square.png — مقصوص مربع للبروفايل (1:1)
+        </span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Colors.txt</span>
+        <span class="ii-sub">ملف نصي بسيط فيه كودات الألوان:<br>Primary: #XXXXXX | Secondary: #XXXXXX | Accent: #XXXXXX</span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">ملفات الفونت في فولدر Fonts/</span>
+        <span class="ii-sub">يحمل ملفات TTF أو OTF الخاصة بالفونت المستخدم</span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">تنظيم الصور في مجلداتها الصح</span>
+        <span class="ii-sub">يرتب كل صورة في: Products / Team / Location / General</span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">سيناريوهات اللوجو — إيه تعمل لو</div>
+    <div class="ilist">
+      <div class="iitem"><div><span class="ii-title">العميل مش عنده اللوجو أصلاً</span><span class="ii-sub">ناخد أفضل صورة موجودة ونعمل Vectorize — لو مش ممكن نبلّغه إن محتاج يعمل لوجو أو ندي له الخدمة دي</span></div></div>
+      <div class="iitem"><div><span class="ii-title">اللوجو جودته وحشة جداً</span><span class="ii-sub">نشتغل بيه مؤقتاً مع إخفاء حواف الـ pixelation — ونبلّغ AM إنه محتاج تحديث</span></div></div>
+      <div class="iitem"><div><span class="ii-title">مفيش صور للمنتجات</span><span class="ii-sub">نشتغل بـ Stock Photos مؤقتاً من Unsplash / Freepik — وفي نفس الوقت AM بيطلب من العميل</span></div></div>
+    </div>
+  </div>
+
+  <p class="note good">الـ Brand Assets مش بتتغير كتير — بس بتتحدث لو العميل غير لوجو أو أضاف منتج جديد</p>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- 02_STRATEGY -->
+<!-- ══════════════════════════════════════ -->
+<div class="folder f2" id="f2">
+  <div class="fh-top">
+    <div class="fh-icon">📊</div>
+    <div>
+      <div class="fh-path">📁 [اسم العميل] / 02_Strategy</div>
+      <div class="fh-h2">02_Strategy</div>
+      <div class="fh-sub">الوثائق الاستراتيجية — بتتكتب مرة وبترجع ليها كل شهر</div>
+    </div>
+  </div>
+  <div class="fh-divider"></div>
+
+  <div class="block">
+    <div class="block-title">البيانات المطلوبة من العميل لكتابة الاستراتيجية</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">وصف النشاط التجاري بالتفصيل</span>
+        <span class="ii-sub">إيه المنتج / الخدمة؟ — إيه الأسعار؟ — إيه الميزة التنافسية (ليه يشتري منك مش من غيرك)؟</span>
+        <span class="ii-tag c">Onboarding Form</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">الجمهور المستهدف كما يراه العميل</span>
+        <span class="ii-sub">العمر / الجنس / المنطقة الجغرافية / الاهتمامات / مستوى الدخل (لو معروف)</span>
+        <span class="ii-tag c">Onboarding Form</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">الهدف من السوشيال ميديا</span>
+        <span class="ii-sub">Awareness (ناس تعرفني)؟ أو Leads (ناس تتواصل)؟ أو Sales (بيع مباشر)؟ أو Loyalty (عملاء يرجعوا)؟</span>
+        <span class="ii-tag c">Onboarding Form</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">المنافسين المباشرين (٣–٥ على الأقل)</span>
+        <span class="ii-sub">لينك صفحاتهم على فيسبوك وإنستجرام — لو مش عارف: اسمهم بس يكفي</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">حسابات بتعجبه وبتعجبه الـ Style بتاعتها</span>
+        <span class="ii-sub">مش لازم نفس المجال — إيه اللي بيحبه في تصاميمهم؟ وإيه اللي ما يحبوش؟</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">تجربة سابقة مع السوشيال ميديا</span>
+        <span class="ii-sub">حاسس بإيه من تجاربه السابقة؟ إيه اللي اشتغل وإيه اللي فشل؟</span>
+        <span class="ii-tag c">Onboarding Form</span>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">ما يصنعه الفريق في هذا الفولدر</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Competitor_Analysis.pdf</span>
+        <span class="ii-sub">كاتب المحتوى بيحلل ٣–٥ منافسين: إيه بينشروا؟ إيه الـ Engagement؟ نقاط القوة والضعف؟</span>
+        <span class="ii-tag t">كاتب المحتوى</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Content_Strategy_M01.pdf</span>
+        <span class="ii-sub">فيه: Audience Persona + Content Pillars (٤–٥) + Tone of Voice + KPIs + Sample Posts</span>
+        <span class="ii-tag t">كاتب المحتوى</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Style_Guide.pdf</span>
+        <span class="ii-sub">فيه: الألوان + الفونتات + أسلوب الصور + نماذج تصاميم مقترحة (٢–٣ اتجاهات)</span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+    </div>
+  </div>
+
+  <p class="note info">الاستراتيجية بتتراجع كل ٣ أشهر — أو لما في تغيير كبير عند العميل (منتج جديد / موسم / هدف جديد)</p>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- 03_CONTENT -->
+<!-- ══════════════════════════════════════ -->
+<div class="folder f3" id="f3">
+  <div class="fh-top">
+    <div class="fh-icon">📅</div>
+    <div>
+      <div class="fh-path">📁 [اسم العميل] / 03_Content</div>
+      <div class="fh-h2">03_Content</div>
+      <div class="fh-sub">كل محتوى كل شهر في فولدر منفصل — سهل الرجوع لأي شهر</div>
+    </div>
+  </div>
+  <div class="fh-divider"></div>
+
+  <div class="block">
+    <div class="block-title">هيكل داخل كل شهر</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Content_Calendar.xlsx (أو Google Sheet)</span>
+        <span class="ii-sub">الشيت الرئيسي: كل بوست ليه صف فيه التاريخ + الوقت + الـ Pillar + الكابشن كامل + الـ CTA + الهاشتاجات + اسم ملف التصميم</span>
+        <span class="ii-tag t">كاتب المحتوى</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Designs/Posts/ — تصاميم البوستات</span>
+        <span class="ii-sub">كل ملف بالاسم: 01_post_Jan15.png — الرقم + الـ type + التاريخ</span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Designs/Stories/ — تصاميم الاستوريز</span>
+        <span class="ii-sub">أبعاد 1080×1920 — نفس نظام التسمية</span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Designs/Ads/ — Ad Creatives للإعلانات</span>
+        <span class="ii-sub">صور + فيديوهات مخصصة للإعلانات — مختلفة عن بوستات الأورجانيك</span>
+        <span class="ii-tag d">المصمم</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Approved/ — النسخ النهائية الموافق عليها</span>
+        <span class="ii-sub">بعد موافقة العميل — النسخ اللي هتتنشر بالظبط بتتنقل هنا<br>مدير الحساب هو اللي بينقلها — مش أي حد تاني</span>
+        <span class="ii-tag t">مدير الحساب</span>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">البيانات المطلوبة من العميل لإنتاج المحتوى</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">أي مناسبات أو عروض الشهر القادم</span>
+        <span class="ii-sub">عيد / موسم / افتتاح فرع / خصم / حدث — لازم يبلّغنا قبل بداية الشهر بأسبوع</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">صور جديدة لو في منتجات أو أحداث الشهر ده</span>
+        <span class="ii-sub">كل شهر لو في جديد — بنطلبه في البداية مش في النص</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">تفاصيل أي خدمة أو منتج جديد</span>
+        <span class="ii-sub">السعر + المواصفات + المدة + أي تفاصيل نذكرها في الكابشن</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Feedback على المحتوى السابق</span>
+        <span class="ii-sub">إيه اللي عجبه وإيه اللي ما عجبوش — يفيد في تحسين الشهر الجاي</span>
+        <span class="ii-tag c">من العميل</span>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">قواعد فولدر Content</div>
+    <div class="naming">
+      <h4>نظام التسمية داخل Designs/</h4>
+      <div class="name-list">
+        <div class="name-row"><span class="name-code">01_post_Jan15.png</span><span class="name-desc">بوست رقم ١ — يتنشر ١٥ يناير</span></div>
+        <div class="name-row"><span class="name-code">02_story_Jan16.png</span><span class="name-desc">استوري رقم ٢ — يتنشر ١٦ يناير</span></div>
+        <div class="name-row"><span class="name-code">03_ad_Jan_v1.jpg</span><span class="name-desc">إعلان يناير — النسخة الأولى</span></div>
+        <div class="name-row"><span class="name-code">03_ad_Jan_v2.jpg</span><span class="name-desc">نفس الإعلان — النسخة المعدلة</span></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note caution">مش بنحذف أي نسخة قديمة — بنضيف v2, v3 — عشان نقدر نرجع لأي إصدار</p>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- 04_REPORTS -->
+<!-- ══════════════════════════════════════ -->
+<div class="folder f4" id="f4">
+  <div class="fh-top">
+    <div class="fh-icon">📈</div>
+    <div>
+      <div class="fh-path">📁 [اسم العميل] / 04_Reports</div>
+      <div class="fh-h2">04_Reports</div>
+      <div class="fh-sub">أرشيف كل التقارير والبيانات — بيفيد في تقييم النمو</div>
+    </div>
+  </div>
+  <div class="fh-divider"></div>
+
+  <div class="block">
+    <div class="block-title">محتوى الفولدر</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Report_Month_01.pdf</span>
+        <span class="ii-sub">التقرير الشهري الكامل — بيحتفظ بكل التقارير بالترتيب: 01, 02, 03...</span>
+        <span class="ii-tag t">مدير الحساب</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Ads_Data/Month_01_Ads.xlsx</span>
+        <span class="ii-sub">تصدير خام من Ads Manager — الأرقام الكاملة كل شهر</span>
+        <span class="ii-tag t">Media Buyer</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Insights_Screenshots/ (اختياري)</span>
+        <span class="ii-sub">لقطات شاشة من Facebook Insights — للرجوع إليها في حالة تغيير الـ API</span>
+        <span class="ii-tag t">مدير الحساب</span>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">البيانات اللي بنجمعها لعمل التقرير</div>
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Organic Insights من فيسبوك</span>
+        <span class="ii-sub">Reach / Impressions / Engagement / Page Likes Growth / Best Performing Posts</span>
+        <span class="ii-tag t">مدير الحساب — من Facebook Business Suite</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">Organic Insights من إنستجرام</span>
+        <span class="ii-sub">Reach / Impressions / Followers Growth / Story Views / Profile Visits</span>
+        <span class="ii-tag t">مدير الحساب — من Instagram Insights</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">بيانات الإعلانات من Ads Manager</span>
+        <span class="ii-sub">Spend / Reach / Impressions / Clicks / CTR / CPC / ROAS / Cost per Lead</span>
+        <span class="ii-tag t">Media Buyer</span>
+      </div></div>
+      <div class="iitem"><input type="checkbox"><div>
+        <span class="ii-title">ملاحظات Community Manager</span>
+        <span class="ii-sub">Sentiment الشهر + أكتر الأسئلة المتكررة + توصيات للمحتوى القادم</span>
+        <span class="ii-tag t">Community Manager</span>
+      </div></div>
+    </div>
+  </div>
+
+  <p class="note good">التقارير القديمة مش بتتحذف أبداً — بتفيد في مقارنة النمو ومناقشات التجديد</p>
+</div>
+
+
+<!-- NAMING RULES -->
+<div class="sep"><span>قواعد التسمية العامة</span></div>
+
+<div id="naming" class="block" style="margin-bottom:48px">
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>نوع الملف</th><th>نظام التسمية</th><th>مثال</th></tr></thead>
+      <tbody>
+        <tr><td>تقرير شهري</td><td>Report_Month_[رقم].pdf</td><td>Report_Month_03.pdf</td></tr>
+        <tr><td>استراتيجية</td><td>Content_Strategy_M[رقم].pdf</td><td>Content_Strategy_M01.pdf</td></tr>
+        <tr><td>بيانات إعلانات</td><td>Month_[رقم]_Ads.xlsx</td><td>Month_02_Ads.xlsx</td></tr>
+        <tr><td>تصميم بوست</td><td>[رقم]_post_[شهر][يوم].png</td><td>05_post_Feb10.png</td></tr>
+        <tr><td>تصميم استوري</td><td>[رقم]_story_[شهر][يوم].png</td><td>03_story_Feb12.png</td></tr>
+        <tr><td>تصميم إعلان</td><td>[رقم]_ad_[شهر]_v[نسخة].jpg</td><td>01_ad_Feb_v2.jpg</td></tr>
+        <tr><td>لوجو</td><td>Logo_[نوع].png</td><td>Logo_White.png</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note info" style="margin-top:16px">الأسماء كلها بالإنجليزية — لا مسافات — استخدم _ بدل المسافة — لا تكتب "final" أو "new" في الاسم</p>
+</div>
+
+
+<!-- CHECKLIST -->
+<div id="checklist" class="block">
+  <div class="block-title">Checklist استلام Drive — يوم ١</div>
+  <div style="background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:20px 24px">
+    <div class="ilist">
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">تم إنشاء فولدر العميل بالهيكل الكامل (٥ فولدرات)</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">تم رفع العقد الموقع في 00_Admin</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">تم استلام وتخزين نموذج الاستيعاب</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">تم كتابة Internal Brief من AM ورفعه</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">تم استلام اللوجو الأصلي ورفعه في 01_Brand Assets/Logo</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">المصمم استخرج الـ Logo Pack (٤ نسخ) وحط Colors.txt</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">تم استلام الصور الأولية ورفعها في Photos</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">تم تشارك الـ Drive مع الفريق بالصلاحيات الصح</span></div></div>
+      <div class="iitem"><input type="checkbox"><div><span class="ii-title">لينك الـ Drive موجود في أداة إدارة المشاريع على بورد العميل</span></div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /wrap -->
+
+<script>
+function go(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior:'smooth', block:'start' })
+}
+const sections = ['overview','f0','f1','f2','f3','f4','naming','checklist']
+window.addEventListener('scroll', () => {
+  let cur = ''
+  sections.forEach(id => {
+    const el = document.getElementById(id)
+    if (el && scrollY >= el.offsetTop - 120) cur = id
+  })
+  document.querySelectorAll('.nav-link').forEach(n => {
+    const oc = n.getAttribute('onclick') || ''
+    n.classList.toggle('on', oc.includes(`'${cur}'`))
+  })
+}, { passive:true })
+</script>
+</body>
+</html>

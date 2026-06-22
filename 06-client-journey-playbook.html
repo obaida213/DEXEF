@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Journey Playbook</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+:root {
+  --bg:      #F6F8FB;
+  --white:   #FFFFFF;
+  --border:  #E2E8F0;
+  --text:    #1A2535;
+  --muted:   #64748B;
+  --faint:   #94A3B8;
+  --accent:  #1E3A5F;
+  --gold:    #D97706;
+  --green:   #15803D;
+  --red:     #B91C1C;
+  --r: 12px;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  direction: rtl;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14.5px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 5px }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px }
+
+/* ══ TOP BAR ══ */
+.topbar {
+  height: 54px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  position: fixed; top: 0; right: 0; left: 0; z-index: 200;
+  display: flex; align-items: center; padding: 0 24px; gap: 14px;
+}
+.tb-chip {
+  font-size: 10.5px; font-weight: 800; background: var(--accent);
+  color: #fff; padding: 3px 10px; border-radius: 6px; letter-spacing: .5px;
+}
+.tb-title { font-size: 13px; font-weight: 600; color: var(--muted) }
+.tb-print {
+  margin-right: auto;
+  border: 1px solid var(--border); background: none;
+  color: var(--faint); font-size: 12px; padding: 5px 14px;
+  border-radius: 7px; cursor: pointer; font-family: inherit; transition: .15s;
+}
+.tb-print:hover { border-color: var(--accent); color: var(--accent) }
+
+/* ══ LAYOUT ══ */
+.wrap { display: flex; margin-top: 54px }
+
+/* ══ SIDEBAR ══ */
+.sidebar {
+  width: 210px; flex-shrink: 0;
+  position: fixed; top: 54px; right: 0; bottom: 0;
+  background: var(--white); border-left: 1px solid var(--border);
+  overflow-y: auto; padding: 20px 0 60px;
+}
+.nav-section { margin-bottom: 6px }
+.nav-label {
+  font-size: 10px; font-weight: 700; color: var(--faint);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 12px 20px 5px; display: block;
+}
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 20px; font-size: 12.5px; color: var(--muted);
+  cursor: pointer; transition: .12s;
+  border-right: 2px solid transparent;
+}
+.nav-link:hover { color: var(--text); background: #F8FAFD }
+.nav-link.on { color: var(--accent); border-right-color: var(--accent); font-weight: 600 }
+.nav-n {
+  width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  background: var(--bg); color: var(--faint); transition: .12s;
+}
+.nav-link.on .nav-n { background: var(--accent); color: #fff }
+
+/* ══ MAIN ══ */
+.main {
+  margin-right: 210px;
+  padding: 48px 52px 100px;
+  max-width: 860px;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ══ STAGE ══ */
+.stage { margin-bottom: 80px }
+
+.stage-header { margin-bottom: 32px }
+.stage-label {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--faint);
+  margin-bottom: 8px; display: block;
+}
+.stage-title-row { display: flex; align-items: flex-start; gap: 16px }
+.stage-badge {
+  font-size: 12px; font-weight: 800; color: #fff;
+  padding: 6px 11px; border-radius: 8px;
+  flex-shrink: 0; margin-top: 4px; min-width: 40px; text-align: center;
+}
+.stage-h2 { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.25; margin-bottom: 5px }
+.stage-sub { font-size: 13.5px; color: var(--muted) }
+.stage-divider { height: 1px; background: var(--border); margin-top: 20px }
+
+/* ══ BLOCK (replaces card) ══ */
+.block { margin-bottom: 28px }
+.block-title {
+  font-size: 12px; font-weight: 700; color: var(--faint);
+  letter-spacing: 1.2px; text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* ══ GATE ══ */
+.gate {
+  background: var(--accent); border-radius: var(--r);
+  padding: 20px 24px; margin-bottom: 28px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.gate-ico { font-size: 22px; flex-shrink: 0 }
+.gate h4 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px }
+.gate p  { font-size: 13px; color: rgba(255,255,255,.7); line-height: 1.65 }
+.gate-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px }
+.gate-chip {
+  background: rgba(255,255,255,.13); color: rgba(255,255,255,.9);
+  font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+}
+
+/* ══ STEP LIST ══ */
+.slist { display: flex; flex-direction: column; gap: 0 }
+.sitem {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.sitem:last-child { border-bottom: none }
+.snum {
+  font-size: 11.5px; font-weight: 800; color: var(--faint);
+  min-width: 28px; padding-top: 2px; flex-shrink: 0;
+  text-align: left;
+}
+.snum.g { color: var(--gold) }
+.snum.r { color: var(--red) }
+.snum.gr { color: var(--green) }
+.sitem h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px }
+.sitem p  { font-size: 13px; color: var(--muted); line-height: 1.65 }
+
+/* ══ TABLE ══ */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px }
+.tbl thead th {
+  font-size: 11px; font-weight: 700; color: var(--faint);
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 10px 16px; text-align: right;
+  border-bottom: 2px solid var(--border);
+}
+.tbl tbody td {
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  color: var(--text); vertical-align: top; line-height: 1.65;
+}
+.tbl tbody tr:last-child td { border-bottom: none }
+.tbl tbody tr:hover td { background: #F8FAFD }
+.tbl td strong { color: var(--accent) }
+
+/* ══ CHECKLIST ══ */
+.clist { display: flex; flex-direction: column }
+.citem {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+}
+.citem:last-child { border-bottom: none }
+.citem:has(input:checked) .c-title { color: var(--faint); text-decoration: line-through }
+.citem input { width: 16px; height: 16px; margin-top: 3px; accent-color: var(--green); flex-shrink: 0; cursor: pointer }
+.c-title { font-size: 13.5px; font-weight: 600; color: var(--text); display: block }
+.c-sub   { font-size: 12.5px; color: var(--faint) }
+.c-req   { font-size: 10px; font-weight: 700; background: #FEF3C7; color: var(--gold); padding: 1px 7px; border-radius: 10px; margin-right: 6px }
+
+/* ══ MSG ══ */
+.msg { background: #F8FAFD; border: 1px solid var(--border); border-radius: var(--r); padding: 20px 24px; margin-top: 4px; position: relative }
+.msg-label { font-size: 10.5px; font-weight: 700; color: var(--faint); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px }
+.msg pre { font-size: 13.5px; color: var(--text); white-space: pre-wrap; font-family: inherit; line-height: 1.85 }
+.msg .cp-btn {
+  position: absolute; top: 14px; left: 16px;
+  background: var(--accent); color: #fff; border: none;
+  font-size: 11.5px; padding: 4px 12px; border-radius: 6px;
+  cursor: pointer; font-family: inherit; transition: .15s;
+}
+.msg .cp-btn:hover { opacity: .85 }
+
+/* ══ NOTE ══ */
+.note { font-size: 13px; color: var(--muted); padding-right: 14px; border-right: 3px solid var(--border); margin-top: 16px; line-height: 1.65 }
+.note.warn   { border-color: var(--red);   color: var(--red) }
+.note.caution{ border-color: var(--gold);  color: var(--gold) }
+.note.good   { border-color: var(--green); color: var(--green) }
+.note.info   { border-color: var(--accent);color: var(--accent) }
+
+/* ══ OBJ (objection) ══ */
+.obj-item { padding: 16px 0; border-bottom: 1px solid var(--border) }
+.obj-item:last-child { border-bottom: none }
+.obj-q { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 6px }
+.obj-a { font-size: 13px; color: var(--muted); line-height: 1.7 }
+.obj-a strong { color: var(--text) }
+
+/* ══ ACCORDION ══ */
+.acc-item { border-bottom: 1px solid var(--border) }
+.acc-item:last-child { border-bottom: none }
+.acc-h { display: flex; align-items: center; gap: 10px; padding: 14px 0; cursor: pointer }
+.acc-h:hover .acc-title { color: var(--accent) }
+.acc-title { font-size: 13.5px; font-weight: 600; color: var(--text); flex: 1 }
+.acc-ico-l { font-size: 16px }
+.acc-arr { font-size: 11px; color: var(--faint); transition: transform .2s }
+.acc-body { padding: 0 0 16px 38px; display: none }
+.acc-body.open { display: block }
+
+/* ══ TIMELINE ══ */
+.tline { border-right: 2px solid var(--border); padding-right: 22px }
+.tl-row { position: relative; padding-bottom: 20px }
+.tl-row:last-child { padding-bottom: 0 }
+.tl-dot {
+  position: absolute; right: -27px; top: 6px;
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid var(--white); background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.tl-time { font-size: 11px; font-weight: 700; color: var(--gold); margin-bottom: 2px }
+.tl-row h4 { font-size: 13.5px; font-weight: 700; color: var(--text) }
+.tl-row p  { font-size: 13px; color: var(--muted) }
+
+/* ══ CRISIS GRID ══ */
+.cr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px }
+.cr-box { border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px }
+.cr-box h4 { font-size: 13px; font-weight: 700; margin-bottom: 8px }
+.cr-box li { font-size: 12.5px; color: var(--muted); margin-right: 14px; margin-bottom: 3px }
+.cr-sla { font-size: 11.5px; font-weight: 700; margin-top: 10px }
+.cr1 { border-top: 3px solid var(--gold) }     .cr1 h4 { color: var(--gold) }     .cr1 .cr-sla { color: var(--gold) }
+.cr2 { border-top: 3px solid #EA580C }          .cr2 h4 { color: #EA580C }          .cr2 .cr-sla { color: #EA580C }
+.cr3 { border-top: 3px solid var(--red) }       .cr3 h4 { color: var(--red) }       .cr3 .cr-sla { color: var(--red) }
+
+/* ══ UPSELL LIST ══ */
+.ups-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border) }
+.ups-row:last-child { border-bottom: none }
+.ups-ico { font-size: 20px; flex-shrink: 0; margin-top: 1px }
+.ups-row h5 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px }
+.ups-row p  { font-size: 13px; color: var(--muted) }
+
+/* ══ TWO-COL (limited use) ══ */
+.tcol { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px }
+.tcol-box { border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px }
+.tcol-box h5 { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 8px }
+.tcol-box li { font-size: 13px; color: var(--muted); margin-right: 14px; margin-bottom: 4px }
+
+/* ══ REPLY GRID ══ */
+.rg { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+.rc { border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px }
+.rc h5 { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 5px }
+.rc p  { font-size: 12.5px; color: var(--muted); line-height: 1.65 }
+
+/* ══ PHASE SEP ══ */
+.phase-sep {
+  display: flex; align-items: center; gap: 16px;
+  margin: 60px 0 50px;
+}
+.phase-sep::before, .phase-sep::after { content: ''; flex: 1; height: 1px; background: var(--border) }
+.phase-sep span {
+  font-size: 10.5px; font-weight: 800; color: var(--accent);
+  letter-spacing: 2px; text-transform: uppercase; white-space: nowrap;
+}
+
+/* ══ PRINT ══ */
+@media print {
+  .sidebar, .topbar, .no-print { display: none !important }
+  .main { margin: 0 !important; padding: 20px !important }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar no-print">
+  <span class="tb-chip">PLAYBOOK</span>
+  <span class="tb-title">رحلة العميل — من أول تواصل لحد الإنهاء</span>
+  <button class="tb-print" onclick="window.print()">طباعة</button>
+</div>
+
+<div class="wrap">
+
+<!-- SIDEBAR -->
+<nav class="sidebar no-print">
+  <div class="nav-section">
+    <span class="nav-label">قبل التعاقد</span>
+    <div class="nav-link on"  onclick="go('s1')"><span class="nav-n">01</span>تأهيل الليد</div>
+    <div class="nav-link" onclick="go('s2')"><span class="nav-n">02</span>Discovery Call</div>
+    <div class="nav-link" onclick="go('s3')"><span class="nav-n">03</span>الاقتراح والتسعير</div>
+    <div class="nav-link" onclick="go('s4')"><span class="nav-n">04</span>الإغلاق والعقد</div>
+  </div>
+  <div class="nav-section">
+    <span class="nav-label">بعد التعاقد</span>
+    <div class="nav-link" onclick="go('s5')"><span class="nav-n">05</span>الأونبوردينج</div>
+    <div class="nav-link" onclick="go('s6')"><span class="nav-n">06</span>الاستراتيجية</div>
+    <div class="nav-link" onclick="go('s7')"><span class="nav-n">07</span>إنتاج المحتوى</div>
+    <div class="nav-link" onclick="go('s8')"><span class="nav-n">08</span>النشر والمجتمع</div>
+    <div class="nav-link" onclick="go('s9')"><span class="nav-n">09</span>التقرير الشهري</div>
+  </div>
+  <div class="nav-section">
+    <span class="nav-label">مواقف خاصة</span>
+    <div class="nav-link" onclick="go('s10')"><span class="nav-n">10</span>إدارة الأزمات</div>
+    <div class="nav-link" onclick="go('s11')"><span class="nav-n">11</span>التجديد والـ Upsell</div>
+    <div class="nav-link" onclick="go('s12')"><span class="nav-n">12</span>الأوفبوردينج</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+
+<!-- ─────────────────── S01 ─────────────────── -->
+<div class="stage" id="s1">
+  <div class="stage-header">
+    <span class="stage-label">قبل التعاقد — المرحلة الأولى</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:var(--accent)">01</span>
+      <div>
+        <div class="stage-h2">تأهيل الليد</div>
+        <div class="stage-sub">مش كل طلب يستاهل وقتك — اتعلم تفلتر قبل ما تصرف مجهود</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="gate">
+    <span class="gate-ico">🚦</span>
+    <div>
+      <h4>لا تدخل في Discovery Call قبل ما تعرف</h4>
+      <p>خمسة أسئلة بتوفر عليك ساعات من كلام فاضي مع عملاء مش مناسبين</p>
+      <div class="gate-chips">
+        <span class="gate-chip">نشاطه إيه؟</span>
+        <span class="gate-chip">عنده حسابات موجودة؟</span>
+        <span class="gate-chip">الميزانية في النطاق؟</span>
+        <span class="gate-chip">بيفهم إن النتيجة بتاخد وقت؟</span>
+        <span class="gate-chip">هو صاحب القرار؟</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">العميل المثالي</div>
+    <div class="clist">
+      <div class="citem"><input type="checkbox"><div><span class="c-title">عنده نشاط حقيقي — مش مجرد فكرة</span><span class="c-sub">فيه منتج أو خدمة موجودة فعلاً</span></div></div>
+      <div class="citem"><input type="checkbox"><div><span class="c-title">مستعد للمحتوى والإعلانات معاً</span><span class="c-sub">محتوى بدون إعلانات = نتائج بطيئة جداً</span></div></div>
+      <div class="citem"><input type="checkbox"><div><span class="c-title">هو نفسه صاحب القرار</span><span class="c-sub">لو قالك "هعرض على صاحبي" — احتمال الضياع كبير</span></div></div>
+      <div class="citem"><input type="checkbox"><div><span class="c-title">فاهم إن النتيجة بتاخد ٣ شهور</span><span class="c-sub">اللي بيقولك "عايز نتيجة في شهر" هيتعب ويعبك</span></div></div>
+      <div class="citem"><input type="checkbox"><div><span class="c-title">مستعد يتعاون في الأصول والموافقات</span><span class="c-sub">اللي مش بيرد على رسائلك = كابوس طول التعاقد</span></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">علامات التحذير</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum r">❌</span><div><h4>"جربت شركة تانية وما نفعتش"</h4><p>اسأل: ليه؟ لو المشكلة كانت منه هو — نفس المشكلة هتتكرر معاك</p></div></div>
+      <div class="sitem"><span class="snum r">❌</span><div><h4>"بدفعك بعد ما أشوف النتيجة"</h4><p>لا تبدأ ولا يوم قبل الدفعة الأولى — من غير استثناء</p></div></div>
+      <div class="sitem"><span class="snum r">❌</span><div><h4>"عايز ١٠٠ ألف فولوور في شهر"</h4><p>توقعات خارج الواقع = شكاوى وعدم رضا مضمون</p></div></div>
+      <div class="sitem"><span class="snum r">❌</span><div><h4>"أنا عارف السوشيال أكتر منك"</h4><p>ده مدير مش عميل — هيتعبك في كل خطوة</p></div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S02 ─────────────────── -->
+<div class="stage" id="s2">
+  <div class="stage-header">
+    <span class="stage-label">قبل التعاقد — المرحلة الثانية</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#2563EB">02</span>
+      <div>
+        <div class="stage-h2">Discovery Call</div>
+        <div class="stage-sub">اسمع أكتر ما بتتكلم — الهدف فهم وثقة مش بيع</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">أجندة الكول — ٤٥ دقيقة</div>
+    <div class="tline">
+      <div class="tl-row"><div class="tl-dot"></div><div class="tl-time">٠:٠٠ — ٥ دقائق</div><h4>تعريف سريع بنفسك</h4><p>اذكر ٢ عميل مشابه نجحت معاهم — مش قايمة خدمات</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:var(--gold);box-shadow:0 0 0 1px var(--gold)"></div><div class="tl-time">٠:٠٥ — ١٥ دقيقة</div><h4>خليه يحكي بدون مقاطعة</h4><p>"احكيلي عن نشاطك وهدفك الأساسي من السوشيال ميديا"</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:var(--green);box-shadow:0 0 0 1px var(--green)"></div><div class="tl-time">٠:٢٠ — ١٠ دقائق</div><h4>أسئلة التشخيص</h4><p>شوف الأسئلة أدناه — مش لازم كلها</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:#7C3AED;box-shadow:0 0 0 1px #7C3AED"></div><div class="tl-time">٠:٣٠ — ٨ دقائق</div><h4>وضّح الحل بشكل عام</h4><p>"بنعمل كذا ونوصّلك لـ كذا" — مش تفاصيل تقنية</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:#EA580C;box-shadow:0 0 0 1px #EA580C"></div><div class="tl-time">٠:٣٨ — ٧ دقائق</div><h4>الخطوة الجاية</h4><p>اتفق على موعد للعرض — مش "هبعتلك" بدون موعد</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">أسئلة التشخيص الأهم</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum g">01.</span><div><h4>"إيه هدفك الأساسي من السوشيال؟"</h4><p>جمهور / مبيعات / Awareness / خدمة عملاء — الإجابة بتحدد الاستراتيجية كلها</p></div></div>
+      <div class="sitem"><span class="snum g">02.</span><div><h4>"مين الجمهور اللي بيدفع فعلاً؟"</h4><p>مش الجمهور اللي بتحبه — اللي بيشتري. فيه فرق كبير</p></div></div>
+      <div class="sitem"><span class="snum g">03.</span><div><h4>"اشتغلت مع حد قبل كده؟ إيه اللي حصل؟"</h4><p>لو في تجربة سابقة — اعرف ليه خلصت. ده أهم سؤال</p></div></div>
+      <div class="sitem"><span class="snum g">04.</span><div><h4>"عندك ميزانية للإعلانات بجانب الإدارة؟"</h4><p>اللي مش عنده ميزانية منفصلة — النتائج هتكون بطيئة</p></div></div>
+      <div class="sitem"><span class="snum g">05.</span><div><h4>"مين بيتخذ القرار النهائي في الموافقة؟"</h4><p>لو في أكتر من شخص — هتتعب في الموافقات</p></div></div>
+    </div>
+    <p class="note info">في نهاية الكول لازم تقدر تكمل: "المشكلة هي X، هو بيدور على Y، نقدر نديه Z"</p>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S03 ─────────────────── -->
+<div class="stage" id="s3">
+  <div class="stage-header">
+    <span class="stage-label">قبل التعاقد — المرحلة الثالثة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#0891B2">03</span>
+      <div>
+        <div class="stage-h2">الاقتراح والتسعير</div>
+        <div class="stage-sub">قدّم حل مش قايمة أسعار — العميل بيشتري نتيجة</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">هيكل العرض</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum">01.</span><div><h4>ملخص المشكلة بكلامه هو</h4><p>"بناءً على كلامنا، الهدف هو X وعندك مشكلة في Y" — بيثبتلك إنك فاهم</p></div></div>
+      <div class="sitem"><span class="snum">02.</span><div><h4>الحل المقترح</h4><p>"هنبني حضور قوي على فيسبوك وإنستجرام عبر محتوى متخصص + إعلانات مستهدفة"</p></div></div>
+      <div class="sitem"><span class="snum">03.</span><div><h4>إيه اللي بيشمله العرض</h4><p>عدد البوستات / الاستوريز / الإعلانات / التقارير / الكولات الشهرية</p></div></div>
+      <div class="sitem"><span class="snum r">04.</span><div><h4>إيه اللي مش بيشمله — مهم جداً</h4><p>التصوير / الموقع / الـ Influencers / الرد على الرسائل ٢٤/٧</p></div></div>
+      <div class="sitem"><span class="snum">05.</span><div><h4>النتائج المتوقعة — بشكل واقعي</h4><p>"في ٣ شهور هنوصل لـ X" — مش وعود فارغة</p></div></div>
+      <div class="sitem"><span class="snum g">06.</span><div><h4>الاستثمار (السعر) — في الآخر دايماً</h4><p>الناس بتقبل سعر أعلى لما بتفهم القيمة الأول</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">هيكل التسعير</div>
+    <table class="tbl">
+      <thead><tr><th>الباقة</th><th>المحتوى الشهري</th><th>الإعلانات</th><th>مناسب لـ</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Starter</strong></td><td>٨–١٢ بوست + استوريز</td><td>إدارة فقط</td><td>شركات في البداية</td></tr>
+        <tr><td><strong>Growth</strong></td><td>١٦–٢٠ بوست + استوريز</td><td>إدارة + حملات</td><td>شركات في مرحلة النمو</td></tr>
+        <tr><td><strong>Pro</strong></td><td>٢٥+ بوست + ريلز</td><td>استراتيجية كاملة</td><td>شركات في مرحلة التوسع</td></tr>
+      </tbody>
+    </table>
+    <p class="note caution">دايماً قدم ٣ باقات — الناس بتاخد الوسطى في معظم الأحيان</p>
+  </div>
+
+  <div class="block">
+    <div class="block-title">الخدمات الإضافية — خارج العقد</div>
+    <table class="tbl">
+      <thead><tr><th>الخدمة</th><th>بيُضاف متى؟</th></tr></thead>
+      <tbody>
+        <tr><td><strong>TikTok / YouTube</strong></td><td>منصة إضافية خارج الباقة</td></tr>
+        <tr><td><strong>إنتاج فيديو وتصوير</strong></td><td>جلسة تصوير كاملة مطلوبة</td></tr>
+        <tr><td><strong>Influencer Campaigns</strong></td><td>تنسيق مع مؤثرين</td></tr>
+        <tr><td><strong>تصميم هوية بصرية</strong></td><td>مش عنده لوجو أو ألوان</td></tr>
+        <tr><td><strong>Community Management 24/7</strong></td><td>رد على رسائل خارج ساعات العمل</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S04 ─────────────────── -->
+<div class="stage" id="s4">
+  <div class="stage-header">
+    <span class="stage-label">قبل التعاقد — المرحلة الرابعة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:var(--green)">04</span>
+      <div>
+        <div class="stage-h2">الإغلاق والعقد</div>
+        <div class="stage-sub">التوقيع + الدفعة الأولى = بداية الشغل الحقيقية</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">الاعتراضات الشائعة وردودها</div>
+    <div class="obj-item"><div class="obj-q">❓ "السعر عالي — عندي حد بأقل"</div><div class="obj-a"><strong>الرد:</strong> "السؤال مش مين أرخص — مين هيديك نتيجة. محتوى رديء بيضر البراند أكتر من إنه يساعده."</div></div>
+    <div class="obj-item"><div class="obj-q">❓ "عايز أفكر شوية"</div><div class="obj-a"><strong>الرد:</strong> "بالتأكيد — إيه تحديداً اللي محتاج تفكر فيه؟" مش "تمام بعتلك رسالة"</div></div>
+    <div class="obj-item"><div class="obj-q">❓ "ممكن نجرب شهر أول؟"</div><div class="obj-a"><strong>الرد:</strong> "السوشيال بتاخد ٩٠ يوم قبل نتيجة حقيقية. في شهر واحد بنبني الهوية — النتيجة بتيجي من الشهر الثاني. ٣ شهور هو الحد الأدنى المنطقي."</div></div>
+    <div class="obj-item"><div class="obj-q">❓ "هبدفع بعد ما أشوف البوستات"</div><div class="obj-a"><strong>الرد:</strong> "نظامنا ٥٠٪ في البداية و٥٠٪ قبل نهاية الشهر — الفريق بيبدأ بمجرد استلام الدفعة الأولى."</div></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">بنود العقد المهمة</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum r">!</span><div><h4>ملكية المحتوى والحسابات</h4><p>الصفحات والمحتوى ملك العميل — نحن مديرون فقط ولا نمسك الصفحة كـ Leverage</p></div></div>
+      <div class="sitem"><span class="snum r">!</span><div><h4>شرط الإنهاء المبكر</h4><p>إشعار مسبق ٣٠ يوم — والشهر المدفوع لا يُرد</p></div></div>
+      <div class="sitem"><span class="snum g">✓</span><div><h4>عدد التعديلات المدرجة</h4><p>مثلاً ٢ تعديل لكل بوست — ما فوق ده بيتحسب Extra</p></div></div>
+      <div class="sitem"><span class="snum g">✓</span><div><h4>مدة الموافقة على المحتوى</h4><p>العميل عنده ٤٨ ساعة — لو ما ردش بنعتبره موافق ونكمل</p></div></div>
+      <div class="sitem"><span class="snum g">✓</span><div><h4>ميزانية الإعلانات منفصلة</h4><p>تُدفع مباشرة للمنصة من حسابه — لا من حسابنا أبداً</p></div></div>
+    </div>
+  </div>
+
+  <div class="gate">
+    <span class="gate-ico">💳</span>
+    <div>
+      <h4>Gate — لا يبدأ أي شغل قبل</h4>
+      <div class="gate-chips">
+        <span class="gate-chip">عقد موقع من الطرفين</span>
+        <span class="gate-chip">الدفعة الأولى مستلمة</span>
+        <span class="gate-chip">تاريخ البداية متفق عليه</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PHASE SEP -->
+<div class="phase-sep"><span>بعد التعاقد</span></div>
+
+
+<!-- ─────────────────── S05 ─────────────────── -->
+<div class="stage" id="s5">
+  <div class="stage-header">
+    <span class="stage-label">بعد التعاقد — المرحلة الخامسة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#EA580C">05</span>
+      <div>
+        <div class="stage-h2">الأونبوردينج</div>
+        <div class="stage-sub">أسبوع الأونبوردينج بيحدد شكل العلاقة طول فترة التعاقد</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">جدول الأسبوع الأول</div>
+    <table class="tbl">
+      <thead><tr><th>اليوم</th><th>المطلوب من العميل</th><th>الفريق يعمل</th></tr></thead>
+      <tbody>
+        <tr><td><strong>يوم ١</strong></td><td>Admin Access فيسبوك + Business Manager</td><td>إعداد Drive + Checklist + Kickoff Message</td></tr>
+        <tr><td><strong>يوم ١–٢</strong></td><td>لوجو + كودات الألوان</td><td>Competitor Analysis ابتدائي</td></tr>
+        <tr><td><strong>يوم ٢–٣</strong></td><td>Onboarding Form معبي</td><td>Templates أولية + نسخ اللوجو</td></tr>
+        <tr><td><strong>يوم ٣–٥</strong></td><td>صور المنتجات على Drive</td><td>Brand Voice Document + Strategy Draft</td></tr>
+        <tr><td><strong>يوم ٥–٧</strong></td><td>موافقة على Strategy</td><td>Content Calendar الشهر الأول</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="block">
+    <div class="block-title">Kickoff Meeting — أجندة ٣٠ دقيقة</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum">01.</span><div><h4>تعارف الفريق (٥ د)</h4><p>قدّم الـ Account Manager وكل فرد سيتواصل معاه مباشرة</p></div></div>
+      <div class="sitem"><span class="snum g">02.</span><div><h4>اتفق على طريقة التواصل (٥ د)</h4><p>واتساب ولا إيميل؟ المسؤول من جانبه؟ ساعات الرد؟ موعد الكول الشهري؟</p></div></div>
+      <div class="sitem"><span class="snum g">03.</span><div><h4>وضّح الـ Workflow (١٠ د)</h4><p>بنبعت المحتوى يوم X → عنده ٤٨ ساعة → بننشر يوم Y — مش قابل للتغيير في آخر لحظة</p></div></div>
+      <div class="sitem"><span class="snum">04.</span><div><h4>Checklist الأصول المطلوبة (١٠ د)</h4><p>تأكد إنه فاهم إيه المطلوب ومتى</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">رسالة الكيكأوف</div>
+    <div class="msg">
+      <div class="msg-label">ابعتها على واتساب خلال ساعة من التوقيع</div>
+      <button class="cp-btn" onclick="cp(this)">نسخ</button>
+      <pre>أهلاً [الاسم] 🎉 يسعدنا تعاملنا معاك!
+
+موعد البداية: [التاريخ]
+
+عشان نبدأ في الوقت، محتاجين منك خلال 48 ساعة:
+
+🔑 مطلوب فوراً:
+١. إضافتنا Admin على صفحة الفيسبوك (هبعتلك الخطوات)
+٢. اللوجو PNG بخلفية شفافة
+٣. الألوان الرسمية لو عندك كودات Hex
+
+📁 لينك Drive لرفع الأصول: [رابط الفولدر]
+
+📦 خلال أسبوع:
+٤. صور المنتجات على الـ Drive
+٥. استمارة الأونبوردينج (هبعتهالك)
+
+أنا موجود لأي سؤال ✅</pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S06 ─────────────────── -->
+<div class="stage" id="s6">
+  <div class="stage-header">
+    <span class="stage-label">بعد التعاقد — المرحلة السادسة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#7C3AED">06</span>
+      <div>
+        <div class="stage-h2">الاستراتيجية</div>
+        <div class="stage-sub">بنيها مرة واحدة صح — وبتتراجع كل ٣ شهور</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">مكونات الاستراتيجية</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum">01.</span><div><h4>تحليل الحسابات الحالية</h4><p>Insights، Engagement Rate، أكتر بوست نجح، الجمهور الحالي</p></div></div>
+      <div class="sitem"><span class="snum">02.</span><div><h4>تحليل المنافسين (٣–٥)</h4><p>كم بيبوستوا / أي محتوى بيشتغل معاهم / نقاط ضعفهم</p></div></div>
+      <div class="sitem"><span class="snum">03.</span><div><h4>Audience Persona</h4><p>عمر / جنس / اهتمامات / المشكلة اللي بيحلها المنتج</p></div></div>
+      <div class="sitem"><span class="snum">04.</span><div><h4>أعمدة المحتوى (٤–٥ محاور)</h4><p>تعليمي / ترفيهي / تسويقي / إنساني / كواليس</p></div></div>
+      <div class="sitem"><span class="snum">05.</span><div><h4>Tone of Voice</h4><p>رسمي؟ عامي؟ شبابي؟ تقني؟ — لازم يتوثق في Brand Voice Doc</p></div></div>
+      <div class="sitem"><span class="snum">06.</span><div><h4>KPIs والأهداف الشهرية</h4><p>Reach / Engagement / Followers / Leads — أرقام واقعية مش خيالية</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">تقديم الاستراتيجية للعميل</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum g">01.</span><div><h4>ابعتهاله قبل الكول بيوم</h4><p>PDF أو Google Slide — مش تبعته وتشرحه في نفس الوقت</p></div></div>
+      <div class="sitem"><span class="snum g">02.</span><div><h4>الكول للأسئلة فقط</h4><p>مش لشرح الاستراتيجية — هو لازم يقرأ أولاً</p></div></div>
+      <div class="sitem"><span class="snum g">03.</span><div><h4>اطلب موافقة كتابية</h4><p>"موافق على الاستراتيجية؟" رسالة واتساب — لا تكمل بدونها</p></div></div>
+    </div>
+    <p class="note warn">بعد موافقته — أي تغيير جوهري في الاستراتيجية = طلب خارج نطاق العقد</p>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S07 ─────────────────── -->
+<div class="stage" id="s7">
+  <div class="stage-header">
+    <span class="stage-label">بعد التعاقد — المرحلة السابعة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#0284C7">07</span>
+      <div>
+        <div class="stage-h2">إنتاج المحتوى والموافقة</div>
+        <div class="stage-sub">بدون نظام موافقة واضح = تعديلات لا تنتهي وتأخير في النشر</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">Workflow الشهر الواحد</div>
+    <div class="tline">
+      <div class="tl-row"><div class="tl-dot"></div><div class="tl-time">يوم ١–٥</div><h4>إنتاج المحتوى</h4><p>Copywriter كتابة → Designer تصميم → Manager مراجعة داخلية</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:var(--gold);box-shadow:0 0 0 1px var(--gold)"></div><div class="tl-time">يوم ٦–٧</div><h4>إرسال Content Calendar للعميل</h4><p>PDF أو Google Sheet — كل بوست وموعده ومحتواه</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:var(--green);box-shadow:0 0 0 1px var(--green)"></div><div class="tl-time">يوم ٧–٩</div><h4>موافقة العميل — ٤٨ ساعة</h4><p>لو ما ردش → Reminder → لو ما ردش تاني → بنعتبره موافق</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:#EA580C;box-shadow:0 0 0 1px #EA580C"></div><div class="tl-time">يوم ١٠</div><h4>التعديلات المتفق عليها</h4><p>التعديل التالت وما بعده بيتحسب Extra</p></div>
+      <div class="tl-row"><div class="tl-dot" style="background:var(--green);box-shadow:0 0 0 1px var(--green)"></div><div class="tl-time">يوم ١١+</div><h4>بداية النشر</h4><p>بعد الموافقة النهائية</p></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">مواقف الموافقة الصعبة</div>
+    <div class="acc-item">
+      <div class="acc-h" onclick="tog(this)"><span class="acc-ico-l">😤</span><span class="acc-title">"مش عاجبني كل حاجة — ابدأ من الأول"</span><span class="acc-arr">▼</span></div>
+      <div class="acc-body">
+        <div class="slist">
+          <div class="sitem"><span class="snum r">١</span><div><h4>اسأل بالضبط: إيه اللي مش عاجبه؟</h4><p>الكلام العام مش قابل للتنفيذ — الصورة؟ النص؟ الألوان؟</p></div></div>
+          <div class="sitem"><span class="snum r">٢</span><div><h4>ارجع للمرجع المتفق عليه</h4><p>"حسب الاستراتيجية اللي وافقت عليها يوم X..." — يخلي الكلام موضوعي</p></div></div>
+          <div class="sitem"><span class="snum r">٣</span><div><h4>لو التغيير جوهري — وضّح التكلفة</h4><p>تغيير كامل في الـ Tone = خارج نطاق العقد</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-h" onclick="tog(this)"><span class="acc-ico-l">🐢</span><span class="acc-title">العميل مش بيرد على Content Calendar</span><span class="acc-arr">▼</span></div>
+      <div class="acc-body">
+        <div class="msg" style="margin-top:0">
+          <div class="msg-label">Reminder بعد 24 ساعة</div>
+          <button class="cp-btn" onclick="cp(this)">نسخ</button>
+          <pre>[الاسم]، بعتنالك Content Calendar الشهر القادم 📅
+
+محتاجين موافقتك قبل [التاريخ] عشان نبدأ في الوقت.
+لو في تعديل قولنا وهنعدل فوراً 🙏</pre>
+        </div>
+        <p class="note warn">لو فضل مش بيرد بعد تاني Reminder → نشر بدون موافقة مع إخطاره — ده في العقد</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-h" onclick="tog(this)"><span class="acc-ico-l">🔄</span><span class="acc-title">بيطلب تعديلات بعد ما وافق وانتشر</span><span class="acc-arr">▼</span></div>
+      <div class="acc-body">
+        <p class="note info" style="margin-top:0">الرد: "البوست اتنشر بعد موافقتك يوم X — ملاحظاتك هناخذها في المحتوى القادم بالتأكيد 🙏"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S08 ─────────────────── -->
+<div class="stage" id="s8">
+  <div class="stage-header">
+    <span class="stage-label">بعد التعاقد — المرحلة الثامنة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#0891B2">08</span>
+      <div>
+        <div class="stage-h2">النشر وإدارة المجتمع</div>
+        <div class="stage-sub">النشر مش ضغطة زر — في نظام وراه</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">SLA الردود</div>
+    <table class="tbl">
+      <thead><tr><th>النوع</th><th>الرد في خلال</th><th>ملاحظة</th></tr></thead>
+      <tbody>
+        <tr><td>تعليق عادي / سؤال</td><td>٢٤ ساعة</td><td>Community Manager</td></tr>
+        <tr><td>شكوى أو تجربة سيئة</td><td>٤ ساعات</td><td>إخطار العميل قبل الرد</td></tr>
+        <tr><td>سؤال عن سعر / شراء</td><td>ساعتين</td><td>رد بـ DM + بيانات التواصل</td></tr>
+        <tr><td>تعليق مسيء / Spam</td><td>فوراً</td><td>Hide — مش Delete إلا بموافقة</td></tr>
+        <tr><td>هجوم منظم / أزمة</td><td>فوراً</td><td>إخطار العميل + انتقل لـ Stage 10</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="block">
+    <div class="block-title">قاموس الردود الجاهز</div>
+    <div class="rg">
+      <div class="rc"><h5>سؤال عن السعر</h5><p>"شكراً لاهتمامك! تقدر تتواصل معنا على [واتساب] وهنبعتلك كل التفاصيل ✅"</p></div>
+      <div class="rc"><h5>شكوى من منتج</h5><p>"آسفين جداً على التجربة دي 🙏 ممكن تتواصل معنا على [رقم] عشان نحل الموضوع؟"</p></div>
+      <div class="rc"><h5>تعليق إيجابي</h5><p>"شكراً جزيلاً على كلامك الجميل! سعداء بثقتك فينا ❤️"</p></div>
+      <div class="rc"><h5>سؤال عن التوصيل</h5><p>"التوصيل متاح — تقدر تطلب عبر [الطريقة] ✅"</p></div>
+    </div>
+    <p class="note">هذا القاموس بيتبنى في الأسبوع الأول مع كل عميل بناءً على الأسئلة المتوقعة لمجاله</p>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S09 ─────────────────── -->
+<div class="stage" id="s9">
+  <div class="stage-header">
+    <span class="stage-label">بعد التعاقد — المرحلة التاسعة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#B45309">09</span>
+      <div>
+        <div class="stage-h2">التقرير الشهري</div>
+        <div class="stage-sub">التقرير بيثبت قيمتك أو بيخسّرك العميل</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">جدول التقرير</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum">يوم ٢٥</span><div><h4>ابدأ تجمع الأرقام</h4><p>من Insights فيسبوك وإنستجرام + Ads Manager</p></div></div>
+      <div class="sitem"><span class="snum g">يوم ٢٨</span><div><h4>التقرير جاهز</h4><p>PDF كامل + ملاحظات الشهر + توصيات الشهر القادم</p></div></div>
+      <div class="sitem"><span class="snum g">يوم ٢٩</span><div><h4>ابعت التقرير قبل الكول بيوم</h4><p>خليه يقرأ ويتأهل للأسئلة — مش في نفس وقت الكول</p></div></div>
+      <div class="sitem"><span class="snum gr">يوم ٣٠</span><div><h4>Monthly Review Call — ٣٠ دقيقة</h4><p>نتائج الشهر + خطة القادم + محادثة التجديد</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">هيكل Monthly Review Call</div>
+    <div class="tcol">
+      <div class="tcol-box">
+        <h5>قبل الكول</h5>
+        <ul>
+          <li>راجع الأرقام مقارنة بالشهر السابق</li>
+          <li>جهز ٢–٣ نقطة نجاح واضحة</li>
+          <li>جهز ٢ تحدي وحلولهم</li>
+          <li>جهز اقتراح للشهر القادم</li>
+        </ul>
+      </div>
+      <div class="tcol-box">
+        <h5>أجندة الكول</h5>
+        <ul>
+          <li>٥ د — ملخص الشهر والإيجابيات</li>
+          <li>١٠ د — مراجعة الأرقام</li>
+          <li>٥ د — التحديات والدروس</li>
+          <li>٥ د — خطة الشهر القادم</li>
+          <li>٥ د — أسئلة + تجديد</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note good">في نهاية الكول: "هل أنت راضي؟ في حاجة تحب نضيفها الشهر القادم؟" — سؤال بيفتح باب التجديد</p>
+  </div>
+</div>
+
+
+<!-- PHASE SEP -->
+<div class="phase-sep"><span>مواقف خاصة</span></div>
+
+
+<!-- ─────────────────── S10 ─────────────────── -->
+<div class="stage" id="s10">
+  <div class="stage-header">
+    <span class="stage-label">مواقف خاصة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:var(--red)">10</span>
+      <div>
+        <div class="stage-h2">إدارة الأزمات</div>
+        <div class="stage-sub">الهدوء هو الاستراتيجية — مش الصمت ومش الرد العشوائي</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">مستويات الأزمة</div>
+    <div class="cr-grid">
+      <div class="cr-box cr1"><h4>🟡 مستوى ١ — تنبيه</h4><ul><li>تعليقات سلبية متكررة</li><li>Negative Reactions كتير</li><li>شكوى علنية</li></ul><div class="cr-sla">الاستجابة: ٤ ساعات</div></div>
+      <div class="cr-box cr2"><h4>🟠 مستوى ٢ — طوارئ</h4><ul><li>محتوى انتشر بشكل سلبي</li><li>هجوم منظم على الصفحة</li><li>خبر سلبي اتنشر</li></ul><div class="cr-sla">الاستجابة: ساعة</div></div>
+      <div class="cr-box cr3"><h4>🔴 مستوى ٣ — أزمة</h4><ul><li>منتج بيضر الناس</li><li>تسريب بيانات</li><li>فيديو حساس انتشر</li></ul><div class="cr-sla">الاستجابة: فورية</div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">خطوات التعامل</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum r">01.</span><div><h4>وقّف أي محتوى مجدول فوراً</h4><p>بوست مرح في وقت الأزمة = كارثة</p></div></div>
+      <div class="sitem"><span class="snum r">02.</span><div><h4>بلّغ العميل قبل أي رد</h4><p>لا تتكلم باسمه من غير موافقته — حتى لو الرد واضح</p></div></div>
+      <div class="sitem"><span class="snum r">03.</span><div><h4>اجمع المعلومات أولاً</h4><p>إيه بالضبط اتقال؟ الخبر صحيح ولا لأ؟</p></div></div>
+      <div class="sitem"><span class="snum g">04.</span><div><h4>اتفق على الموقف الرسمي</h4><p>جملة واحدة واضحة — كل الردود تصدر منها</p></div></div>
+      <div class="sitem"><span class="snum g">05.</span><div><h4>رد واحد رسمي علني</h4><p>مش ترد على كل تعليق بكلام مختلف</p></div></div>
+      <div class="sitem"><span class="snum gr">06.</span><div><h4>متابعة بعد ٢٤ ساعة</h4><p>هل الموقف هدى؟ في تحديث للجمهور؟</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">قوالب الأزمة</div>
+    <div class="msg">
+      <div class="msg-label">رد أولي — المستوى ١</div>
+      <button class="cp-btn" onclick="cp(this)">نسخ</button>
+      <pre>شكراً لتواصلك معنا 🙏
+نحن نتفهم قلقك تماماً ونعتذر عن أي تجربة غير مرضية.
+فريقنا يراجع الأمر الآن وسيتواصل معك في أقرب وقت على [رقم/إيميل]</pre>
+    </div>
+    <div class="msg">
+      <div class="msg-label">بيان رسمي — المستوى ٢–٣</div>
+      <button class="cp-btn" onclick="cp(this)">نسخ</button>
+      <pre>نود أن نوضح موقفنا بشأن [الموضوع]:
+
+[موقف واضح ومختصر بدون إنكار أو اتهام]
+
+اتخذنا الإجراءات التالية: [إجراء حقيقي وملموس]
+
+للتواصل المباشر: [رقم/إيميل]</pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S11 ─────────────────── -->
+<div class="stage" id="s11">
+  <div class="stage-header">
+    <span class="stage-label">مواقف خاصة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:var(--green)">11</span>
+      <div>
+        <div class="stage-h2">التجديد والـ Upsell</div>
+        <div class="stage-sub">تجديد عميل موجود بيكلف ٥ مرات أقل من كسب عميل جديد</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">توقيت ومحادثة التجديد</div>
+    <div class="slist">
+      <div class="sitem"><span class="snum g">✓</span><div><h4>ابدأ في الأسبوع الأخير من الشهر الثاني</h4><p>مش في نهاية الشهر الثالث — العميل محتاج وقت يفكر</p></div></div>
+      <div class="sitem"><span class="snum g">✓</span><div><h4>ابدأ بالنتائج مش بالعقد</h4><p>"في الشهرين الفاتين وصلنا لـ X" — مش "عقدك خلص"</p></div></div>
+      <div class="sitem"><span class="snum g">✓</span><div><h4>قدم خيار التجديد مع تحسين</h4><p>"نفضل نفس الباقة مع إضافة X — ولا هترقي للأعلى؟"</p></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">فرص الـ Upsell</div>
+    <div class="ups-row"><div class="ups-ico">🎵</div><div><h5>إضافة TikTok</h5><p>اقترحه لما جمهوره شباب — "ريلز بيوصل ٣× أكتر من بوست عادي"</p></div></div>
+    <div class="ups-row"><div class="ups-ico">📈</div><div><h5>رفع ميزانية الإعلانات</h5><p>لما الـ ROAS كويس — "لو رفعنا X هنضاعف النتيجة"</p></div></div>
+    <div class="ups-row"><div class="ups-ico">🎬</div><div><h5>إنتاج فيديو</h5><p>لما المحتوى الصوري بيأدي كويس — "الفيديو Engagement أعلى بـ ٦٠٪"</p></div></div>
+    <div class="ups-row"><div class="ups-ico">💬</div><div><h5>Community Management كامل</h5><p>لما بيشتكي من كثرة الرسائل — "هنتكفل برد على كل التعليقات"</p></div></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">رسالة التجديد</div>
+    <div class="msg">
+      <button class="cp-btn" onclick="cp(this)">نسخ</button>
+      <pre>[الاسم]، الشهرين الفاتين كانوا كويسين 🎯
+
+وصلنا لـ [X Reach] ووصلنا لـ [X] فولوور جديد.
+
+عقدنا بيخلص [التاريخ] — وعندي مقترح بيبني على اللي عملناه.
+
+إمتى يناسبك كول ١٥ دقيقة؟ 📞</pre>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─────────────────── S12 ─────────────────── -->
+<div class="stage" id="s12">
+  <div class="stage-header">
+    <span class="stage-label">مواقف خاصة</span>
+    <div class="stage-title-row">
+      <span class="stage-badge" style="background:#475569">12</span>
+      <div>
+        <div class="stage-h2">الأوفبوردينج</div>
+        <div class="stage-sub">الطريقة اللي بتخرج بيها بتحدد لو هيرجع أو يبعتلك توصية</div>
+      </div>
+    </div>
+    <div class="stage-divider"></div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">Checklist الخروج</div>
+    <div class="clist">
+      <div class="citem"><div class="req-dot" style="width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;margin-top:7px"></div><div><span class="c-title"><span class="c-req">مطلوب</span>تأكيد استلام كل المستحقات المالية</span><span class="c-sub">لا تسلّم أي شيء قبل إيصال التسوية الكاملة</span></div></div>
+      <div class="citem"><div class="req-dot" style="width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;margin-top:7px"></div><div><span class="c-title"><span class="c-req">مطلوب</span>إزالة صلاحياتنا من الصفحة والبيزنس ماناجر</span><span class="c-sub">بعد تسليم كل الملفات — يحميك من أي مشكلة لاحقة</span></div></div>
+      <div class="citem"><input type="checkbox"><div><span class="c-title">تسليم Drive بالمحتوى الكامل</span><span class="c-sub">كل التصاميم والنصوص — ملك العميل</span></div></div>
+      <div class="citem"><input type="checkbox"><div><span class="c-title">تسليم تقرير الأداء الإجمالي</span><span class="c-sub">ملخص كل فترة التعاقد والتوصيات النهائية</span></div></div>
+      <div class="citem"><input type="checkbox"><div><span class="c-title">إرسال Goodbye Message احترافية</span><span class="c-sub">بتفتح الباب للرجوع في المستقبل</span></div></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">إيه بيفضل وإيه بيروح</div>
+    <div class="tcol">
+      <div class="tcol-box" style="border-top:3px solid var(--green)">
+        <h5 style="color:var(--green)">يفضل عندك</h5>
+        <ul>
+          <li>Templates الداخلية العامة</li>
+          <li>Brand Voice Document</li>
+          <li>Audiences لو تحت بيزنسك</li>
+          <li>Competitor Analysis كـ Template</li>
+        </ul>
+      </div>
+      <div class="tcol-box" style="border-top:3px solid var(--red)">
+        <h5 style="color:var(--red)">يروح معاه</h5>
+        <ul>
+          <li>كل التصاميم والمحتوى المنتج</li>
+          <li>Ads Account لو تحت بيزنسه</li>
+          <li>Pixel Data وCustom Audiences</li>
+          <li>بيانات الصفحة والفوللوورز</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">رسالة الوداع</div>
+    <div class="msg">
+      <button class="cp-btn" onclick="cp(this)">نسخ</button>
+      <pre>[الاسم]، يسعدنا إن شغلنا مع بعض كان له أثر إيجابي 🙏
+
+بعتنالك Drive بكل المحتوى كامل + تقرير الأداء الإجمالي.
+
+لو احتجت أي دعم في المستقبل أو حابب ترجع — أنا موجود دايماً.
+
+شكراً على ثقتك بينا وبالتوفيق ✨</pre>
+    </div>
+    <p class="note good">العميل اللي بيخرج بتجربة كويسة = توصية محتملة لعميل جديد</p>
+  </div>
+
+</div><!-- /stage 12 -->
+</div><!-- /main -->
+</div><!-- /wrap -->
+
+<script>
+function go(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function tog(head) {
+  const body = head.nextElementSibling
+  const arr  = head.querySelector('.acc-arr')
+  body.classList.toggle('open')
+  arr.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : ''
+}
+
+function cp(btn) {
+  const pre = btn.nextElementSibling
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    const t = btn.textContent
+    btn.textContent = '✓'
+    btn.style.background = 'var(--green)'
+    setTimeout(() => { btn.textContent = t; btn.style.background = '' }, 2000)
+  })
+}
+
+// scroll spy
+const sections = document.querySelectorAll('.stage[id]')
+window.addEventListener('scroll', () => {
+  let cur = ''
+  sections.forEach(s => { if (scrollY >= s.offsetTop - 130) cur = s.id })
+  document.querySelectorAll('.nav-link').forEach(n => {
+    const oc = n.getAttribute('onclick') || ''
+    n.classList.toggle('on', oc.includes(cur))
+  })
+}, { passive: true })
+</script>
+</body>
+</html>

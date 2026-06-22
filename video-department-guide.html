@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام قسم الفيديو والمونتاج</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:#F1F5F9;color:#1E293B;font-size:14px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;background:#0F172A;color:white;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:50}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:#C026D3;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700}.logo-sub{font-size:11px;color:#64748B}
+.sidebar-section{padding:16px 12px 4px;font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;color:#94A3B8;transition:all .15s;border-radius:8px;margin:2px 8px}
+.nav-item:hover{background:#1E293B;color:white}
+.nav-item.active{background:#C026D3;color:white}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-right:auto;background:#DC2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.nav-badge.amber{background:#D97706}
+.sidebar-user{padding:16px;border-top:1px solid #1E293B;display:flex;align-items:center;gap:10px;margin-top:auto}
+.s-avatar{width:34px;height:34px;background:#C026D3;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:white}.user-role{font-size:11px;color:#64748B}
+.main{flex:1;margin-right:230px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:white;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:18px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.notif-btn{position:relative;cursor:pointer;background:#F1F5F9;border-radius:8px;padding:8px;font-size:16px}
+.notif-dot{position:absolute;top:6px;left:6px;width:8px;height:8px;background:#DC2626;border-radius:50%;border:2px solid white}
+.content{flex:1;padding:24px}
+.screen{display:none}.screen.active{display:block}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-fuchsia{background:#FDF4FF}.si-green{background:#F0FDF4}.si-amber{background:#FFFBEB}.si-red{background:#FEF2F2}.si-sky{background:#F0F9FF}.si-purple{background:#F5F3FF}
+.stat-label{font-size:12px;color:#64748B;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:900;line-height:1}
+.sv-fuchsia{color:#C026D3}.sv-green{color:#16A34A}.sv-amber{color:#D97706}.sv-red{color:#DC2626}.sv-sky{color:#0EA5E9}.sv-purple{color:#7C3AED}
+.stat-sub{font-size:12px;color:#64748B;margin-top:3px}
+.up{color:#16A34A}.down{color:#DC2626}
+/* Alert */
+.alert{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;margin-bottom:8px;font-size:13px}
+.a-red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.a-amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.a-fuchsia{background:#FDF4FF;border:1px solid #F0ABFC;color:#86198F}
+.a-green{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.a-sky{background:#F0F9FF;border:1px solid #BAE6FD;color:#0369A1}
+.alert-icon{font-size:16px;flex-shrink:0}.alert-text{flex:1}
+.alert-action{font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;white-space:nowrap}
+/* Card */
+.card{background:white;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.b-shoot{background:#FDF4FF;color:#86198F}.b-shoot::before{background:#C026D3}
+.b-montage{background:#EEF2FF;color:#3730A3}.b-montage::before{background:#4F46E5}
+.b-review{background:#FFFBEB;color:#B45309}.b-review::before{background:#D97706}
+.b-done{background:#F0FDF4;color:#15803D}.b-done::before{background:#16A34A}
+.b-late{background:#FEF2F2;color:#B91C1C}.b-late::before{background:#DC2626}
+.b-revision{background:#FFF7ED;color:#C2410C}.b-revision::before{background:#EA580C}
+.b-brief{background:#F0F9FF;color:#0369A1}.b-brief::before{background:#0EA5E9}
+/* Button */
+.btn{padding:9px 18px;border-radius:8px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-fuchsia{background:#C026D3;color:white}.btn-fuchsia:hover{background:#A21CAF}
+.btn-success{background:#16A34A;color:white}
+.btn-outline{background:white;color:#374151;border:1px solid #E2E8F0}.btn-outline:hover{background:#F8FAFC}
+.btn-ghost{background:transparent;color:#64748B;padding:8px 12px}.btn-ghost:hover{background:#F1F5F9}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#374151}
+.req{color:#DC2626}
+.form-control{width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;color:#1E293B;background:white;transition:border-color .2s}
+.form-control:focus{outline:none;border-color:#C026D3;box-shadow:0 0 0 3px rgba(192,38,211,.1)}
+textarea.form-control{resize:vertical;min-height:80px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-header h2{font-size:20px;font-weight:700}
+.ph-sub{font-size:13px;color:#64748B;margin-top:2px}
+/* Task card */
+.task-card{background:white;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:8px;border-right:4px solid transparent;cursor:pointer;transition:all .15s;display:flex;align-items:flex-start;gap:12px}
+.task-card:hover{box-shadow:0 3px 10px rgba(0,0,0,.1);transform:translateX(-2px)}
+.tc-shoot{border-right-color:#C026D3}
+.tc-montage{border-right-color:#4F46E5}
+.tc-review{border-right-color:#D97706}
+.tc-done{border-right-color:#16A34A}
+.tc-late{border-right-color:#DC2626}
+.task-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ti-shoot{background:#FDF4FF}.ti-montage{background:#EEF2FF}.ti-review{background:#FFFBEB}.ti-done{background:#F0FDF4}.ti-late{background:#FEF2F2}
+.task-content{flex:1}
+.task-client{font-size:11px;font-weight:700;color:#C026D3;margin-bottom:2px}
+.task-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.task-meta{display:flex;gap:12px;font-size:12px;color:#64748B;flex-wrap:wrap}
+.task-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+/* Progress bar */
+.progress-wrap{margin:16px 0}
+.progress-steps{display:flex;gap:0;margin-bottom:8px;overflow:hidden;border-radius:8px}
+.p-step{flex:1;padding:8px 4px;text-align:center;font-size:11px;font-weight:700;background:#F1F5F9;color:#94A3B8;transition:all .2s;position:relative}
+.p-step.done{background:#C026D3;color:white}
+.p-step.current{background:#F0ABFC;color:#86198F}
+.p-step-label{font-size:10px;display:block;margin-top:2px;opacity:.8}
+/* Checklist */
+.checklist-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F8FAFC;cursor:pointer}
+.checklist-item:last-child{border-bottom:none}
+.checklist-item input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:#C026D3}
+.checklist-item label{font-size:13px;cursor:pointer;flex:1}
+.checklist-item.checked label{text-decoration:line-through;color:#94A3B8}
+.checklist-status{font-size:13px;font-weight:700;color:#C026D3;margin-top:10px}
+/* Specs card */
+.spec-card{background:white;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px;border-top:3px solid #C026D3}
+.spec-platform{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.spec-item{background:#F8FAFC;border-radius:8px;padding:8px 10px}
+.spec-key{font-size:11px;color:#64748B;margin-bottom:2px}
+.spec-val{font-size:13px;font-weight:700}
+/* Shoot card */
+.shoot-card{background:white;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:8px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s}
+.shoot-card:hover{box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.shoot-date{width:56px;height:56px;background:#FDF4FF;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:2px solid #F0ABFC}
+.shoot-day{font-size:22px;font-weight:900;color:#C026D3;line-height:1}
+.shoot-month{font-size:11px;color:#86198F;font-weight:600}
+.shoot-info{flex:1}
+.shoot-client{font-size:12px;font-weight:700;color:#C026D3;margin-bottom:2px}
+.shoot-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.shoot-meta{font-size:12px;color:#64748B;display:flex;gap:12px;flex-wrap:wrap}
+/* Library card */
+.lib-card{background:white;border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+.lib-thumb{width:90px;height:56px;background:linear-gradient(135deg,#C026D3,#7C3AED);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:white}
+.lib-meta{font-size:12px;color:#64748B;display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+/* KPI row */
+.kpi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
+.kpi-row:last-child{border-bottom:none}
+.kpi-label{color:#64748B}.kpi-val{font-weight:700}
+/* Filter */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-select{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;color:#374151;cursor:pointer}
+.search-input{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;min-width:180px}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:16px;padding:24px;width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8}.modal-close:hover{color:#1E293B}
+.modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #F1F5F9}
+/* Phase badge */
+.phase-col{display:flex;flex-direction:column;gap:8px}
+.phase-title{font-size:12px;font-weight:700;color:#64748B;padding:6px 0;display:flex;align-items:center;gap:6px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:#F1F5F9}::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🎬</div>
+    <div><div class="logo-text">SocialPro</div><div class="logo-sub">قسم الفيديو والمونتاج</div></div>
+  </div>
+  <div class="sidebar-section">العمل</div>
+  <div class="nav-item active" onclick="show('dashboard')"><span class="nav-icon">🏠</span> الرئيسية</div>
+  <div class="nav-item" onclick="show('tasks')"><span class="nav-icon">🎞️</span> تاسكاتي<span class="nav-badge">4</span></div>
+  <div class="nav-item" onclick="show('workspace')"><span class="nav-icon">✂️</span> منطقة المونتاج</div>
+  <div class="nav-item" onclick="show('shoots')"><span class="nav-icon">📷</span> جلسات التصوير<span class="nav-badge amber">2</span></div>
+  <div class="sidebar-section">المراجع</div>
+  <div class="nav-item" onclick="show('library')"><span class="nav-icon">🗂️</span> مكتبة الفيديوهات</div>
+  <div class="nav-item" onclick="show('specs')"><span class="nav-icon">📐</span> مواصفات المنصات</div>
+  <div class="sidebar-section">الإدارة</div>
+  <div class="nav-item" onclick="show('sop')"><span class="nav-icon">📜</span> SOP القسم</div>
+  <div class="nav-item" onclick="show('manager')"><span class="nav-icon">👨‍💼</span> لوحة المدير</div>
+  <div class="sidebar-user">
+    <div class="s-avatar">م</div>
+    <div><div class="user-name">محمود عادل</div><div class="user-role">مونتير / مصور</div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">الرئيسية</div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="openModal('notif-modal')">🔔<div class="notif-dot"></div></div>
+      <button class="btn btn-fuchsia btn-sm" onclick="openModal('new-task-modal')">➕ تاسك جديد</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard" class="screen active">
+      <div style="margin-bottom:16px">
+        <div class="alert a-red"><span class="alert-icon">🔴</span><span class="alert-text"><strong>ريلز بوتيك لونا</strong> — المونتاج متأخر يومين — المفروض اتسلّم أمس</span><span class="alert-action" onclick="show('workspace')">افتح التاسك ←</span></div>
+        <div class="alert a-amber"><span class="alert-icon">📷</span><span class="alert-text"><strong>جلسة تصوير مطعم الأصيل</strong> — غداً الساعة 2 ظهراً — لازم تأكيد المعدات</span><span class="alert-action" onclick="show('shoots')">تفاصيل الجلسة ←</span></div>
+        <div class="alert a-fuchsia"><span class="alert-icon">🔁</span><span class="alert-text"><strong>شركة التك</strong> — طالبت بتعديل على موشن جرافيك الإعلان — تعليق جديد</span><span class="alert-action" onclick="show('tasks')">شوف التعليق ←</span></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-fuchsia">🎬</div><div><div class="stat-label">تاسكات النهارده</div><div class="stat-value sv-fuchsia">4</div><div class="stat-sub">2 مونتاج + 1 تصوير + 1 مراجعة</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">⏰</div><div><div class="stat-label">متأخر</div><div class="stat-value sv-red">1</div><div class="stat-sub down">ريلز بوتيك لونا</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">🔁</div><div><div class="stat-label">في المراجعة</div><div class="stat-value sv-amber">3</div><div class="stat-sub">ينتظر رد العميل</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">سُلّمت الأسبوع ده</div><div class="stat-value sv-green">7</div><div class="stat-sub up">↑ 3 عن الأسبوع اللي فات</div></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📋 تاسكاتي اليوم</div>
+          <div class="task-card tc-late" onclick="show('workspace')">
+            <div class="task-icon ti-late">🚨</div>
+            <div class="task-content">
+              <div class="task-client">بوتيك لونا</div>
+              <div class="task-title">ريلز إنستجرام — مجموعة صيف 2025</div>
+              <div class="task-meta"><span>مدة: 30 ث</span><span style="color:#DC2626;font-weight:600">متأخر يومين</span></div>
+            </div>
+            <div class="task-right"><span class="badge b-late">متأخر</span></div>
+          </div>
+          <div class="task-card tc-montage" onclick="show('workspace')">
+            <div class="task-icon ti-montage">✂️</div>
+            <div class="task-content">
+              <div class="task-client">كافيه ريلاكس</div>
+              <div class="task-title">فيديو موشن — عروض رمضان</div>
+              <div class="task-meta"><span>مدة: 15 ث</span><span>يُسلَّم: غداً</span></div>
+            </div>
+            <div class="task-right"><span class="badge b-montage">مونتاج</span></div>
+          </div>
+          <div class="task-card tc-review" onclick="show('workspace')">
+            <div class="task-icon ti-review">👀</div>
+            <div class="task-content">
+              <div class="task-client">شركة التك</div>
+              <div class="task-title">موشن جرافيك — إعلان منتج جديد</div>
+              <div class="task-meta"><span>مدة: 60 ث</span><span>تعليق جديد من العميل</span></div>
+            </div>
+            <div class="task-right"><span class="badge b-review">مراجعة</span></div>
+          </div>
+          <div class="task-card tc-shoot" onclick="show('shoots')">
+            <div class="task-icon ti-shoot">📷</div>
+            <div class="task-content">
+              <div class="task-client">مطعم الأصيل</div>
+              <div class="task-title">جلسة تصوير أكلات — الموقع</div>
+              <div class="task-meta"><span>غداً 2 ظهراً</span><span>📍 المطعم</span></div>
+            </div>
+            <div class="task-right"><span class="badge b-shoot">تصوير</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">📊 تقدم الأسبوع</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>ريلز ومقاطع قصيرة</span><strong>3/5</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#C026D3;height:8px;border-radius:4px;width:60%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>موشن جرافيك</span><strong>2/3</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#7C3AED;height:8px;border-radius:4px;width:66%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>فيديوهات طويلة</span><strong>1/2</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#0EA5E9;height:8px;border-radius:4px;width:50%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>جلسات تصوير</span><strong>1/2</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#F97316;height:8px;border-radius:4px;width:50%"></div></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📅 جلسات تصوير قادمة</div>
+            <div class="shoot-card" onclick="show('shoots')">
+              <div class="shoot-date"><div class="shoot-day">19</div><div class="shoot-month">يونيو</div></div>
+              <div class="shoot-info">
+                <div class="shoot-client">مطعم الأصيل</div>
+                <div class="shoot-title">تصوير أكلات — منيو جديد</div>
+                <div class="shoot-meta"><span>📍 المطعم — المعادي</span><span>⏰ 2:00 م</span></div>
+              </div>
+              <span class="badge b-shoot">غداً</span>
+            </div>
+            <div class="shoot-card" onclick="show('shoots')">
+              <div class="shoot-date"><div class="shoot-day">22</div><div class="shoot-month">يونيو</div></div>
+              <div class="shoot-info">
+                <div class="shoot-client">بوتيك لونا</div>
+                <div class="shoot-title">تصوير مجموعة صيف — بورتريه</div>
+                <div class="shoot-meta"><span>📍 ستوديو — مدينة نصر</span><span>⏰ 11:00 ص</span></div>
+              </div>
+              <span class="badge b-montage">4 أيام</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div id="screen-tasks" class="screen">
+      <div class="page-header">
+        <div><h2>🎞️ كل التاسكات</h2><div class="ph-sub">8 تاسكات — 1 متأخر — 3 في المراجعة</div></div>
+        <button class="btn btn-fuchsia btn-sm" onclick="openModal('new-task-modal')">➕ تاسك جديد</button>
+      </div>
+      <div class="filter-bar">
+        <select class="filter-select"><option>كل العملاء</option><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select>
+        <select class="filter-select"><option>كل الأنواع</option><option>ريلز</option><option>موشن جرافيك</option><option>فيديو طويل</option><option>ستوري</option></select>
+        <select class="filter-select"><option>كل الحالات</option><option>متأخر</option><option>مونتاج</option><option>مراجعة</option><option>تصوير</option><option>مكتمل</option></select>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#DC2626;margin-bottom:8px">🔴 متأخر</div>
+      <div class="task-card tc-late" onclick="openModal('task-detail-modal')">
+        <div class="task-icon ti-late">🚨</div>
+        <div class="task-content">
+          <div class="task-client">بوتيك لونا</div>
+          <div class="task-title">ريلز إنستجرام — مجموعة صيف 2025</div>
+          <div class="task-meta"><span>📱 ريلز 30 ث</span><span>التسليم: 16 يونيو</span><span style="color:#DC2626;font-weight:600">متأخر يومين</span><span>المرحلة: مونتاج</span></div>
+        </div>
+        <div class="task-right"><span class="badge b-late">متأخر يومين</span><button class="btn btn-fuchsia btn-sm" onclick="event.stopPropagation();show('workspace')">فتح ←</button></div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#4F46E5;margin:16px 0 8px">✂️ قيد المونتاج</div>
+      <div class="task-card tc-montage" onclick="openModal('task-detail-modal')">
+        <div class="task-icon ti-montage">✂️</div>
+        <div class="task-content">
+          <div class="task-client">كافيه ريلاكس</div>
+          <div class="task-title">فيديو موشن — عروض رمضان القادم</div>
+          <div class="task-meta"><span>🎨 موشن جرافيك 15 ث</span><span>يُسلَّم: غداً</span><span>70% مكتمل</span></div>
+        </div>
+        <div class="task-right"><span class="badge b-montage">مونتاج</span><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();show('workspace')">فتح ←</button></div>
+      </div>
+      <div class="task-card tc-montage" onclick="openModal('task-detail-modal')">
+        <div class="task-icon ti-montage">✂️</div>
+        <div class="task-content">
+          <div class="task-client">مطعم الأصيل</div>
+          <div class="task-title">فيديو تعريفي — اليوتيوب</div>
+          <div class="task-meta"><span>📹 فيديو 2 دقيقة</span><span>يُسلَّم: 25 يونيو</span><span>30% مكتمل</span></div>
+        </div>
+        <div class="task-right"><span class="badge b-montage">مونتاج</span><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();show('workspace')">فتح ←</button></div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#D97706;margin:16px 0 8px">👀 في المراجعة</div>
+      <div class="task-card tc-review" onclick="openModal('task-detail-modal')">
+        <div class="task-icon ti-review">👀</div>
+        <div class="task-content">
+          <div class="task-client">شركة التك</div>
+          <div class="task-title">موشن جرافيك — إعلان منتج جديد</div>
+          <div class="task-meta"><span>🎨 موشن 60 ث</span><span>أُرسل للعميل: 15 يونيو</span><span style="color:#D97706;font-weight:600">تعليق جديد من العميل</span></div>
+        </div>
+        <div class="task-right"><span class="badge b-review">مراجعة</span></div>
+      </div>
+      <div class="task-card tc-review" onclick="openModal('task-detail-modal')">
+        <div class="task-icon ti-review">👀</div>
+        <div class="task-content">
+          <div class="task-client">بوتيك لونا</div>
+          <div class="task-title">ستوري — عرض تخفيض نهاية الموسم</div>
+          <div class="task-meta"><span>📱 ستوري 15 ث</span><span>أُرسل: 14 يونيو</span></div>
+        </div>
+        <div class="task-right"><span class="badge b-review">مراجعة</span></div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#C026D3;margin:16px 0 8px">📷 تصوير قادم</div>
+      <div class="task-card tc-shoot" onclick="show('shoots')">
+        <div class="task-icon ti-shoot">📷</div>
+        <div class="task-content">
+          <div class="task-client">مطعم الأصيل</div>
+          <div class="task-title">جلسة تصوير فيديو — منيو جديد</div>
+          <div class="task-meta"><span>📷 تصوير</span><span>غداً — 2 ظهراً</span><span>📍 المطعم</span></div>
+        </div>
+        <div class="task-right"><span class="badge b-shoot">غداً</span></div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#16A34A;margin:16px 0 8px">✅ سُلّمت</div>
+      <div class="task-card tc-done" style="opacity:.75" onclick="openModal('task-detail-modal')">
+        <div class="task-icon ti-done">✅</div>
+        <div class="task-content">
+          <div class="task-client">كافيه ريلاكس</div>
+          <div class="task-title">ريلز — كوكتيل الصيف</div>
+          <div class="task-meta"><span>📱 ريلز 20 ث</span><span>سُلّم: 15 يونيو</span></div>
+        </div>
+        <div class="task-right"><span class="badge b-done">مكتمل</span></div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div id="screen-workspace" class="screen">
+      <div class="page-header">
+        <div><h2>✂️ منطقة المونتاج</h2><div class="ph-sub">ريلز بوتيك لونا — مجموعة صيف 2025</div></div>
+        <div class="btn-group">
+          <button class="btn btn-fuchsia btn-sm" onclick="openModal('deliver-modal')">📤 تسليم للأكونت</button>
+          <button class="btn btn-outline btn-sm" onclick="openModal('task-detail-modal')">📋 تفاصيل التاسك</button>
+        </div>
+      </div>
+
+      <div class="alert a-red" style="margin-bottom:16px"><span class="alert-icon">🚨</span><span class="alert-text">هذا التاسك متأخر يومين — أولويته الأولى — خلّص قبل أي حاجة تانية</span></div>
+
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-title">📋 بريف التاسك</div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div class="kpi-row"><span class="kpi-label">العميل</span><span class="kpi-val" style="color:#C026D3">بوتيك لونا</span></div>
+              <div class="kpi-row"><span class="kpi-label">النوع</span><span class="kpi-val">ريلز إنستجرام</span></div>
+              <div class="kpi-row"><span class="kpi-label">المدة المطلوبة</span><span class="kpi-val">25-30 ثانية</span></div>
+              <div class="kpi-row"><span class="kpi-label">الهدف</span><span class="kpi-val">إطلاق مجموعة صيف 2025</span></div>
+              <div class="kpi-row"><span class="kpi-label">اللون العام</span><span class="kpi-val">ألوان صيفية — وردي + أصفر</span></div>
+              <div class="kpi-row"><span class="kpi-label">الموسيقى</span><span class="kpi-val">Trending — ترند التيك توك</span></div>
+              <div class="kpi-row"><span class="kpi-label">الكابشن</span><span class="kpi-val">موجود في مجلد الدرايف</span></div>
+              <div class="kpi-row" style="border:none"><span class="kpi-label">التسليم</span><span class="kpi-val" style="color:#DC2626">16 يونيو ❌ فات</span></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📁 ملفات المشروع<button class="btn btn-outline btn-sm">فتح Drive</button></div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#F8FAFC;border-radius:8px"><span>🎬 خام التصوير (12 ملف)</span><span style="color:#16A34A;font-weight:700">✅ موجود</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#F8FAFC;border-radius:8px"><span>🎵 موسيقى + مؤثرات</span><span style="color:#16A34A;font-weight:700">✅ موجود</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#F8FAFC;border-radius:8px"><span>📝 نص الكابشن والهاشتاج</span><span style="color:#16A34A;font-weight:700">✅ موجود</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#FEF2F2;border-radius:8px"><span>🎨 ملف Premiere / CapCut</span><span style="color:#D97706;font-weight:700">⚠️ شغّال</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#FEF2F2;border-radius:8px"><span>📤 نسخة التسليم MP4</span><span style="color:#DC2626;font-weight:700">❌ لم تُرفع</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">🔄 مراحل التاسك
+              <div id="checklist-status-video" class="checklist-status">0/7 مكتمل</div>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-steps">
+                <div class="p-step done">📋<span class="p-step-label">البريف</span></div>
+                <div class="p-step done">📷<span class="p-step-label">التصوير</span></div>
+                <div class="p-step current">✂️<span class="p-step-label">المونتاج</span></div>
+                <div class="p-step">🔍<span class="p-step-label">مراجعة</span></div>
+                <div class="p-step">📤<span class="p-step-label">تسليم</span></div>
+                <div class="p-step">✅<span class="p-step-label">اعتماد</span></div>
+              </div>
+            </div>
+            <div class="checklist-item" id="ci1" onclick="toggleCheck(1)"><input type="checkbox" id="c1" onchange="updateVideoCheck()"><label for="c1">مراجعة كل اللقطات الخام واختيار الأفضل</label></div>
+            <div class="checklist-item" id="ci2" onclick="toggleCheck(2)"><input type="checkbox" id="c2" onchange="updateVideoCheck()"><label for="c2">مزامنة اللقطات مع الموسيقى (Beat Sync)</label></div>
+            <div class="checklist-item" id="ci3" onclick="toggleCheck(3)"><input type="checkbox" id="c3" onchange="updateVideoCheck()"><label for="c3">تصحيح الألوان (Color Grading) حسب هوية البراند</label></div>
+            <div class="checklist-item" id="ci4" onclick="toggleCheck(4)"><input type="checkbox" id="c4" onchange="updateVideoCheck()"><label for="c4">إضافة النص والكابشن (Subtitles/Text)</label></div>
+            <div class="checklist-item" id="ci5" onclick="toggleCheck(5)"><input type="checkbox" id="c5" onchange="updateVideoCheck()"><label for="c5">إضافة اللوجو + واترمارك في النهاية</label></div>
+            <div class="checklist-item" id="ci6" onclick="toggleCheck(6)"><input type="checkbox" id="c6" onchange="updateVideoCheck()"><label for="c6">مراجعة الصوت — مستوى الصوت مناسب</label></div>
+            <div class="checklist-item" id="ci7" onclick="toggleCheck(7)"><input type="checkbox" id="c7" onchange="updateVideoCheck()"><label for="c7">تصدير بالمواصفات الصحيحة (1080×1920 — MP4 — H.264)</label></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">💬 ملاحظات وتعليقات</div>
+            <div style="background:#FDF4FF;border-radius:8px;padding:12px;font-size:13px;margin-bottom:10px">
+              <div style="font-weight:700;color:#86198F;margin-bottom:4px">أكونت — سارة محمود:</div>
+              <div>العميلة قالت الألوان تبقى أكتر دفاً — مش ساطعة أوي. واللوجو يبقى في الزاوية مش في الوسط.</div>
+            </div>
+            <textarea class="form-control" placeholder="ردّ أو ملاحظة..."></textarea>
+            <button class="btn btn-fuchsia btn-sm" style="margin-top:8px">إرسال</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOOTS -->
+    <div id="screen-shoots" class="screen">
+      <div class="page-header">
+        <div><h2>📷 جلسات التصوير</h2><div class="ph-sub">جلستان قادمتان هذا الأسبوع</div></div>
+        <button class="btn btn-fuchsia btn-sm" onclick="openModal('new-shoot-modal')">➕ جلسة جديدة</button>
+      </div>
+
+      <div class="alert a-amber" style="margin-bottom:16px"><span class="alert-icon">⚠️</span><span class="alert-text">تأكّد من المعدات قبل جلسة الغد — كاميرا + تريبود + إضاءة</span></div>
+
+      <div style="font-size:13px;font-weight:700;color:#D97706;margin-bottom:8px">⏰ غداً</div>
+      <div class="shoot-card" onclick="openModal('shoot-detail-modal')">
+        <div class="shoot-date"><div class="shoot-day">19</div><div class="shoot-month">يونيو</div></div>
+        <div class="shoot-info">
+          <div class="shoot-client">مطعم الأصيل</div>
+          <div class="shoot-title">تصوير فيديو أكلات — منيو جديد</div>
+          <div class="shoot-meta"><span>⏰ 2:00 م — 5:00 م</span><span>📍 المطعم — المعادي</span><span>👤 محمود + أحمد</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="badge b-review">غداً ⚠️</span>
+          <button class="btn btn-fuchsia btn-sm" onclick="event.stopPropagation();openModal('shoot-detail-modal')">تفاصيل ←</button>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#C026D3;margin:16px 0 8px">📅 هذا الأسبوع</div>
+      <div class="shoot-card" onclick="openModal('shoot-detail-modal')">
+        <div class="shoot-date"><div class="shoot-day">22</div><div class="shoot-month">يونيو</div></div>
+        <div class="shoot-info">
+          <div class="shoot-client">بوتيك لونا</div>
+          <div class="shoot-title">تصوير فيديو موضة — مجموعة صيف بورتريه</div>
+          <div class="shoot-meta"><span>⏰ 11:00 ص — 3:00 م</span><span>📍 ستوديو — مدينة نصر</span><span>👤 محمود</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="badge b-shoot">4 أيام</span>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#64748B;margin:16px 0 8px">✅ منتهية</div>
+      <div class="shoot-card" style="opacity:.7" onclick="openModal('shoot-detail-modal')">
+        <div class="shoot-date" style="background:#F0FDF4;border-color:#BBF7D0"><div class="shoot-day" style="color:#16A34A">15</div><div class="shoot-month" style="color:#166534">يونيو</div></div>
+        <div class="shoot-info">
+          <div class="shoot-client">كافيه ريلاكس</div>
+          <div class="shoot-title">تصوير مشروبات صيفية — كوكتيل</div>
+          <div class="shoot-meta"><span>⏰ 10:00 ص — 1:00 م</span><span>📍 الكافيه</span></div>
+        </div>
+        <span class="badge b-done">منتهية ✅</span>
+      </div>
+
+      <!-- Shoot detail checklist card -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-title">🎒 تشيكليست المعدات — جلسة الغد (مطعم الأصيل)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>كاميرا أساسية + بطاريات</span></div>
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>كارت ميموري (64GB+)</span></div>
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>تريبود ثابت</span></div>
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>Gimbal / ستابلايزر</span></div>
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>إضاءة (Ring Light / LED)</span></div>
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>ميكروفون خارجي</span></div>
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>مرشحات عدسة (ND)</span></div>
+          <div style="padding:8px 12px;background:#F8FAFC;border-radius:8px;display:flex;align-items:center;gap:8px"><input type="checkbox" style="accent-color:#C026D3"><span>لابتوب — نسخة احتياطية</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY -->
+    <div id="screen-library" class="screen">
+      <div class="page-header">
+        <div><h2>🗂️ مكتبة الفيديوهات</h2><div class="ph-sub">23 فيديو مكتمل</div></div>
+      </div>
+      <div class="filter-bar">
+        <select class="filter-select"><option>كل العملاء</option><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select>
+        <select class="filter-select"><option>كل الأنواع</option><option>ريلز</option><option>موشن</option><option>فيديو طويل</option><option>ستوري</option></select>
+        <input class="search-input" placeholder="🔍 بحث...">
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-thumb">🎬</div>
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:700;color:#C026D3;margin-bottom:2px">كافيه ريلاكس</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">ريلز — كوكتيل الصيف</div>
+          <div class="lib-meta"><span>📱 ريلز</span><span>20 ث</span><span>1080×1920</span><span>سُلّم: 15 يونيو</span><span style="color:#16A34A;font-weight:700">✅ معتمد</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm">⬇️ تحميل</button>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-thumb" style="background:linear-gradient(135deg,#4F46E5,#0EA5E9)">🎨</div>
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:700;color:#C026D3;margin-bottom:2px">شركة التك</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">موشن جرافيك — إطلاق التطبيق</div>
+          <div class="lib-meta"><span>🎨 موشن</span><span>45 ث</span><span>1080×1080</span><span>سُلّم: 10 يونيو</span><span style="color:#16A34A;font-weight:700">✅ معتمد</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm">⬇️ تحميل</button>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-thumb" style="background:linear-gradient(135deg,#F97316,#EAB308)">🍽️</div>
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:700;color:#C026D3;margin-bottom:2px">مطعم الأصيل</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">فيديو ترويجي — عروض رمضان</div>
+          <div class="lib-meta"><span>📹 فيديو</span><span>90 ث</span><span>1920×1080</span><span>سُلّم: 2 مارس</span><span style="color:#16A34A;font-weight:700">✅ معتمد</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm">⬇️ تحميل</button>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-thumb" style="background:linear-gradient(135deg,#EC4899,#C026D3)">👗</div>
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:700;color:#C026D3;margin-bottom:2px">بوتيك لونا</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">ريلز — مجموعة ربيع 2025</div>
+          <div class="lib-meta"><span>📱 ريلز</span><span>28 ث</span><span>1080×1920</span><span>سُلّم: 1 أبريل</span><span style="color:#16A34A;font-weight:700">✅ معتمد</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm">⬇️ تحميل</button>
+      </div>
+
+      <div class="lib-card">
+        <div class="lib-thumb" style="background:linear-gradient(135deg,#0EA5E9,#10B981)">☕</div>
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:700;color:#C026D3;margin-bottom:2px">كافيه ريلاكس</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px">ستوري — قهوة الصباح</div>
+          <div class="lib-meta"><span>📱 ستوري</span><span>12 ث</span><span>1080×1920</span><span>سُلّم: 20 مايو</span><span style="color:#16A34A;font-weight:700">✅ معتمد</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm">⬇️ تحميل</button>
+      </div>
+    </div>
+
+    <!-- SPECS -->
+    <div id="screen-specs" class="screen">
+      <div class="page-header"><h2>📐 مواصفات الفيديو بالمنصة</h2></div>
+      <div class="alert a-fuchsia" style="margin-bottom:20px"><span class="alert-icon">💡</span><span class="alert-text">دايماً صدّر بـ H.264 لـ MP4 — أحسن توافق مع كل المنصات. لو بتستخدم CapCut: اختار "Original Quality".</span></div>
+
+      <div class="three-col">
+        <div class="spec-card" style="border-top-color:#C026D3">
+          <div class="spec-platform">📱 Instagram Reels</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-key">الأبعاد</div><div class="spec-val">1080 × 1920</div></div>
+            <div class="spec-item"><div class="spec-key">النسبة</div><div class="spec-val">9:16 عمودي</div></div>
+            <div class="spec-item"><div class="spec-key">المدة</div><div class="spec-val">حتى 90 ثانية</div></div>
+            <div class="spec-item"><div class="spec-key">الصيغة</div><div class="spec-val">MP4 / MOV</div></div>
+            <div class="spec-item"><div class="spec-key">الحجم الأقصى</div><div class="spec-val">4 جيجابايت</div></div>
+            <div class="spec-item"><div class="spec-key">FPS</div><div class="spec-val">30 أو 60</div></div>
+          </div>
+          <div style="margin-top:10px;padding:8px;background:#FDF4FF;border-radius:6px;font-size:12px;color:#86198F"><strong>💡 نصيحة:</strong> اترك هامش 250px من الأعلى والأسفل — الكابشن بيغطي المنطقة السفلية</div>
+        </div>
+
+        <div class="spec-card" style="border-top-color:#000">
+          <div class="spec-platform">🎵 TikTok</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-key">الأبعاد</div><div class="spec-val">1080 × 1920</div></div>
+            <div class="spec-item"><div class="spec-key">النسبة</div><div class="spec-val">9:16 عمودي</div></div>
+            <div class="spec-item"><div class="spec-key">المدة</div><div class="spec-val">15 ث — 10 دقايق</div></div>
+            <div class="spec-item"><div class="spec-key">الصيغة</div><div class="spec-val">MP4 / MOV</div></div>
+            <div class="spec-item"><div class="spec-key">الحجم الأقصى</div><div class="spec-val">287 ميجابايت</div></div>
+            <div class="spec-item"><div class="spec-key">FPS</div><div class="spec-val">30 أو 60</div></div>
+          </div>
+          <div style="margin-top:10px;padding:8px;background:#F8FAFC;border-radius:6px;font-size:12px;color:#475569"><strong>💡 نصيحة:</strong> الفيديوهات من 15-30 ثانية هي الأكثر مشاهدة — متطولش</div>
+        </div>
+
+        <div class="spec-card" style="border-top-color:#1877F2">
+          <div class="spec-platform">📘 Facebook Video</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-key">الأبعاد (فيد)</div><div class="spec-val">1280 × 720</div></div>
+            <div class="spec-item"><div class="spec-key">النسبة</div><div class="spec-val">16:9 أفقي</div></div>
+            <div class="spec-item"><div class="spec-key">المدة</div><div class="spec-val">حتى 240 دقيقة</div></div>
+            <div class="spec-item"><div class="spec-key">الصيغة</div><div class="spec-val">MP4</div></div>
+            <div class="spec-item"><div class="spec-key">الحجم الأقصى</div><div class="spec-val">10 جيجابايت</div></div>
+            <div class="spec-item"><div class="spec-key">Bitrate</div><div class="spec-val">4000 kbps+</div></div>
+          </div>
+          <div style="margin-top:10px;padding:8px;background:#EFF6FF;border-radius:6px;font-size:12px;color:#1D4ED8"><strong>💡 نصيحة:</strong> Captions إجبارية — 85% من الناس بتتفرج بدون صوت على فيسبوك</div>
+        </div>
+
+        <div class="spec-card" style="border-top-color:#FF0000">
+          <div class="spec-platform">▶️ YouTube Shorts</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-key">الأبعاد</div><div class="spec-val">1080 × 1920</div></div>
+            <div class="spec-item"><div class="spec-key">النسبة</div><div class="spec-val">9:16 عمودي</div></div>
+            <div class="spec-item"><div class="spec-key">المدة</div><div class="spec-val">حتى 60 ثانية</div></div>
+            <div class="spec-item"><div class="spec-key">الصيغة</div><div class="spec-val">MP4 / MOV</div></div>
+            <div class="spec-item"><div class="spec-key">الحجم الأقصى</div><div class="spec-val">256 ميجابايت</div></div>
+            <div class="spec-item"><div class="spec-key">FPS</div><div class="spec-val">24 / 30 / 60</div></div>
+          </div>
+          <div style="margin-top:10px;padding:8px;background:#FEF2F2;border-radius:6px;font-size:12px;color:#991B1B"><strong>💡 نصيحة:</strong> ضيف #Shorts في العنوان — بيساعد الخوارزمية</div>
+        </div>
+
+        <div class="spec-card" style="border-top-color:#C026D3">
+          <div class="spec-platform">📱 Instagram Story</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-key">الأبعاد</div><div class="spec-val">1080 × 1920</div></div>
+            <div class="spec-item"><div class="spec-key">النسبة</div><div class="spec-val">9:16 عمودي</div></div>
+            <div class="spec-item"><div class="spec-key">المدة</div><div class="spec-val">حتى 60 ثانية</div></div>
+            <div class="spec-item"><div class="spec-key">الصيغة</div><div class="spec-val">MP4 / MOV</div></div>
+            <div class="spec-item"><div class="spec-key">الحجم الأقصى</div><div class="spec-val">4 جيجابايت</div></div>
+            <div class="spec-item"><div class="spec-key">ملاحظة</div><div class="spec-val">Safe zone مهم!</div></div>
+          </div>
+          <div style="margin-top:10px;padding:8px;background:#FDF4FF;border-radius:6px;font-size:12px;color:#86198F"><strong>💡 نصيحة:</strong> Safe Zone: المحتوى المهم ما بين 250-1670 بيكسل من الأعلى</div>
+        </div>
+
+        <div class="spec-card" style="border-top-color:#0A66C2">
+          <div class="spec-platform">💼 LinkedIn Video</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="spec-key">الأبعاد</div><div class="spec-val">1920 × 1080</div></div>
+            <div class="spec-item"><div class="spec-key">النسبة</div><div class="spec-val">16:9 أفقي</div></div>
+            <div class="spec-item"><div class="spec-key">المدة</div><div class="spec-val">3 ث — 10 دقايق</div></div>
+            <div class="spec-item"><div class="spec-key">الصيغة</div><div class="spec-val">MP4 / MOV</div></div>
+            <div class="spec-item"><div class="spec-key">الحجم الأقصى</div><div class="spec-val">5 جيجابايت</div></div>
+            <div class="spec-item"><div class="spec-key">FPS</div><div class="spec-val">30</div></div>
+          </div>
+          <div style="margin-top:10px;padding:8px;background:#EFF6FF;border-radius:6px;font-size:12px;color:#1D4ED8"><strong>💡 نصيحة:</strong> لينكدإن بيفضل الفيديوهات الأقل من 3 دقايق للإنجيجمنت الأحسن</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:4px">
+        <div class="card-title">⚙️ إعدادات التصدير الموصى بها</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:13px">
+          <div style="padding:12px;background:#FDF4FF;border-radius:8px;text-align:center"><div style="font-weight:700;margin-bottom:4px;color:#86198F">الكودك</div><div>H.264</div></div>
+          <div style="padding:12px;background:#FDF4FF;border-radius:8px;text-align:center"><div style="font-weight:700;margin-bottom:4px;color:#86198F">الصوت</div><div>AAC — 128kbps</div></div>
+          <div style="padding:12px;background:#FDF4FF;border-radius:8px;text-align:center"><div style="font-weight:700;margin-bottom:4px;color:#86198F">Color Space</div><div>Rec. 709</div></div>
+          <div style="padding:12px;background:#FDF4FF;border-radius:8px;text-align:center"><div style="font-weight:700;margin-bottom:4px;color:#86198F">Bitrate</div><div>8000+ kbps</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOP -->
+    <div id="screen-sop" class="screen">
+      <div class="page-header"><h2>📜 SOP قسم الفيديو والمونتاج</h2></div>
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-title">🔄 سير عمل التاسك — من البريف للتسليم</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:12px;padding:12px;background:#FDF4FF;border-radius:8px;border-right:3px solid #C026D3"><div style="font-size:20px;flex-shrink:0">1️⃣</div><div><div style="font-weight:700;margin-bottom:3px">استلام البريف من الأكونت</div><div style="font-size:13px;color:#475569">راجع النوع، المدة، الأسلوب، الموعد — لو حاجة ناقصة اسأل الأكونت فوراً متبدأش تشتغل ببريف ناقص</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#EEF2FF;border-radius:8px;border-right:3px solid #4F46E5"><div style="font-size:20px;flex-shrink:0">2️⃣</div><div><div style="font-weight:700;margin-bottom:3px">جلسة التصوير (لو مطلوبة)</div><div style="font-size:13px;color:#475569">تشيكليست المعدات قبل الخروج — خذ لقطات أكتر من اللازم — احتياطي دايماً</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FDF4FF;border-radius:8px;border-right:3px solid #C026D3"><div style="font-size:20px;flex-shrink:0">3️⃣</div><div><div style="font-weight:700;margin-bottom:3px">المونتاج</div><div style="font-size:13px;color:#475569">اتبع الشيكليست — تصحيح ألوان + صوت + نص + لوجو — صدّر Draft أولاً للمراجعة الداخلية</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><div style="font-size:20px;flex-shrink:0">4️⃣</div><div><div style="font-weight:700;margin-bottom:3px">مراجعة داخلية</div><div style="font-size:13px;color:#475569">ارفع على Drive — أبلغ الأكونت بالرابط — انتظر الموافقة قبل ما ترسل للعميل</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><div style="font-size:20px;flex-shrink:0">5️⃣</div><div><div style="font-weight:700;margin-bottom:3px">التعديلات (لو في)</div><div style="font-size:13px;color:#475569">التعديل الأول والثاني مجانيين — من التعديل الثالث: أبلغ المدير والأكونت</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#F0FDF4;border-radius:8px;border-right:3px solid #16A34A"><div style="font-size:20px;flex-shrink:0">6️⃣</div><div><div style="font-weight:700;margin-bottom:3px">التسليم النهائي</div><div style="font-size:13px;color:#475569">ارفع النسخة النهائية بمواصفات المنصة الصح — اضيف للمكتبة — اكتب "مكتمل" في السيستم</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">🚫 قواعد لا تُكسر</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="padding:10px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626"><strong style="color:#991B1B">🚫 ممنوع:</strong> ترسل فيديو للعميل مباشرة بدون مراجعة الأكونت — تستخدم موسيقى كوبيرايت بدون ترخيص — تنسى تحط اللوجو</div>
+              <div style="padding:10px;background:#F0FDF4;border-radius:8px;border-right:3px solid #16A34A"><strong style="color:#166534">✅ مطلوب:</strong> كل فيديو نهائي يتحفظ في مكتبة Drive — النسخة الخام تتحفظ 30 يوم على الأقل</div>
+              <div style="padding:10px;background:#FDF4FF;border-radius:8px;border-right:3px solid #C026D3"><strong style="color:#86198F">⏰ مواعيد:</strong> لو هتتأخر عن الموعد أكثر من 4 ساعات — أبلغ الأكونت فوراً متستناش</div>
+              <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><strong style="color:#92400E">🔁 تعديلات:</strong> أول وتاني تعديل مجاني — من التالت ابلغ الأكونت يتكلم مع العميل</div>
+              <div style="padding:10px;background:#EEF2FF;border-radius:8px;border-right:3px solid #4F46E5"><strong style="color:#3730A3">📐 مواصفات:</strong> دايماً صدّر بمواصفات المنصة الصح — متبعتش ريلز بأبعاد فيسبوك</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⭐ معايير التقييم</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>جودة المونتاج والتصوير</span><strong>35%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#C026D3;height:10px;border-radius:4px;width:35%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>الالتزام بالمواعيد</span><strong>30%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#4F46E5;height:10px;border-radius:4px;width:30%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>الالتزام بهوية البراند</span><strong>20%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#0EA5E9;height:10px;border-radius:4px;width:20%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>عدد التعديلات المطلوبة</span><strong>15%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#D97706;height:10px;border-radius:4px;width:15%"></div></div></div>
+            </div>
+            <div style="margin-top:14px;padding:12px;background:#FDF4FF;border-radius:8px;font-size:12px;color:#86198F;line-height:1.8"><strong>A:</strong> 90%+ · <strong>B:</strong> 75-89% · <strong>C:</strong> 60-74% · <strong>D:</strong> أقل من 60%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGER -->
+    <div id="screen-manager" class="screen">
+      <div class="page-header"><h2>👨‍💼 لوحة تحكم مدير الفيديو</h2></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-fuchsia">🎬</div><div><div class="stat-label">فيديوهات هذا الشهر</div><div class="stat-value sv-fuchsia">18</div><div class="stat-sub up">↑ 4 عن الشهر الماضي</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">في الوقت</div><div class="stat-value sv-green">16</div><div class="stat-sub">89%</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">⏰</div><div><div class="stat-label">متأخر</div><div class="stat-value sv-red">1</div><div class="stat-sub down">ريلز بوتيك لونا</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">🔁</div><div><div class="stat-label">متوسط التعديلات</div><div class="stat-value sv-amber">1.4</div><div class="stat-sub">تعديل لكل فيديو</div></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">⚠️ تنبيهات تحتاج قرار مدير</div>
+          <div style="padding:14px;background:#FEF2F2;border-radius:10px;border-right:4px solid #DC2626;margin-bottom:12px">
+            <div style="font-size:13px;font-weight:700;color:#991B1B;margin-bottom:6px">🔴 ريلز بوتيك لونا — متأخر يومين</div>
+            <div style="font-size:13px;color:#475569;margin-bottom:10px">المونتير محمود في متأخر يومين — العميلة بتستفسر. هل نعتذر رسمياً أم نبعت جزء تجريبي؟</div>
+            <div class="btn-group">
+              <button class="btn btn-danger btn-sm" onclick="openModal('escalate-modal')">📞 اتصال بالعميل</button>
+              <button class="btn btn-outline btn-sm">📋 إضافة تعليق</button>
+            </div>
+          </div>
+          <div style="padding:14px;background:#FFFBEB;border-radius:10px;border-right:4px solid #D97706">
+            <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:6px">🟡 شركة التك — تعديل ثالث على الموشن</div>
+            <div style="font-size:13px;color:#475569;margin-bottom:10px">العميل طلب التعديل الثالث — وفق SOP يتم إبلاغ المدير. هل نطبق سياسة التعديلات الإضافية؟</div>
+            <div class="btn-group">
+              <button class="btn btn-fuchsia btn-sm">✅ اعتمد التعديل مجاناً</button>
+              <button class="btn btn-outline btn-sm">💰 أبلغ العميل بالتكلفة</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">📊 أداء الفريق — يونيو</div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div class="kpi-row"><span class="kpi-label">إجمالي الفيديوهات</span><span class="kpi-val">18</span></div>
+              <div class="kpi-row"><span class="kpi-label">نسبة التسليم في الوقت</span><span class="kpi-val" style="color:#16A34A">89%</span></div>
+              <div class="kpi-row"><span class="kpi-label">متوسط وقت الإنتاج</span><span class="kpi-val">2.3 يوم</span></div>
+              <div class="kpi-row"><span class="kpi-label">متوسط التعديلات</span><span class="kpi-val">1.4 تعديل</span></div>
+              <div class="kpi-row"><span class="kpi-label">جلسات تصوير</span><span class="kpi-val">4 جلسات</span></div>
+              <div class="kpi-row" style="border:none"><span class="kpi-label">رضا العملاء (Feedback)</span><span class="kpi-val" style="color:#16A34A">92%</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📦 توزيع الإنتاج بالنوع</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>📱 ريلز وقصيرة</span><div style="display:flex;align-items:center;gap:8px"><strong>8 فيديو</strong><span style="font-size:11px;padding:2px 6px;background:#FDF4FF;color:#86198F;border-radius:4px">44%</span></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>🎨 موشن جرافيك</span><div style="display:flex;align-items:center;gap:8px"><strong>6 فيديو</strong><span style="font-size:11px;padding:2px 6px;background:#EEF2FF;color:#3730A3;border-radius:4px">33%</span></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>📹 فيديو طويل</span><div style="display:flex;align-items:center;gap:8px"><strong>3 فيديو</strong><span style="font-size:11px;padding:2px 6px;background:#F0F9FF;color:#0369A1;border-radius:4px">17%</span></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>📱 ستوري</span><div style="display:flex;align-items:center;gap:8px"><strong>1 فيديو</strong><span style="font-size:11px;padding:2px 6px;background:#F0FDF4;color:#166534;border-radius:4px">6%</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="new-task-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">➕ تاسك فيديو جديد</div><button class="modal-close" onclick="closeModal('new-task-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">العميل <span class="req">*</span></label><select class="form-control"><option>-- اختر --</option><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select></div>
+      <div class="form-group"><label class="form-label">نوع الفيديو <span class="req">*</span></label><select class="form-control"><option>ريلز</option><option>موشن جرافيك</option><option>فيديو طويل</option><option>ستوري</option><option>إعلان</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">عنوان التاسك <span class="req">*</span></label><input class="form-control" placeholder="مثال: ريلز إنستجرام — إطلاق المنتج الجديد"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">المدة المطلوبة</label><select class="form-control"><option>15 ثانية</option><option>30 ثانية</option><option>60 ثانية</option><option>2-3 دقائق</option><option>+3 دقائق</option></select></div>
+      <div class="form-group"><label class="form-label">المنصة</label><select class="form-control"><option>Instagram Reels</option><option>TikTok</option><option>Facebook</option><option>YouTube</option><option>Story</option></select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">تاريخ التسليم <span class="req">*</span></label><input type="date" class="form-control"></div>
+      <div class="form-group"><label class="form-label">هل يحتاج تصوير؟</label><select class="form-control"><option>لأ — مواد جاهزة</option><option>أيوه — جلسة مطلوبة</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات من الأكونت</label><textarea class="form-control" placeholder="الأسلوب، الألوان، أي تفاصيل تانية..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-fuchsia" onclick="closeModal('new-task-modal')">➕ إضافة التاسك</button><button class="btn btn-ghost" onclick="closeModal('new-task-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="task-detail-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📋 تفاصيل التاسك</div><button class="modal-close" onclick="closeModal('task-detail-modal')">×</button></div>
+    <div style="display:flex;flex-direction:column;gap:0;margin-bottom:16px">
+      <div class="kpi-row"><span class="kpi-label">العميل</span><span class="kpi-val" style="color:#C026D3">بوتيك لونا</span></div>
+      <div class="kpi-row"><span class="kpi-label">النوع</span><span class="kpi-val">ريلز إنستجرام</span></div>
+      <div class="kpi-row"><span class="kpi-label">المدة</span><span class="kpi-val">30 ثانية</span></div>
+      <div class="kpi-row"><span class="kpi-label">المنصة</span><span class="kpi-val">Instagram Reels — 1080×1920</span></div>
+      <div class="kpi-row"><span class="kpi-label">تاريخ التسليم</span><span class="kpi-val" style="color:#DC2626">16 يونيو ❌</span></div>
+      <div class="kpi-row" style="border:none"><span class="kpi-label">الحالة</span><span class="badge b-late">متأخر يومين</span></div>
+    </div>
+    <div style="padding:12px;background:#FFFBEB;border-radius:8px;font-size:13px;margin-bottom:10px"><strong>ملاحظات الأكونت:</strong> الألوان صيفية — وردي + أصفر. الموسيقى من ترند التيك توك. اللوجو في الركن اليسار السفلي.</div>
+    <div class="modal-footer"><button class="btn btn-fuchsia" onclick="closeModal('task-detail-modal');show('workspace')">✂️ افتح في المونتاج</button><button class="btn btn-ghost" onclick="closeModal('task-detail-modal')">إغلاق</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deliver-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">📤 تسليم الفيديو للأكونت</div><button class="modal-close" onclick="closeModal('deliver-modal')">×</button></div>
+    <div class="alert a-fuchsia" style="margin-bottom:16px"><span class="alert-icon">✅</span><span class="alert-text">قبل التسليم: تأكد من إكمال كل بنود الشيكليست</span></div>
+    <div class="form-group"><label class="form-label">رابط الفيديو (Google Drive) <span class="req">*</span></label><input class="form-control" placeholder="https://drive.google.com/..."></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">صيغة الملف</label><select class="form-control"><option>MP4 — H.264</option><option>MOV</option></select></div>
+      <div class="form-group"><label class="form-label">الدقة</label><select class="form-control"><option>1080×1920 (Reels/Story)</option><option>1080×1080 (Square)</option><option>1920×1080 (Landscape)</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات للأكونت</label><textarea class="form-control" placeholder="أي تفاصيل عن الفيديو..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-fuchsia" onclick="closeModal('deliver-modal')">📤 إرسال للأكونت</button><button class="btn btn-ghost" onclick="closeModal('deliver-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="new-shoot-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📷 جلسة تصوير جديدة</div><button class="modal-close" onclick="closeModal('new-shoot-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">العميل <span class="req">*</span></label><select class="form-control"><option>-- اختر --</option><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select></div>
+      <div class="form-group"><label class="form-label">نوع الجلسة</label><select class="form-control"><option>تصوير منتجات</option><option>تصوير أشخاص</option><option>تصوير موقع</option><option>ستوديو</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">وصف الجلسة</label><input class="form-control" placeholder="مثال: تصوير أكلات — منيو جديد"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">التاريخ <span class="req">*</span></label><input type="date" class="form-control"></div>
+      <div class="form-group"><label class="form-label">الوقت</label><input type="time" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">الموقع</label><input class="form-control" placeholder="عنوان أو اسم المكان"></div>
+    <div class="modal-footer"><button class="btn btn-fuchsia" onclick="closeModal('new-shoot-modal')">📷 إضافة الجلسة</button><button class="btn btn-ghost" onclick="closeModal('new-shoot-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="shoot-detail-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">📷 تفاصيل الجلسة — مطعم الأصيل</div><button class="modal-close" onclick="closeModal('shoot-detail-modal')">×</button></div>
+    <div style="display:flex;flex-direction:column;gap:0;margin-bottom:16px">
+      <div class="kpi-row"><span class="kpi-label">العميل</span><span class="kpi-val" style="color:#C026D3">مطعم الأصيل</span></div>
+      <div class="kpi-row"><span class="kpi-label">النوع</span><span class="kpi-val">تصوير أكلات — فيديو</span></div>
+      <div class="kpi-row"><span class="kpi-label">الموقع</span><span class="kpi-val">📍 المطعم — المعادي</span></div>
+      <div class="kpi-row"><span class="kpi-label">الوقت</span><span class="kpi-val">غداً 2:00 م — 5:00 م</span></div>
+      <div class="kpi-row" style="border:none"><span class="kpi-label">الفريق</span><span class="kpi-val">محمود + أحمد</span></div>
+    </div>
+    <div style="padding:12px;background:#FDF4FF;border-radius:8px;font-size:13px;margin-bottom:12px"><strong>المطلوب:</strong> تصوير 8 أطباق جديدة — كل طبق من 3 زوايا مختلفة — فيديو لكل طبق 10-15 ثانية. الإضاءة طبيعية + مصطناعة.</div>
+    <div class="modal-footer"><button class="btn btn-fuchsia" onclick="closeModal('shoot-detail-modal')">✅ تأكيد الحضور</button><button class="btn btn-ghost" onclick="closeModal('shoot-detail-modal')">إغلاق</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="escalate-modal">
+  <div class="modal" style="width:440px">
+    <div class="modal-header"><div class="modal-title">📞 اتصال بالعميل — بوتيك لونا</div><button class="modal-close" onclick="closeModal('escalate-modal')">×</button></div>
+    <div class="alert a-red" style="margin-bottom:16px"><span class="alert-icon">⚠️</span><span class="alert-text">الاعتذار من المدير — مش من المونتير</span></div>
+    <div class="form-group"><label class="form-label">نص الاعتذار المقترح</label>
+      <textarea class="form-control" style="min-height:100px">السيدة / العميلة المحترمة،
+نعتذر عن التأخر في تسليم الريلز. الفريق يعمل على الانتهاء اليوم وسيصلك الفيديو خلال ساعات. نقدّر صبركم وثقتكم.</textarea></div>
+    <div class="modal-footer"><button class="btn btn-fuchsia" onclick="closeModal('escalate-modal')">📞 تأكيد التواصل</button><button class="btn btn-ghost" onclick="closeModal('escalate-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal" style="width:380px">
+    <div class="modal-header"><div class="modal-title">🔔 الإشعارات</div><button class="modal-close" onclick="closeModal('notif-modal')">×</button></div>
+    <div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">🚨</div><div><div style="font-size:13px"><strong>بوتيك لونا</strong> — ريلز متأخر يومين</div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0">📷</div><div><div style="font-size:13px"><strong>مطعم الأصيل</strong> — جلسة تصوير غداً 2 م</div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:36px;height:36px;border-radius:50%;background:#FDF4FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔁</div><div><div style="font-size:13px"><strong>شركة التك</strong> — تعليق جديد على الموشن</div><div style="font-size:11px;color:#94A3B8">منذ ساعتين</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var titles={
+  dashboard:'الرئيسية',tasks:'تاسكاتي',workspace:'منطقة المونتاج',
+  shoots:'جلسات التصوير',library:'مكتبة الفيديوهات',specs:'مواصفات المنصات',
+  sop:'SOP القسم',manager:'لوحة تحكم المدير'
+};
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  var s=document.getElementById('screen-'+id);
+  if(s)s.classList.add('active');
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(function(el){
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+function updateVideoCheck(){
+  var total=7,done=0;
+  for(var i=1;i<=7;i++){var el=document.getElementById('c'+i);if(el&&el.checked)done++;}
+  var s=document.getElementById('checklist-status-video');
+  if(s){s.textContent=done+'/'+total+' مكتمل';s.style.color=done===total?'#16A34A':'#C026D3';}
+}
+function toggleCheck(n){
+  var cb=document.getElementById('c'+n);
+  var item=document.getElementById('ci'+n);
+  if(cb&&item){cb.checked=!cb.checked;item.classList.toggle('checked',cb.checked);updateVideoCheck();}
+}
+</script>
+</body>
+</html>

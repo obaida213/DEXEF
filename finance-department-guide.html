@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام قسم المحاسبة والفواتير</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:#F1F5F9;color:#1E293B;font-size:14px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;background:#0F172A;color:white;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:50}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:#4F46E5;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700}.logo-sub{font-size:11px;color:#64748B}
+.sidebar-section{padding:16px 12px 4px;font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;color:#94A3B8;transition:all .15s;border-radius:8px;margin:2px 8px}
+.nav-item:hover{background:#1E293B;color:white}
+.nav-item.active{background:#4F46E5;color:white}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-right:auto;background:#DC2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.nav-badge.amber{background:#D97706}
+.sidebar-user{padding:16px;border-top:1px solid #1E293B;display:flex;align-items:center;gap:10px;margin-top:auto}
+.s-avatar{width:34px;height:34px;background:#4F46E5;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:white}.user-role{font-size:11px;color:#64748B}
+.main{flex:1;margin-right:230px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:white;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:18px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.notif-btn{position:relative;cursor:pointer;background:#F1F5F9;border-radius:8px;padding:8px;font-size:16px}
+.notif-dot{position:absolute;top:6px;left:6px;width:8px;height:8px;background:#DC2626;border-radius:50%;border:2px solid white}
+.content{flex:1;padding:24px}
+.screen{display:none}.screen.active{display:block}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-indigo{background:#EEF2FF}.si-green{background:#F0FDF4}.si-amber{background:#FFFBEB}.si-red{background:#FEF2F2}.si-sky{background:#F0F9FF}
+.stat-label{font-size:12px;color:#64748B;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:900;line-height:1}
+.sv-indigo{color:#4F46E5}.sv-green{color:#16A34A}.sv-amber{color:#D97706}.sv-red{color:#DC2626}.sv-sky{color:#0EA5E9}
+.stat-sub{font-size:12px;color:#64748B;margin-top:3px}
+.up{color:#16A34A}.down{color:#DC2626}
+/* Alert */
+.alert{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;margin-bottom:8px;font-size:13px}
+.a-red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.a-amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.a-indigo{background:#EEF2FF;border:1px solid #C7D2FE;color:#3730A3}
+.a-green{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.alert-icon{font-size:16px;flex-shrink:0}.alert-text{flex:1}
+.alert-action{font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;white-space:nowrap}
+/* Card */
+.card{background:white;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.b-paid{background:#F0FDF4;color:#15803D}.b-paid::before{background:#16A34A}
+.b-pending{background:#FFFBEB;color:#B45309}.b-pending::before{background:#D97706}
+.b-overdue{background:#FEF2F2;color:#B91C1C}.b-overdue::before{background:#DC2626}
+.b-draft{background:#F0F9FF;color:#0369A1}.b-draft::before{background:#0EA5E9}
+.b-partial{background:#F5F3FF;color:#6D28D9}.b-partial::before{background:#7C3AED}
+.b-active{background:#EEF2FF;color:#3730A3}.b-active::before{background:#4F46E5}
+.b-expired{background:#F1F5F9;color:#475569}.b-expired::before{background:#94A3B8}
+/* Button */
+.btn{padding:9px 18px;border-radius:8px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-indigo{background:#4F46E5;color:white}.btn-indigo:hover{background:#4338CA}
+.btn-success{background:#16A34A;color:white}
+.btn-danger{background:#DC2626;color:white}
+.btn-outline{background:white;color:#374151;border:1px solid #E2E8F0}.btn-outline:hover{background:#F8FAFC}
+.btn-ghost{background:transparent;color:#64748B;padding:8px 12px}.btn-ghost:hover{background:#F1F5F9}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px}
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#374151}
+.req{color:#DC2626}
+.form-control{width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;color:#1E293B;background:white;transition:border-color .2s}
+.form-control:focus{outline:none;border-color:#4F46E5;box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+textarea.form-control{resize:vertical;min-height:80px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-section{font-size:12px;font-weight:700;color:#64748B;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid #F1F5F9;text-transform:uppercase;letter-spacing:.3px}
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-header h2{font-size:20px;font-weight:700}
+.ph-sub{font-size:13px;color:#64748B;margin-top:2px}
+/* Table */
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:right;padding:10px 14px;background:#F8FAFC;color:#64748B;font-weight:600;font-size:12px;border-bottom:1px solid #E2E8F0;white-space:nowrap}
+.table td{padding:11px 14px;border-bottom:1px solid #F8FAFC;font-size:13px;vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tbody tr:hover td{background:#FAFBFE;cursor:pointer}
+.tw{overflow-x:auto}
+/* Invoice */
+.inv-card{background:white;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:10px;border-right:4px solid transparent;cursor:pointer;transition:all .15s}
+.inv-card:hover{box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.ic-overdue{border-right-color:#DC2626}
+.ic-pending{border-right-color:#D97706}
+.ic-paid{border-right-color:#16A34A}
+.ic-partial{border-right-color:#7C3AED}
+.ic-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.ic-client{font-size:12px;font-weight:700;color:#4F46E5;margin-bottom:2px}
+.ic-title{font-size:14px;font-weight:700}
+.ic-meta{display:flex;gap:14px;font-size:12px;color:#64748B;flex-wrap:wrap}
+/* Contract card */
+.contract-card{background:white;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:10px;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.contract-card:hover{border-color:#C7D2FE;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+/* KPI */
+.kpi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
+.kpi-row:last-child{border-bottom:none}
+.kpi-label{color:#64748B}
+.kpi-val{font-weight:700}
+/* Payment timeline */
+.pay-step{display:flex;gap:14px;padding:10px 0;position:relative}
+.pay-step:not(:last-child)::after{content:'';position:absolute;top:36px;right:17px;width:2px;height:calc(100% - 10px);background:#E2E8F0}
+.pay-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;z-index:1;position:relative}
+.pd-done{background:#F0FDF4;border:2px solid #16A34A}
+.pd-pending{background:#FFFBEB;border:2px solid #D97706}
+.pd-overdue{background:#FEF2F2;border:2px solid #DC2626}
+.pd-future{background:#F8FAFC;border:2px dashed #CBD5E1}
+/* Filter */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-select{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;color:#374151;cursor:pointer}
+.search-input{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;min-width:180px}
+/* Revenue bars */
+.rev-bar-wrap{background:#F1F5F9;border-radius:4px;height:8px;flex:1}
+.rev-bar{height:8px;border-radius:4px;background:#4F46E5}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:16px;padding:24px;width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8}.modal-close:hover{color:#1E293B}
+.modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #F1F5F9}
+/* Invoice print preview */
+.inv-preview{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:24px;font-size:13px}
+.inv-header{display:flex;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #4F46E5}
+.inv-logo{font-size:22px;font-weight:900;color:#4F46E5}
+.inv-table{width:100%;border-collapse:collapse;margin:16px 0}
+.inv-table th{text-align:right;padding:8px 10px;background:#EEF2FF;font-size:12px;font-weight:700}
+.inv-table td{padding:8px 10px;border-bottom:1px solid #F1F5F9;font-size:13px}
+.inv-total{text-align:left;margin-top:12px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#F1F5F9}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💼</div>
+    <div><div class="logo-text">SocialPro</div><div class="logo-sub">قسم المحاسبة والفواتير</div></div>
+  </div>
+  <div class="sidebar-section">المالية</div>
+  <div class="nav-item active" onclick="show('dashboard')"><span class="nav-icon">🏠</span> الرئيسية</div>
+  <div class="nav-item" onclick="show('invoices')"><span class="nav-icon">🧾</span> الفواتير<span class="nav-badge">3</span></div>
+  <div class="nav-item" onclick="show('collections')"><span class="nav-icon">💰</span> التحصيل<span class="nav-badge amber">5</span></div>
+  <div class="nav-item" onclick="show('contracts')"><span class="nav-icon">📄</span> العقود</div>
+  <div class="sidebar-section">التقارير</div>
+  <div class="nav-item" onclick="show('reports')"><span class="nav-icon">📊</span> التقارير المالية</div>
+  <div class="nav-item" onclick="show('expenses')"><span class="nav-icon">💸</span> المصروفات</div>
+  <div class="sidebar-section">الإدارة</div>
+  <div class="nav-item" onclick="show('sop')"><span class="nav-icon">📜</span> SOP القسم</div>
+  <div class="nav-item" onclick="show('manager')"><span class="nav-icon">👨‍💼</span> لوحة المدير</div>
+  <div class="sidebar-user">
+    <div class="s-avatar">ن</div>
+    <div><div class="user-name">نادية يوسف</div><div class="user-role">محاسبة</div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">الرئيسية</div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="openModal('notif-modal')">🔔<div class="notif-dot"></div></div>
+      <button class="btn btn-indigo btn-sm" onclick="openModal('new-invoice-modal')">➕ فاتورة جديدة</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard" class="screen active">
+      <div style="margin-bottom:16px">
+        <div class="alert a-red"><span class="alert-icon">🔴</span><span class="alert-text"><strong>شركة التك</strong> — فاتورة مايو متأخرة 18 يوم — 4,500 جنيه لم تُحصَّل</span><span class="alert-action" onclick="show('collections')">اتخذ إجراء ←</span></div>
+        <div class="alert a-amber"><span class="alert-icon">⚠️</span><span class="alert-text"><strong>بوتيك لونا + كافيه ريلاكس</strong> — فواتير يونيو لم تُرسَل بعد</span><span class="alert-action" onclick="openModal('new-invoice-modal')">أرسل فاتورة ←</span></div>
+        <div class="alert a-indigo"><span class="alert-icon">📄</span><span class="alert-text"><strong>مطعم الأصيل</strong> — عقد ينتهي بعد 14 يوم — لازم تجديد</span><span class="alert-action" onclick="show('contracts')">راجع العقد ←</span></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-indigo">💰</div><div><div class="stat-label">إيراد الشهر</div><div class="stat-value sv-indigo">38,500 ج</div><div class="stat-sub up">↑ 12% عن مايو</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">⏰</div><div><div class="stat-label">متأخر التحصيل</div><div class="stat-value sv-red">9,500 ج</div><div class="stat-sub"><span class="down">2 عملاء</span></div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">📋</div><div><div class="stat-label">فواتير لم تُرسَل</div><div class="stat-value sv-amber">2</div><div class="stat-sub">بوتيك لونا + ريلاكس</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">محصّل هذا الشهر</div><div class="stat-value sv-green">29,000 ج</div><div class="stat-sub">75% من الإيراد</div></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📊 حالة التحصيل — يونيو</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#FEF2F2;border-radius:8px;cursor:pointer" onclick="show('collections')">
+              <div style="flex:1.5"><div style="font-size:12px;font-weight:700;color:#4F46E5">شركة التك</div><div style="font-size:13px;font-weight:700">فاتورة مايو — متأخرة 18 يوم</div></div>
+              <div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:900;color:#DC2626">4,500 ج</div></div>
+              <span class="badge b-overdue">18 يوم</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#FFFBEB;border-radius:8px;cursor:pointer" onclick="show('collections')">
+              <div style="flex:1.5"><div style="font-size:12px;font-weight:700;color:#4F46E5">مطعم الأصيل</div><div style="font-size:13px;font-weight:700">فاتورة يونيو — 5 أيام</div></div>
+              <div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:900;color:#D97706">5,000 ج</div></div>
+              <span class="badge b-pending">5 أيام</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#FFFBEB;border-radius:8px;cursor:pointer" onclick="show('collections')">
+              <div style="flex:1.5"><div style="font-size:12px;font-weight:700;color:#4F46E5">كافيه ريلاكس</div><div style="font-size:13px;font-weight:700">فاتورة يونيو — لم تُرسَل</div></div>
+              <div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:900;color:#D97706">3,000 ج</div></div>
+              <span class="badge b-draft">لم تُرسَل</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#F0FDF4;border-radius:8px">
+              <div style="flex:1.5"><div style="font-size:12px;font-weight:700;color:#4F46E5">بوتيك لونا</div><div style="font-size:13px;font-weight:700">فاتورة يونيو — محصّلة ✅</div></div>
+              <div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:900;color:#16A34A">7,500 ج</div></div>
+              <span class="badge b-paid">محصّلة</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">📈 الإيرادات — آخر 4 شهور</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>مارس</span><strong>31,000 ج</strong></div><div style="display:flex;align-items:center;gap:8px"><div class="rev-bar-wrap"><div class="rev-bar" style="width:80%;opacity:.5"></div></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>أبريل</span><strong>34,200 ج</strong></div><div style="display:flex;align-items:center;gap:8px"><div class="rev-bar-wrap"><div class="rev-bar" style="width:89%;opacity:.65"></div></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>مايو</span><strong>34,400 ج</strong></div><div style="display:flex;align-items:center;gap:8px"><div class="rev-bar-wrap"><div class="rev-bar" style="width:89%;opacity:.8"></div></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>يونيو (حتى الآن)</span><strong style="color:#4F46E5">38,500 ج</strong></div><div style="display:flex;align-items:center;gap:8px"><div class="rev-bar-wrap"><div class="rev-bar" style="width:100%"></div></div></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🏆 الإيراد بالعميل</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>شركة التك</span><div style="display:flex;align-items:center;gap:8px"><strong>12,000 ج</strong><span style="font-size:11px;padding:2px 6px;background:#EEF2FF;color:#3730A3;border-radius:4px">31%</span></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>بوتيك لونا</span><div style="display:flex;align-items:center;gap:8px"><strong>10,500 ج</strong><span style="font-size:11px;padding:2px 6px;background:#EEF2FF;color:#3730A3;border-radius:4px">27%</span></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>مطعم الأصيل</span><div style="display:flex;align-items:center;gap:8px"><strong>9,000 ج</strong><span style="font-size:11px;padding:2px 6px;background:#EEF2FF;color:#3730A3;border-radius:4px">23%</span></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>كافيه ريلاكس</span><div style="display:flex;align-items:center;gap:8px"><strong>7,000 ج</strong><span style="font-size:11px;padding:2px 6px;background:#EEF2FF;color:#3730A3;border-radius:4px">18%</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVOICES -->
+    <div id="screen-invoices" class="screen">
+      <div class="page-header">
+        <div><h2>🧾 الفواتير</h2><div class="ph-sub">12 فاتورة — 3 لم تُرسَل</div></div>
+        <button class="btn btn-indigo btn-sm" onclick="openModal('new-invoice-modal')">➕ فاتورة جديدة</button>
+      </div>
+      <div class="filter-bar">
+        <select class="filter-select"><option>كل العملاء</option><option>شركة التك</option><option>بوتيك لونا</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select>
+        <select class="filter-select"><option>كل الحالات</option><option>محصّلة</option><option>معلقة</option><option>متأخرة</option><option>لم تُرسَل</option></select>
+        <input class="search-input" placeholder="🔍 بحث برقم الفاتورة...">
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#DC2626;margin-bottom:10px">🔴 متأخرة</div>
+      <div class="inv-card ic-overdue" onclick="openModal('invoice-detail-modal')">
+        <div class="ic-top">
+          <div><div class="ic-client">شركة التك</div><div class="ic-title">INV-2025-047 — خدمات سوشيال ميديا مايو</div></div>
+          <span class="badge b-overdue">متأخرة 18 يوم</span>
+        </div>
+        <div class="ic-meta">
+          <span style="font-size:15px;font-weight:900;color:#DC2626">4,500 جنيه</span>
+          <span>تاريخ الاستحقاق: 29 مايو</span>
+          <span>أُرسلت: 15 مايو</span>
+          <span style="color:#DC2626;font-weight:600">تذكيرات أُرسلت: 3</span>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#D97706;margin:16px 0 10px">🟡 معلقة</div>
+      <div class="inv-card ic-pending" onclick="openModal('invoice-detail-modal')">
+        <div class="ic-top">
+          <div><div class="ic-client">مطعم الأصيل</div><div class="ic-title">INV-2025-051 — خدمات سوشيال ميديا يونيو</div></div>
+          <span class="badge b-pending">تستحق 20 يونيو</span>
+        </div>
+        <div class="ic-meta">
+          <span style="font-size:15px;font-weight:900;color:#D97706">5,000 جنيه</span>
+          <span>أُرسلت: 1 يونيو</span>
+          <span>متبقي: 4 أيام</span>
+        </div>
+      </div>
+      <div class="inv-card ic-pending" onclick="openModal('invoice-detail-modal')">
+        <div class="ic-top">
+          <div><div class="ic-client">مطعم الأصيل</div><div class="ic-title">INV-2025-052 — Paid Ads مايو</div></div>
+          <span class="badge b-partial">مدفوع جزئياً</span>
+        </div>
+        <div class="ic-meta">
+          <span style="font-size:15px;font-weight:900;color:#7C3AED">3,000 ج (متبقي 1,500 ج)</span>
+          <span>دفع: 1,500 ج في 5 يونيو</span>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#64748B;margin:16px 0 10px">📋 لم تُرسَل بعد</div>
+      <div class="inv-card ic-pending" style="border-right-color:#0EA5E9;opacity:.85" onclick="openModal('invoice-detail-modal')">
+        <div class="ic-top">
+          <div><div class="ic-client">بوتيك لونا</div><div class="ic-title">INV-2025-053 — خدمات يونيو (مسودة)</div></div>
+          <span class="badge b-draft">مسودة</span>
+        </div>
+        <div class="ic-meta">
+          <span style="font-size:15px;font-weight:900;color:#0369A1">7,500 جنيه</span>
+          <span>لم تُرسَل بعد</span>
+        </div>
+      </div>
+      <div class="inv-card ic-pending" style="border-right-color:#0EA5E9;opacity:.85" onclick="openModal('invoice-detail-modal')">
+        <div class="ic-top">
+          <div><div class="ic-client">كافيه ريلاكس</div><div class="ic-title">INV-2025-054 — خدمات يونيو (مسودة)</div></div>
+          <span class="badge b-draft">مسودة</span>
+        </div>
+        <div class="ic-meta">
+          <span style="font-size:15px;font-weight:900;color:#0369A1">3,000 جنيه</span>
+          <span>لم تُرسَل بعد</span>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#16A34A;margin:16px 0 10px">✅ محصّلة</div>
+      <div class="inv-card ic-paid">
+        <div class="ic-top">
+          <div><div class="ic-client">بوتيك لونا</div><div class="ic-title">INV-2025-046 — خدمات مايو</div></div>
+          <span class="badge b-paid">محصّلة ✅</span>
+        </div>
+        <div class="ic-meta">
+          <span style="font-size:15px;font-weight:900;color:#16A34A">7,500 جنيه</span>
+          <span>دُفعت: 28 مايو</span>
+          <span>طريقة: تحويل بنكي</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLLECTIONS -->
+    <div id="screen-collections" class="screen">
+      <div class="page-header">
+        <div><h2>💰 إدارة التحصيل</h2><div class="ph-sub">5 مستحقات — 9,500 جنيه لم تُحصَّل</div></div>
+      </div>
+      <div class="alert a-red" style="margin-bottom:16px"><span class="alert-icon">🔴</span><span class="alert-text">شركة التك — 18 يوم تأخير. وفق SOP: وصلنا المرحلة الثالثة — إبلاغ المدير + تجميد الخدمات.</span></div>
+
+      <!-- Collection timeline per client -->
+      <div class="card">
+        <div class="card-title" style="color:#DC2626">🔴 شركة التك — 4,500 ج — متأخرة 18 يوم
+          <div class="btn-group">
+            <button class="btn btn-danger btn-sm" onclick="openModal('freeze-modal')">⛔ تجميد الخدمات</button>
+            <button class="btn btn-outline btn-sm" onclick="openModal('collect-modal')">💰 تسجيل دفع</button>
+          </div>
+        </div>
+        <div>
+          <div class="pay-step">
+            <div class="pay-dot pd-done">✓</div>
+            <div><div style="font-size:13px;font-weight:700">يوم الاستحقاق — 29 مايو</div><div style="font-size:12px;color:#64748B">أُرسلت الفاتورة — لم يدفع</div></div>
+          </div>
+          <div class="pay-step">
+            <div class="pay-dot pd-done">✓</div>
+            <div><div style="font-size:13px;font-weight:700">+3 أيام — 1 يونيو</div><div style="font-size:12px;color:#64748B">تذكير واتساب أُرسل — لا رد</div></div>
+          </div>
+          <div class="pay-step">
+            <div class="pay-dot pd-done">✓</div>
+            <div><div style="font-size:13px;font-weight:700">+7 أيام — 5 يونيو</div><div style="font-size:12px;color:#64748B">اتصال هاتفي — وعد بالدفع خلال أسبوع</div></div>
+          </div>
+          <div class="pay-step">
+            <div class="pay-dot pd-done">✓</div>
+            <div><div style="font-size:13px;font-weight:700">+14 أيام — 12 يونيو</div><div style="font-size:12px;color:#64748B">إيميل رسمي + تحذير تجميد — لا رد</div></div>
+          </div>
+          <div class="pay-step">
+            <div class="pay-dot pd-overdue">!</div>
+            <div><div style="font-size:13px;font-weight:700;color:#DC2626">+18 يوم — اليوم</div><div style="font-size:12px;color:#DC2626;font-weight:600">⚠️ وفق SOP: إبلاغ المدير + قرار تجميد الخدمات</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:#D97706">🟡 مطعم الأصيل — 5,000 ج — مستحقة 20 يونيو (4 أيام)
+          <button class="btn btn-outline btn-sm" onclick="openModal('collect-modal')">💰 تسجيل دفع</button>
+        </div>
+        <div>
+          <div class="pay-step">
+            <div class="pay-dot pd-done">✓</div>
+            <div><div style="font-size:13px;font-weight:700">1 يونيو — الفاتورة أُرسلت</div><div style="font-size:12px;color:#64748B">اعترف باستلامها</div></div>
+          </div>
+          <div class="pay-step">
+            <div class="pay-dot pd-pending">⏳</div>
+            <div><div style="font-size:13px;font-weight:700">20 يونيو — يوم الاستحقاق</div><div style="font-size:12px;color:#D97706">متبقي 4 أيام — ابعت تذكير اليوم</div></div>
+          </div>
+          <div class="pay-step">
+            <div class="pay-dot pd-future">...</div>
+            <div><div style="font-size:13px;font-weight:700;color:#94A3B8">+3 أيام — إجراء تالي لو لم يدفع</div></div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="openModal('reminder-modal')">📱 ابعت تذكير الآن</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:#7C3AED">🟣 مطعم الأصيل — 1,500 ج — متبقي من فاتورة مبقسّطة
+          <button class="btn btn-outline btn-sm" onclick="openModal('collect-modal')">💰 تسجيل دفع</button>
+        </div>
+        <div style="display:flex;gap:10px;font-size:13px">
+          <div style="flex:1;padding:10px;background:#F8FAFC;border-radius:8px;text-align:center"><div style="font-weight:700;color:#16A34A">1,500 ج ✅</div><div style="font-size:11px;color:#64748B">دُفع 5 يونيو</div></div>
+          <div style="flex:1;padding:10px;background:#FEF2F2;border-radius:8px;text-align:center"><div style="font-weight:700;color:#DC2626">1,500 ج ⏳</div><div style="font-size:11px;color:#64748B">يستحق 20 يونيو</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRACTS -->
+    <div id="screen-contracts" class="screen">
+      <div class="page-header">
+        <div><h2>📄 عقود العملاء</h2><div class="ph-sub">4 عقود نشطة — 1 ينتهي قريباً</div></div>
+        <button class="btn btn-indigo btn-sm" onclick="openModal('new-contract-modal')">➕ عقد جديد</button>
+      </div>
+
+      <div class="alert a-amber" style="margin-bottom:16px"><span class="alert-icon">⚠️</span><span class="alert-text"><strong>مطعم الأصيل</strong> — العقد ينتهي 30 يونيو (14 يوم). ابدأ محادثة التجديد مع الأكونت الآن.</span></div>
+
+      <div class="contract-card" onclick="openModal('contract-detail-modal')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div>
+            <div style="font-size:14px;font-weight:700">شركة التك</div>
+            <div style="font-size:12px;color:#64748B">خدمات سوشيال ميديا كاملة + Paid Ads</div>
+          </div>
+          <span class="badge b-active">نشط</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:12px">
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">القيمة الشهرية</div><div style="font-weight:700;color:#4F46E5">12,000 ج</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">بداية</div><div style="font-weight:700">1 يناير 2025</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">نهاية</div><div style="font-weight:700">31 ديسمبر 2025</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">الدفع</div><div style="font-weight:700">شهري — 15 كل شهر</div></div>
+        </div>
+      </div>
+
+      <div class="contract-card" onclick="openModal('contract-detail-modal')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div>
+            <div style="font-size:14px;font-weight:700">بوتيك لونا</div>
+            <div style="font-size:12px;color:#64748B">إدارة سوشيال ميديا + إعلانات</div>
+          </div>
+          <span class="badge b-active">نشط</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:12px">
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">القيمة الشهرية</div><div style="font-weight:700;color:#4F46E5">10,500 ج</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">بداية</div><div style="font-weight:700">1 مارس 2025</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">نهاية</div><div style="font-weight:700">28 فبراير 2026</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">الدفع</div><div style="font-weight:700">شهري — أول الشهر</div></div>
+        </div>
+      </div>
+
+      <div class="contract-card" style="border-color:#FDE68A" onclick="openModal('contract-detail-modal')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div>
+            <div style="font-size:14px;font-weight:700">مطعم الأصيل</div>
+            <div style="font-size:12px;color:#DC2626;font-weight:600">⚠️ ينتهي 30 يونيو — 14 يوم</div>
+          </div>
+          <span class="badge b-pending">ينتهي قريباً</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:12px">
+          <div style="padding:8px;background:#FFFBEB;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">القيمة الشهرية</div><div style="font-weight:700;color:#4F46E5">9,000 ج</div></div>
+          <div style="padding:8px;background:#FFFBEB;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">بداية</div><div style="font-weight:700">1 يناير 2025</div></div>
+          <div style="padding:8px;background:#FEF2F2;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">نهاية</div><div style="font-weight:700;color:#DC2626">30 يونيو 2025</div></div>
+          <div style="padding:8px;background:#FFFBEB;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">الدفع</div><div style="font-weight:700">شهري — 20 كل شهر</div></div>
+        </div>
+        <button class="btn btn-indigo btn-sm" style="margin-top:10px" onclick="openModal('renew-contract-modal')">🔄 تجديد العقد</button>
+      </div>
+
+      <div class="contract-card" onclick="openModal('contract-detail-modal')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div>
+            <div style="font-size:14px;font-weight:700">كافيه ريلاكس</div>
+            <div style="font-size:12px;color:#64748B">إدارة سوشيال ميديا</div>
+          </div>
+          <span class="badge b-active">نشط</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font-size:12px">
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">القيمة الشهرية</div><div style="font-weight:700;color:#4F46E5">7,000 ج</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">بداية</div><div style="font-weight:700">1 أبريل 2025</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">نهاية</div><div style="font-weight:700">31 مارس 2026</div></div>
+          <div style="padding:8px;background:#F8FAFC;border-radius:6px"><div style="color:#64748B;margin-bottom:2px">الدفع</div><div style="font-weight:700">شهري — أول الشهر</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="screen-reports" class="screen">
+      <div class="page-header">
+        <div><h2>📊 التقارير المالية</h2></div>
+        <button class="btn btn-outline btn-sm" onclick="openModal('export-modal')">⬇️ تصدير Excel</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-indigo">💰</div><div><div class="stat-label">إيراد 2025 حتى الآن</div><div class="stat-value sv-indigo">201k ج</div><div class="stat-sub">6 شهور</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">محصّل</div><div class="stat-value sv-green">187k ج</div><div class="stat-sub up">93% من الإيراد</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">⏰</div><div><div class="stat-label">متأخر التحصيل</div><div class="stat-value sv-red">9,500 ج</div><div class="stat-sub">5% فقط</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">📈</div><div><div class="stat-label">نمو الإيراد</div><div class="stat-value sv-amber">+18%</div><div class="stat-sub">مقارنة بـ 2024</div></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📅 ملخص شهري 2025</div>
+          <table class="table">
+            <thead><tr><th>الشهر</th><th>إجمالي الفواتير</th><th>محصّل</th><th>متأخر</th><th>نسبة التحصيل</th></tr></thead>
+            <tbody>
+              <tr><td>يناير</td><td>32,000 ج</td><td style="color:#16A34A;font-weight:700">32,000 ج</td><td>—</td><td style="color:#16A34A;font-weight:700">100%</td></tr>
+              <tr><td>فبراير</td><td>32,000 ج</td><td style="color:#16A34A;font-weight:700">32,000 ج</td><td>—</td><td style="color:#16A34A;font-weight:700">100%</td></tr>
+              <tr><td>مارس</td><td>34,500 ج</td><td style="color:#16A34A;font-weight:700">34,500 ج</td><td>—</td><td style="color:#16A34A;font-weight:700">100%</td></tr>
+              <tr><td>أبريل</td><td>35,500 ج</td><td style="color:#16A34A;font-weight:700">35,500 ج</td><td>—</td><td style="color:#16A34A;font-weight:700">100%</td></tr>
+              <tr><td>مايو</td><td>38,500 ج</td><td style="color:#D97706;font-weight:700">34,000 ج</td><td style="color:#DC2626;font-weight:700">4,500 ج</td><td style="color:#D97706;font-weight:700">88%</td></tr>
+              <tr><td style="font-weight:700">يونيو</td><td style="font-weight:700">38,500 ج</td><td style="color:#D97706;font-weight:700">29,000 ج</td><td style="color:#DC2626;font-weight:700">9,500 ج</td><td style="color:#D97706;font-weight:700">75%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">🏆 إيراد العملاء — 2025</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>شركة التك</span><strong style="color:#4F46E5">72,000 ج</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#4F46E5;height:8px;border-radius:4px;width:100%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>بوتيك لونا</span><strong style="color:#4F46E5">63,000 ج</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#4F46E5;height:8px;border-radius:4px;width:87%;opacity:.8"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>مطعم الأصيل</span><strong style="color:#4F46E5">54,000 ج</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#4F46E5;height:8px;border-radius:4px;width:75%;opacity:.7"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>كافيه ريلاكس</span><strong style="color:#4F46E5">21,000 ج</strong></div><div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#4F46E5;height:8px;border-radius:4px;width:29%;opacity:.6"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPENSES -->
+    <div id="screen-expenses" class="screen">
+      <div class="page-header">
+        <div><h2>💸 المصروفات</h2><div class="ph-sub">يونيو 2025</div></div>
+        <button class="btn btn-indigo btn-sm" onclick="openModal('new-expense-modal')">➕ مصروف جديد</button>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="stat-icon si-red">💸</div><div><div class="stat-label">إجمالي المصروفات</div><div class="stat-value sv-red">18,200 ج</div><div class="stat-sub">يونيو</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-indigo">📊</div><div><div class="stat-label">هامش الربح</div><div class="stat-value sv-indigo">53%</div><div class="stat-sub">38,500 - 18,200</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">💰</div><div><div class="stat-label">صافي الربح</div><div class="stat-value sv-green">20,300 ج</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">تفصيل المصروفات — يونيو</div>
+        <table class="table">
+          <thead><tr><th>البند</th><th>الفئة</th><th>المبلغ</th><th>التاريخ</th><th>ملاحظة</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700">رواتب الفريق</td><td><span class="badge b-pending" style="font-size:11px">رواتب</span></td><td style="font-weight:700">12,000 ج</td><td>1 يونيو</td><td>4 موظفين</td></tr>
+            <tr><td style="font-weight:700">إيجار المكتب</td><td><span class="badge b-active" style="font-size:11px">ثابت</span></td><td style="font-weight:700">2,500 ج</td><td>1 يونيو</td><td>—</td></tr>
+            <tr><td style="font-weight:700">اشتراكات SaaS</td><td><span class="badge b-draft" style="font-size:11px">تقنية</span></td><td style="font-weight:700">1,200 ج</td><td>5 يونيو</td><td>Canva + Hootsuite + أدوات</td></tr>
+            <tr><td style="font-weight:700">إعلانات Paid Ads (تشغيل)</td><td><span class="badge b-active" style="font-size:11px">إعلانات</span></td><td style="font-weight:700">8,768 ج</td><td>جارية</td><td>ميزانية العملاء — تُحتسب كتكلفة مرورية</td></tr>
+            <tr><td style="font-weight:700">مصاريف متنوعة</td><td><span class="badge b-ended" style="font-size:11px">أخرى</span></td><td style="font-weight:700">500 ج</td><td>متفرقة</td><td>طباعة + مواصلات</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:12px;background:#EEF2FF;border-radius:8px;font-size:13px;color:#3730A3;display:flex;justify-content:space-between">
+          <strong>إجمالي المصروفات التشغيلية (بدون Paid Ads):</strong>
+          <strong>16,200 ج</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOP -->
+    <div id="screen-sop" class="screen">
+      <div class="page-header"><h2>📜 SOP قسم المحاسبة والفواتير</h2></div>
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-title">🔄 دورة الفوترة الشهرية</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:12px;padding:12px;background:#EEF2FF;border-radius:8px;border-right:3px solid #4F46E5"><div style="font-size:20px;flex-shrink:0">1️⃣</div><div><div style="font-weight:700;margin-bottom:3px">25 كل شهر — إعداد الفواتير</div><div style="font-size:13px;color:#475569">أعدّ فواتير الشهر الجديد لكل عميل — راجع العقد للقيمة الصحيحة</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#F0F9FF;border-radius:8px;border-right:3px solid #0EA5E9"><div style="font-size:20px;flex-shrink:0">2️⃣</div><div><div style="font-weight:700;margin-bottom:3px">أول كل شهر — إرسال الفواتير</div><div style="font-size:13px;color:#475569">أرسل للعميل مباشرة + نسخة للأكونت — سجّل تاريخ الإرسال</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><div style="font-size:20px;flex-shrink:0">3️⃣</div><div><div style="font-weight:700;margin-bottom:3px">يوم الاستحقاق — متابعة</div><div style="font-size:13px;color:#475569">لو لم يدفع في الموعد → تذكير واتساب في نفس اليوم</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626"><div style="font-size:20px;flex-shrink:0">4️⃣</div><div><div style="font-weight:700;margin-bottom:3px">+3 أيام — تذكير ثاني</div><div style="font-size:13px;color:#475569">واتساب + اتصال هاتفي — سجّل في النظام</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626"><div style="font-size:20px;flex-shrink:0">5️⃣</div><div><div style="font-weight:700;margin-bottom:3px">+7 أيام — إيميل رسمي</div><div style="font-size:13px;color:#475569">إيميل رسمي مع التحذير — سجّل + أبلغ المدير</div></div></div>
+              <div style="display:flex;gap:12px;padding:12px;background:#1E293B;border-radius:8px;border-right:3px solid #DC2626"><div style="font-size:20px;flex-shrink:0">6️⃣</div><div><div style="font-weight:700;margin-bottom:3px;color:white">+14 يوم — قرار تجميد</div><div style="font-size:13px;color:#94A3B8">المدير يقرر: تجميد الخدمة أو ترتيب دفع — الأكونت يبلغ العميل</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">🚫 قواعد لا تُكسر</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="padding:10px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626"><strong style="color:#991B1B">🚫 ممنوع:</strong> تقديم خدمة بدون عقد موقّع — قبول أي مدفوعات نقدية بدون إيصال — إرسال فاتورة بدون مراجعة مع الأكونت</div>
+              <div style="padding:10px;background:#F0FDF4;border-radius:8px;border-right:3px solid #16A34A"><strong style="color:#166534">✅ مطلوب:</strong> كل مدفوع يتسجل فوراً في النظام — كل فاتورة لها رقم تسلسلي — إشعار الأكونت بكل فاتورة</div>
+              <div style="padding:10px;background:#EEF2FF;border-radius:8px;border-right:3px solid #4F46E5"><strong style="color:#3730A3">📄 تجديد العقد:</strong> ابدأ محادثة التجديد قبل 30 يوم من الانتهاء — لا تنتظر للآخر</div>
+              <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><strong style="color:#92400E">⚠️ تجميد الخدمة:</strong> المدير هو اللي يقرر — أنت تقترح فقط بعد +14 يوم تأخير</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⭐ معايير التقييم</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>نسبة التحصيل الشهرية</span><strong>40%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#4F46E5;height:10px;border-radius:4px;width:40%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>دقة الفواتير (أخطاء صفر)</span><strong>30%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#16A34A;height:10px;border-radius:4px;width:30%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>الالتزام بدورة الفوترة</span><strong>20%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#0EA5E9;height:10px;border-radius:4px;width:20%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>دقة التقارير المالية</span><strong>10%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#D97706;height:10px;border-radius:4px;width:10%"></div></div></div>
+            </div>
+            <div style="margin-top:14px;padding:12px;background:#EEF2FF;border-radius:8px;font-size:12px;color:#3730A3;line-height:1.8"><strong>A:</strong> 90%+ · <strong>B:</strong> 75-89% · <strong>C:</strong> 60-74% · <strong>D:</strong> أقل من 60%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGER -->
+    <div id="screen-manager" class="screen">
+      <div class="page-header"><h2>👨‍💼</h2></div>
+      <div class="page-header" style="margin-top:-20px"><h2>لوحة تحكم المدير المالي</h2></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-indigo">💰</div><div><div class="stat-label">إيراد يونيو</div><div class="stat-value sv-indigo">38,500 ج</div><div class="stat-sub up">↑ 12%</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">نسبة التحصيل</div><div class="stat-value sv-green">75%</div><div class="stat-sub">حتى الآن</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">⏰</div><div><div class="stat-label">متأخر التحصيل</div><div class="stat-value sv-red">9,500 ج</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">📄</div><div><div class="stat-label">عقود تنتهي</div><div class="stat-value sv-amber">1</div><div class="stat-sub">مطعم الأصيل — 14 يوم</div></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📊 قرارات مطلوبة من المدير</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="padding:14px;background:#FEF2F2;border-radius:10px;border-right:4px solid #DC2626">
+              <div style="font-size:13px;font-weight:700;color:#991B1B;margin-bottom:6px">🔴 شركة التك — 18 يوم تأخير</div>
+              <div style="font-size:13px;color:#475569;margin-bottom:10px">4,500 جنيه لم تُحصَّل. الفريق أرسل 3 تذكيرات. وفق SOP: الآن دور المدير.</div>
+              <div class="btn-group">
+                <button class="btn btn-danger btn-sm" onclick="openModal('freeze-modal')">⛔ تجميد الخدمة</button>
+                <button class="btn btn-outline btn-sm">📞 اتصال من المدير</button>
+                <button class="btn btn-outline btn-sm">📅 ترتيب تقسيط</button>
+              </div>
+            </div>
+            <div style="padding:14px;background:#FFFBEB;border-radius:10px;border-right:4px solid #D97706">
+              <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:6px">🟡 مطعم الأصيل — عقد ينتهي 30 يونيو</div>
+              <div style="font-size:13px;color:#475569;margin-bottom:10px">هل يُجدَّد بنفس الشروط أم بزيادة سعر؟</div>
+              <div class="btn-group">
+                <button class="btn btn-indigo btn-sm" onclick="openModal('renew-contract-modal')">🔄 تجديد بنفس السعر</button>
+                <button class="btn btn-outline btn-sm">💰 تجديد بزيادة 10%</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">📈 ملخص مالي — يونيو</div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div class="kpi-row"><span class="kpi-label">إجمالي الإيراد</span><span class="kpi-val" style="color:#4F46E5">38,500 ج</span></div>
+              <div class="kpi-row"><span class="kpi-label">محصّل</span><span class="kpi-val" style="color:#16A34A">29,000 ج</span></div>
+              <div class="kpi-row"><span class="kpi-label">متأخر التحصيل</span><span class="kpi-val" style="color:#DC2626">9,500 ج</span></div>
+              <div class="kpi-row"><span class="kpi-label">المصروفات التشغيلية</span><span class="kpi-val">16,200 ج</span></div>
+              <div class="kpi-row"><span class="kpi-label">هامش الربح</span><span class="kpi-val" style="color:#16A34A">58%</span></div>
+              <div class="kpi-row"><span class="kpi-label">صافي الربح (حتى الآن)</span><span class="kpi-val" style="color:#4F46E5">12,800 ج</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⚠️ تنبيهات</div>
+            <div class="alert a-red" style="margin-bottom:6px"><span class="alert-icon">🔴</span><span class="alert-text">شركة التك — 18 يوم تأخير — قرار مطلوب</span></div>
+            <div class="alert a-amber"><span class="alert-icon">⚠️</span><span class="alert-text">مطعم الأصيل — عقد ينتهي 14 يوم</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="new-invoice-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">➕ إنشاء فاتورة جديدة</div><button class="modal-close" onclick="closeModal('new-invoice-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">العميل <span class="req">*</span></label><select class="form-control"><option>-- اختر --</option><option>شركة التك</option><option>بوتيك لونا</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select></div>
+      <div class="form-group"><label class="form-label">الشهر <span class="req">*</span></label><select class="form-control"><option>يونيو 2025</option><option>يوليو 2025</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">البنود</label>
+      <div style="background:#F8FAFC;border-radius:8px;padding:12px;font-size:13px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>إدارة سوشيال ميديا</span><input type="number" style="width:100px;padding:4px 8px;border:1px solid #E2E8F0;border-radius:4px;font-size:13px" placeholder="المبلغ"></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Paid Ads Management</span><input type="number" style="width:100px;padding:4px 8px;border:1px solid #E2E8F0;border-radius:4px;font-size:13px" placeholder="المبلغ"></div>
+        <div style="display:flex;justify-content:space-between"><span>ميزانية إعلانات (Pass-through)</span><input type="number" style="width:100px;padding:4px 8px;border:1px solid #E2E8F0;border-radius:4px;font-size:13px" placeholder="المبلغ"></div>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">تاريخ الاستحقاق</label><input type="date" class="form-control"></div>
+      <div class="form-group"><label class="form-label">طريقة الدفع</label><select class="form-control"><option>تحويل بنكي</option><option>شيك</option><option>فودافون كاش</option><option>نقداً</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><textarea class="form-control" placeholder="أي تفاصيل إضافية..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-indigo" onclick="closeModal('new-invoice-modal')">💾 حفظ وإرسال</button>
+      <button class="btn btn-outline" onclick="closeModal('new-invoice-modal')">💾 حفظ كمسودة</button>
+      <button class="btn btn-ghost" onclick="closeModal('new-invoice-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="invoice-detail-modal">
+  <div class="modal" style="width:580px">
+    <div class="modal-header"><div class="modal-title">🧾 INV-2025-047 — شركة التك</div><button class="modal-close" onclick="closeModal('invoice-detail-modal')">×</button></div>
+    <div class="inv-preview">
+      <div class="inv-header">
+        <div><div class="inv-logo">SocialPro</div><div style="font-size:12px;color:#64748B;margin-top:4px">وكالة تسويق رقمي</div></div>
+        <div style="text-align:left"><div style="font-size:20px;font-weight:900;color:#4F46E5">#INV-2025-047</div><div style="font-size:12px;color:#64748B;margin-top:4px">تاريخ: 15 مايو 2025<br>يستحق: 29 مايو 2025</div></div>
+      </div>
+      <div style="margin-bottom:12px;font-size:13px"><strong>العميل:</strong> شركة التك للحلول التقنية<br><strong>جهة الاتصال:</strong> أحمد السيد</div>
+      <table class="inv-table">
+        <thead><tr><th>البند</th><th>المبلغ</th></tr></thead>
+        <tbody>
+          <tr><td>إدارة سوشيال ميديا — مايو 2025</td><td style="text-align:left">3,000 ج</td></tr>
+          <tr><td>إدارة Paid Ads — مايو 2025</td><td style="text-align:left">1,500 ج</td></tr>
+        </tbody>
+      </table>
+      <div class="inv-total">
+        <div style="font-size:16px;font-weight:900;color:#4F46E5">الإجمالي: 4,500 جنيه</div>
+        <div style="font-size:12px;color:#64748B;margin-top:4px">الدفع بالتحويل البنكي — البنك الأهلي — 123456789</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-indigo" onclick="closeModal('invoice-detail-modal')">⬇️ تحميل PDF</button>
+      <button class="btn btn-success btn-sm" onclick="closeModal('invoice-detail-modal')">💰 تسجيل كمحصّلة</button>
+      <button class="btn btn-outline btn-sm" onclick="closeModal('invoice-detail-modal')">📱 إعادة إرسال</button>
+      <button class="btn btn-ghost" onclick="closeModal('invoice-detail-modal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="collect-modal">
+  <div class="modal" style="width:440px">
+    <div class="modal-header"><div class="modal-title">💰 تسجيل دفع</div><button class="modal-close" onclick="closeModal('collect-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">الفاتورة</label><select class="form-control"><option>INV-2025-047 — التك — 4,500 ج</option><option>INV-2025-051 — الأصيل — 5,000 ج</option></select></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">المبلغ المدفوع <span class="req">*</span></label><input type="number" class="form-control" placeholder="4500"></div>
+      <div class="form-group"><label class="form-label">تاريخ الدفع <span class="req">*</span></label><input type="date" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">طريقة الدفع</label><select class="form-control"><option>تحويل بنكي</option><option>شيك</option><option>فودافون كاش</option><option>نقداً</option></select></div>
+    <div class="form-group"><label class="form-label">رقم مرجع التحويل</label><input class="form-control" placeholder="REF-12345"></div>
+    <div class="modal-footer"><button class="btn btn-indigo" onclick="closeModal('collect-modal')">✅ تأكيد التحصيل</button><button class="btn btn-ghost" onclick="closeModal('collect-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="freeze-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">⛔ تجميد خدمات شركة التك</div><button class="modal-close" onclick="closeModal('freeze-modal')">×</button></div>
+    <div class="alert a-red" style="margin-bottom:16px"><span class="alert-icon">⚠️</span><span class="alert-text">هذا الإجراء سيوقف كل الخدمات فوراً — الأكونت سيُبلّغ تلقائياً</span></div>
+    <div style="padding:14px;background:#F8FAFC;border-radius:10px;font-size:13px;margin-bottom:16px"><div class="kpi-row"><span>الفاتورة</span><strong>INV-2025-047</strong></div><div class="kpi-row"><span>المبلغ</span><strong style="color:#DC2626">4,500 جنيه</strong></div><div class="kpi-row"><span>التأخير</span><strong style="color:#DC2626">18 يوم</strong></div><div class="kpi-row" style="border:none"><span>الإجراءات السابقة</span><strong>3 تذكيرات — واتساب + هاتف + إيميل</strong></div></div>
+    <div class="form-group"><label class="form-label">ملاحظة للأكونت</label><textarea class="form-control">تم تجميد خدمات شركة التك بسبب عدم السداد لمدة 18 يوم رغم التذكيرات المتعددة. تواصل مع العميل لترتيب الدفع وأبلغنا فور السداد.</textarea></div>
+    <div class="modal-footer"><button class="btn btn-danger" onclick="closeModal('freeze-modal')">⛔ تأكيد التجميد</button><button class="btn btn-ghost" onclick="closeModal('freeze-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reminder-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">📱 إرسال تذكير</div><button class="modal-close" onclick="closeModal('reminder-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">قناة التذكير</label><select class="form-control"><option>واتساب</option><option>إيميل</option><option>اتصال هاتفي</option></select></div>
+    <div class="form-group"><label class="form-label">نص التذكير</label>
+      <textarea class="form-control" style="min-height:100px">السادة مطعم الأصيل،
+نرجو التكرم بسداد فاتورة شهر يونيو رقم INV-2025-051 بمبلغ 5,000 جنيه قبل تاريخ الاستحقاق 20 يونيو 2025.
+شكراً لتعاملكم معنا.</textarea></div>
+    <div class="modal-footer"><button class="btn btn-indigo" onclick="closeModal('reminder-modal')">📱 إرسال</button><button class="btn btn-ghost" onclick="closeModal('reminder-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="renew-contract-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">🔄 تجديد عقد مطعم الأصيل</div><button class="modal-close" onclick="closeModal('renew-contract-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">القيمة الشهرية الجديدة</label><input type="number" class="form-control" value="9000"></div>
+      <div class="form-group"><label class="form-label">مدة العقد</label><select class="form-control"><option>6 أشهر</option><option>سنة</option><option>سنتين</option></select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">تاريخ البداية</label><input type="date" class="form-control" value="2025-07-01"></div>
+      <div class="form-group"><label class="form-label">تاريخ النهاية</label><input type="date" class="form-control" value="2026-06-30"></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><textarea class="form-control" placeholder="أي تعديلات على الخدمات..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-indigo" onclick="closeModal('renew-contract-modal')">📄 إنشاء عقد تجديد</button><button class="btn btn-ghost" onclick="closeModal('renew-contract-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="new-expense-modal">
+  <div class="modal" style="width:440px">
+    <div class="modal-header"><div class="modal-title">➕ إضافة مصروف</div><button class="modal-close" onclick="closeModal('new-expense-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">البند <span class="req">*</span></label><input class="form-control" placeholder="مثال: اشتراك Canva Pro"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">المبلغ <span class="req">*</span></label><input type="number" class="form-control" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">الفئة</label><select class="form-control"><option>رواتب</option><option>ثابت</option><option>تقنية</option><option>إعلانات</option><option>أخرى</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">التاريخ</label><input type="date" class="form-control"></div>
+    <div class="modal-footer"><button class="btn btn-indigo" onclick="closeModal('new-expense-modal')">✅ حفظ</button><button class="btn btn-ghost" onclick="closeModal('new-expense-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="export-modal">
+  <div class="modal" style="width:400px">
+    <div class="modal-header"><div class="modal-title">⬇️ تصدير التقرير</div><button class="modal-close" onclick="closeModal('export-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">الفترة</label><select class="form-control"><option>يونيو 2025</option><option>الربع الثاني 2025</option><option>2025 كامل حتى الآن</option></select></div>
+    <div class="form-group"><label class="form-label">نوع التقرير</label><select class="form-control"><option>ملخص إيرادات</option><option>تفصيل فواتير</option><option>تقرير مصروفات</option><option>تقرير شامل</option></select></div>
+    <div class="modal-footer"><button class="btn btn-indigo" onclick="closeModal('export-modal')">⬇️ تصدير Excel</button><button class="btn btn-ghost" onclick="closeModal('export-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="new-contract-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📄 عقد جديد</div><button class="modal-close" onclick="closeModal('new-contract-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">اسم العميل <span class="req">*</span></label><input class="form-control" placeholder="اسم الشركة / الشخص"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">القيمة الشهرية <span class="req">*</span></label><input type="number" class="form-control"></div>
+      <div class="form-group"><label class="form-label">موعد الدفع</label><input class="form-control" placeholder="مثال: أول كل شهر"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">تاريخ البداية</label><input type="date" class="form-control"></div>
+      <div class="form-group"><label class="form-label">تاريخ النهاية</label><input type="date" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">الخدمات المشمولة</label><textarea class="form-control" placeholder="إدارة سوشيال ميديا — Paid Ads — ..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-indigo" onclick="closeModal('new-contract-modal')">📄 إنشاء العقد</button><button class="btn btn-ghost" onclick="closeModal('new-contract-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="contract-detail-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">📄 عقد شركة التك</div><button class="modal-close" onclick="closeModal('contract-detail-modal')">×</button></div>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div class="kpi-row"><span class="kpi-label">القيمة الشهرية</span><span class="kpi-val" style="color:#4F46E5">12,000 جنيه</span></div>
+      <div class="kpi-row"><span class="kpi-label">القيمة الإجمالية</span><span class="kpi-val">144,000 جنيه</span></div>
+      <div class="kpi-row"><span class="kpi-label">البداية</span><span class="kpi-val">1 يناير 2025</span></div>
+      <div class="kpi-row"><span class="kpi-label">النهاية</span><span class="kpi-val">31 ديسمبر 2025</span></div>
+      <div class="kpi-row"><span class="kpi-label">موعد الدفع</span><span class="kpi-val">15 كل شهر</span></div>
+      <div class="kpi-row"><span class="kpi-label">الخدمات</span><span class="kpi-val">سوشيال ميديا + Paid Ads</span></div>
+      <div class="kpi-row" style="border:none"><span class="kpi-label">الحالة</span><span class="badge b-active">نشط</span></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-indigo" onclick="closeModal('contract-detail-modal')">⬇️ تحميل العقد</button><button class="btn btn-ghost" onclick="closeModal('contract-detail-modal')">إغلاق</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal" style="width:400px">
+    <div class="modal-header"><div class="modal-title">🔔 الإشعارات</div><button class="modal-close" onclick="closeModal('notif-modal')">×</button></div>
+    <div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔴</div><div><div style="font-size:13px;line-height:1.5"><strong>شركة التك</strong> — 18 يوم تأخير دفع</div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0">⚠️</div><div><div style="font-size:13px;line-height:1.5"><strong>مطعم الأصيل</strong> — عقد ينتهي 14 يوم</div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:36px;height:36px;border-radius:50%;background:#EEF2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">📋</div><div><div style="font-size:13px;line-height:1.5">فواتير يونيو <strong>لم تُرسَل</strong> — بوتيك لونا + ريلاكس</div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var titles={
+  dashboard:'الرئيسية',invoices:'الفواتير',collections:'إدارة التحصيل',
+  contracts:'عقود العملاء',reports:'التقارير المالية',expenses:'المصروفات',
+  sop:'SOP القسم',manager:'لوحة تحكم المدير المالي'
+};
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  var s=document.getElementById('screen-'+id);
+  if(s)s.classList.add('active');
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(function(el){
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+</script>
+</body>
+</html>

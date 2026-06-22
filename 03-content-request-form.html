@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Content Request Form — فورم طلب المحتوى</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Calibri','Arial',sans-serif;direction:rtl;background:#f0f4f8;color:#2C3E50;font-size:14px;line-height:1.7}
+@media print{body{background:#fff}.no-print{display:none!important}.page{box-shadow:none;margin:0;border-radius:0;page-break-after:always}.page:last-of-type{page-break-after:avoid}}
+.toolbar{background:#8E44AD;color:#fff;padding:11px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.toolbar h1{font-size:15px;font-weight:600}
+.btn{padding:7px 16px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:#F4A923;color:#1E3A5F}
+.btn2{padding:7px 16px;border-radius:6px;border:1px solid rgba(255,255,255,.4);cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;background:transparent;color:#fff}
+.wrapper{max-width:780px;margin:28px auto;padding:0 18px 60px}
+.page{background:#fff;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.09);overflow:hidden}
+/* cover */
+.cover{background:linear-gradient(145deg,#4a1266,#8E44AD,#9b59b6);padding:44px;color:#fff;text-align:center}
+.cover .tag{font-size:12px;letter-spacing:3px;color:rgba(255,255,255,.7);margin-bottom:10px}
+.cover h2{font-size:28px;font-weight:900;line-height:1.3;margin-bottom:8px}
+.cover p{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:18px}
+.gold-bar{width:60px;height:4px;background:#F4A923;border-radius:2px;margin:12px auto;opacity:.8}
+.warn-box-cover{background:rgba(255,255,255,.15);border-radius:10px;padding:14px 18px;border:1px solid rgba(255,255,255,.2);margin-top:16px;font-size:13px;color:rgba(255,255,255,.9)}
+/* section */
+.section{padding:24px 36px;border-bottom:1px solid #eef1f4}
+.section:last-child{border-bottom:none}
+.sh{display:flex;align-items:center;gap:11px;margin-bottom:15px}
+.sn{width:30px;height:30px;background:#8E44AD;color:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.sh h3{font-size:16px;font-weight:700;color:#4a1266}
+.sh small{font-size:12px;color:#888;display:block;margin-top:1px}
+/* fields */
+.fg{display:grid;gap:12px}
+.fg2{grid-template-columns:1fr 1fr}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;font-weight:600;color:#555}
+.fl{border:none;border-bottom:1.5px solid #d0d8e4;padding:6px 2px;font-size:14px;font-family:inherit;direction:rtl;background:transparent;width:100%;color:#2C3E50;outline:none}
+.fl:focus{border-bottom-color:#8E44AD}
+.fa{border:1.5px solid #d0d8e4;border-radius:8px;padding:10px;font-size:13px;font-family:inherit;direction:rtl;background:transparent;width:100%;color:#2C3E50;outline:none;resize:vertical;min-height:70px}
+.fa:focus{border-color:#8E44AD}
+/* sel cards */
+.cg{display:grid;gap:9px}
+.cg2{grid-template-columns:1fr 1fr}
+.cg3{grid-template-columns:1fr 1fr 1fr}
+.cg4{grid-template-columns:repeat(4,1fr)}
+.cg5{grid-template-columns:repeat(5,1fr)}
+.sc{border:2px solid #e0e8f0;border-radius:10px;padding:11px 9px;text-align:center;cursor:pointer;position:relative;transition:all .2s}
+.sc input{position:absolute;opacity:0;width:0;height:0}
+.sc:has(input:checked){border-color:#8E44AD;background:#f8f0ff}
+.sc-ico{font-size:20px;margin-bottom:3px}
+.sc-nm{font-size:12.5px;font-weight:700;color:#4a1266}
+/* priority */
+.priority-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pcard{border:2px solid #e0e8f0;border-radius:10px;padding:14px;text-align:center;cursor:pointer;position:relative;transition:all .2s}
+.pcard input{position:absolute;opacity:0;width:0;height:0}
+.pcard.low:has(input:checked){border-color:#27AE60;background:#f0fdf4}
+.pcard.med:has(input:checked){border-color:#F4A923;background:#fffdf5}
+.pcard.high:has(input:checked){border-color:#C0392B;background:#FEF3F2}
+.pcard-icon{font-size:24px;margin-bottom:6px}
+.pcard-name{font-size:14px;font-weight:700}
+.pcard-desc{font-size:11.5px;color:#888;margin-top:3px}
+/* request history table */
+.htable{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.htable th{background:#8E44AD;color:#fff;padding:9px 12px;text-align:right;font-weight:600}
+.htable td{padding:8px 12px;border-bottom:1px solid #eee;color:#555}
+.htable tr:nth-child(even) td{background:#f9f5ff}
+.status-badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap}
+.s-pending{background:#FFF9E6;color:#856404}
+.s-done{background:#f0fdf4;color:#27AE60}
+.s-wip{background:#EEF4F8;color:#1E3A5F}
+/* note */
+.note{background:#FFF9E6;border-right:4px solid #F4A923;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#856404;margin-top:10px}
+.warn{background:#FEF3F2;border-right:4px solid #C0392B;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#7B241C;margin-top:10px}
+.info{background:#f8f0ff;border-right:4px solid #8E44AD;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#4a1266;margin-top:10px}
+/* sig */
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:16px}
+.sig-line{height:40px;border-bottom:1.5px solid #2C3E50;margin-bottom:6px}
+.sig-meta{display:flex;justify-content:space-between;font-size:11.5px;color:#888}
+/* footer */
+.doc-footer{background:#f8fafc;padding:12px 36px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#aaa;border-top:1px solid #eee}
+/* print button area */
+.submit-area{padding:20px 36px;background:#f8f0ff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.submit-area p{font-size:13px;color:#4a1266}
+.submit-btn{background:#8E44AD;color:#fff;border:none;padding:11px 28px;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer}
+.submit-btn:hover{background:#7D3C98}
+</style>
+</head>
+<body>
+
+<div class="toolbar no-print">
+  <h1>📝 Content Request Form — العميل بيملأه عند الطلب</h1>
+  <div style="display:flex;gap:10px">
+    <button class="btn2" onclick="clearForm()">🔄 مسح</button>
+    <button class="btn" onclick="window.print()">🖨️ طباعة / PDF</button>
+  </div>
+</div>
+
+<div class="wrapper">
+<div class="page">
+
+  <div class="cover">
+    <div class="tag">يُستخدم لطلب أي محتوى خارج الخطة الشهرية</div>
+    <h2>فورم طلب المحتوى<br>Content Request Form</h2>
+    <div class="gold-bar"></div>
+    <p>كل طلب خارج خطة المحتوى المتفق عليها يمر عبر هذا الفورم</p>
+    <div class="warn-box-cover">
+      ⏰ <strong>مهم:</strong> الطلبات الطارئة تحتاج <strong>24 ساعة على الأقل</strong> قبل موعد النشر المطلوب — الطلبات في نفس اليوم غير مضمونة
+    </div>
+  </div>
+
+  <!-- 1. REQUEST INFO -->
+  <div class="section">
+    <div class="sh"><div class="sn">١</div><div><h3>بيانات الطلب الأساسية</h3></div></div>
+    <div class="fg fg2">
+      <div class="field"><label>اسم الشركة / العميل</label><input class="fl" type="text"></div>
+      <div class="field"><label>تاريخ تقديم الطلب</label><input class="fl" type="text" placeholder="__  /  __  / ____"></div>
+      <div class="field"><label>موضوع البوست (عنوان مختصر)</label><input class="fl" type="text" placeholder="مثال: إعلان عرض نهاية الأسبوع"></div>
+      <div class="field"><label>تاريخ النشر المطلوب</label><input class="fl" type="text" placeholder="__  /  __  / ____ — الوقت المفضل"></div>
+    </div>
+  </div>
+
+  <!-- 2. CONTENT TYPE -->
+  <div class="section">
+    <div class="sh"><div class="sn">٢</div><div><h3>نوع المحتوى المطلوب</h3></div></div>
+    <div class="cg cg4">
+      <label class="sc"><input type="checkbox" name="type"><div class="sc-ico">🖼️</div><div class="sc-nm">بوست صورة</div></label>
+      <label class="sc"><input type="checkbox" name="type"><div class="sc-ico">🎬</div><div class="sc-nm">فيديو / ريلز</div></label>
+      <label class="sc"><input type="checkbox" name="type"><div class="sc-ico">💬</div><div class="sc-nm">ستوري</div></label>
+      <label class="sc"><input type="checkbox" name="type"><div class="sc-ico">📊</div><div class="sc-nm">إنفوجرافيك</div></label>
+    </div>
+  </div>
+
+  <!-- 3. PLATFORM -->
+  <div class="section">
+    <div class="sh"><div class="sn">٣</div><div><h3>المنصة المطلوبة</h3></div></div>
+    <div class="cg cg5">
+      <label class="sc"><input type="checkbox" name="plat"><div class="sc-ico">📘</div><div class="sc-nm">Facebook</div></label>
+      <label class="sc"><input type="checkbox" name="plat"><div class="sc-ico">📷</div><div class="sc-nm">Instagram</div></label>
+      <label class="sc"><input type="checkbox" name="plat"><div class="sc-ico">🎵</div><div class="sc-nm">TikTok</div></label>
+      <label class="sc"><input type="checkbox" name="plat"><div class="sc-ico">💼</div><div class="sc-nm">LinkedIn</div></label>
+      <label class="sc"><input type="checkbox" name="plat"><div class="sc-ico">📱</div><div class="sc-nm">الكل</div></label>
+    </div>
+  </div>
+
+  <!-- 4. PRIORITY -->
+  <div class="section">
+    <div class="sh"><div class="sn">٤</div><div><h3>درجة الأولوية</h3></div></div>
+    <div class="priority-grid">
+      <label class="pcard low">
+        <input type="radio" name="priority" value="low">
+        <div class="pcard-icon">🟢</div>
+        <div class="pcard-name" style="color:#27AE60">عادي</div>
+        <div class="pcard-desc">48 ساعة — لا يوجد ضغط وقت</div>
+      </label>
+      <label class="pcard med">
+        <input type="radio" name="priority" value="medium">
+        <div class="pcard-icon">🟡</div>
+        <div class="pcard-name" style="color:#E67E22">متوسط</div>
+        <div class="pcard-desc">24 ساعة — يوجد موعد محدد</div>
+      </label>
+      <label class="pcard high">
+        <input type="radio" name="priority" value="high">
+        <div class="pcard-icon">🔴</div>
+        <div class="pcard-name" style="color:#C0392B">عاجل</div>
+        <div class="pcard-desc">أقل من 24 ساعة — ضروري جداً</div>
+      </label>
+    </div>
+    <div class="warn">⚠️ طلبات "العاجل" تخضع لرسوم Rush Fee متفق عليها في العقد</div>
+  </div>
+
+  <!-- 5. CONTENT DETAILS -->
+  <div class="section">
+    <div class="sh"><div class="sn">٥</div><div><h3>تفاصيل المحتوى المطلوب</h3><small>كلما كانت المعلومات أكثر تفصيلاً، كانت النتيجة أقرب لما تريده</small></div></div>
+    <div class="fg">
+      <div class="field"><label>الهدف من هذا البوست</label><input class="fl" type="text" placeholder="مثال: إعلان عن عرض خاص / الترحيب بالموسم / إعلان حدث / تهنئة..."></div>
+      <div class="field"><label>الرسالة الرئيسية (ما تريد قوله في جملة واحدة)</label><input class="fl" type="text" placeholder="الفكرة الجوهرية التي يجب أن يفهمها المتابع..."></div>
+      <div class="field"><label>تفاصيل إضافية يجب ذكرها في البوست</label><textarea class="fa" rows="4" placeholder="مثال: اسم العرض، نسبة الخصم، تاريخ انتهاء العرض، شروط، رقم تواصل، رابط..."></textarea></div>
+      <div class="fg2">
+        <div class="field"><label>الـ CTA المطلوب (Call to Action)</label><input class="fl" type="text" placeholder="مثال: تواصل معنا / اطلب الآن / زور الموقع..."></div>
+        <div class="field"><label>رابط أو رقم تواصل في البوست (إن وجد)</label><input class="fl" type="text" dir="ltr" placeholder="رابط / رقم واتساب / بريد..."></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. REFERENCES -->
+  <div class="section">
+    <div class="sh"><div class="sn">٦</div><div><h3>المراجع والمواد المرفقة</h3></div></div>
+    <div class="fg">
+      <div class="fg2">
+        <div class="field"><label>هل عندك صور أو فيديوهات جاهزة؟</label>
+          <div style="display:flex;gap:12px;margin-top:6px">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="has_assets" style="accent-color:#8E44AD"> نعم — سأرسلها</label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px"><input type="radio" name="has_assets" style="accent-color:#8E44AD"> لأ — استخدموا صور من عندكم</label>
+          </div>
+        </div>
+        <div class="field"><label>مثال أو مرجع بصري تحبه</label><input class="fl" type="text" placeholder="رابط أو وصف لأسلوب تصميم تفضله..."></div>
+      </div>
+      <div class="field"><label>ملاحظات إضافية</label><textarea class="fa" rows="2" placeholder="أي تفاصيل أخرى لم تذكرها أعلاه..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- SUBMIT AREA -->
+  <div class="submit-area no-print">
+    <p>✅ بعد تعبئة الفورم — اطبعه كـ PDF وابعته للفريق عبر واتساب أو بريد إلكتروني</p>
+    <button class="submit-btn" onclick="window.print()">🖨️ تصدير كـ PDF وإرسال</button>
+  </div>
+
+  <!-- REQUEST LOG -->
+  <div class="section">
+    <div class="sh"><div class="sn">٧</div><div><h3>سجل الطلبات السابقة</h3><small>للاستخدام الداخلي — يملأه فريق الشركة</small></div></div>
+    <table class="htable">
+      <thead>
+        <tr><th>#</th><th>التاريخ</th><th>الموضوع</th><th>النوع</th><th>الأولوية</th><th>الحالة</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>١</td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:80px;font-family:inherit;font-size:12px;background:transparent;outline:none;text-align:center" type="text" placeholder="__/__"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:140px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:80px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:60px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><select style="border:1px solid #ddd;border-radius:6px;padding:2px 6px;font-size:11px;font-family:inherit;background:transparent"><option value="">--</option><option value="p">⏳ قيد التنفيذ</option><option value="d">✅ تم</option><option value="w">👀 مراجعة</option></select></td>
+        </tr>
+        <tr>
+          <td>٢</td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:80px;font-family:inherit;font-size:12px;background:transparent;outline:none;text-align:center" type="text" placeholder="__/__"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:140px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:80px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:60px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><select style="border:1px solid #ddd;border-radius:6px;padding:2px 6px;font-size:11px;font-family:inherit;background:transparent"><option value="">--</option><option value="p">⏳ قيد التنفيذ</option><option value="d">✅ تم</option><option value="w">👀 مراجعة</option></select></td>
+        </tr>
+        <tr>
+          <td>٣</td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:80px;font-family:inherit;font-size:12px;background:transparent;outline:none;text-align:center" type="text" placeholder="__/__"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:140px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:80px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><input style="border:none;border-bottom:1px solid #ddd;width:60px;font-family:inherit;font-size:12px;background:transparent;outline:none" type="text"></td>
+          <td><select style="border:1px solid #ddd;border-radius:6px;padding:2px 6px;font-size:11px;font-family:inherit;background:transparent"><option value="">--</option><option value="p">⏳ قيد التنفيذ</option><option value="d">✅ تم</option><option value="w">👀 مراجعة</option></select></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:10px">📌 احتفظ بنسخة من كل طلب — تساعدك في التقرير الشهري وفي حل أي خلاف مستقبلي</div>
+  </div>
+
+  <div class="doc-footer">
+    <span>Content Request Form</span>
+    <span>اسم الشركة — <span contenteditable="true" style="border-bottom:1px dashed #ccc">__/__/____</span></span>
+  </div>
+</div>
+</div>
+
+<script>
+function clearForm(){
+  if(!confirm('مسح كل البيانات؟'))return;
+  document.querySelectorAll('input[type=text],textarea').forEach(e=>e.value='');
+  document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(e=>e.checked=false);
+}
+</script>
+</body>
+</html>

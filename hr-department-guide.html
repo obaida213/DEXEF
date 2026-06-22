@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام قسم الموارد البشرية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:#F1F5F9;color:#1E293B;font-size:14px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;background:#0F172A;color:white;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:50}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:#059669;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700}.logo-sub{font-size:11px;color:#64748B}
+.sidebar-section{padding:16px 12px 4px;font-size:11px;color:#475569;font-weight:700;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;color:#94A3B8;transition:all .15s;border-radius:8px;margin:2px 8px}
+.nav-item:hover{background:#1E293B;color:white}
+.nav-item.active{background:#059669;color:white}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-right:auto;background:#DC2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.nav-badge.amber{background:#D97706}
+.sidebar-user{padding:16px;border-top:1px solid #1E293B;display:flex;align-items:center;gap:10px;margin-top:auto}
+.s-avatar{width:34px;height:34px;background:#059669;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:white}.user-role{font-size:11px;color:#64748B}
+.main{flex:1;margin-right:230px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:white;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:18px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.notif-btn{position:relative;cursor:pointer;background:#F1F5F9;border-radius:8px;padding:8px;font-size:16px}
+.notif-dot{position:absolute;top:6px;left:6px;width:8px;height:8px;background:#DC2626;border-radius:50%;border:2px solid white}
+.content{flex:1;padding:24px}
+.screen{display:none}.screen.active{display:block}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-em{background:#ECFDF5}.si-green{background:#F0FDF4}.si-amber{background:#FFFBEB}.si-red{background:#FEF2F2}.si-sky{background:#F0F9FF}.si-purple{background:#F5F3FF}
+.stat-label{font-size:12px;color:#64748B;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:900;line-height:1}
+.sv-em{color:#059669}.sv-green{color:#16A34A}.sv-amber{color:#D97706}.sv-red{color:#DC2626}.sv-sky{color:#0EA5E9}.sv-purple{color:#7C3AED}
+.stat-sub{font-size:12px;color:#64748B;margin-top:3px}
+.up{color:#16A34A}.down{color:#DC2626}
+.alert{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;margin-bottom:8px;font-size:13px}
+.a-red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.a-amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.a-em{background:#ECFDF5;border:1px solid #A7F3D0;color:#065F46}
+.a-sky{background:#F0F9FF;border:1px solid #BAE6FD;color:#0369A1}
+.alert-icon{font-size:16px;flex-shrink:0}.alert-text{flex:1}
+.alert-action{font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;white-space:nowrap}
+.card{background:white;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.b-active{background:#ECFDF5;color:#065F46}.b-active::before{background:#059669}
+.b-leave{background:#FEF2F2;color:#991B1B}.b-leave::before{background:#DC2626}
+.b-pending{background:#FFFBEB;color:#92400E}.b-pending::before{background:#D97706}
+.b-approved{background:#ECFDF5;color:#065F46}.b-approved::before{background:#059669}
+.b-rejected{background:#FEF2F2;color:#991B1B}.b-rejected::before{background:#DC2626}
+.b-probation{background:#F0F9FF;color:#0369A1}.b-probation::before{background:#0EA5E9}
+.b-open{background:#F5F3FF;color:#5B21B6}.b-open::before{background:#7C3AED}
+.b-interview{background:#FFFBEB;color:#92400E}.b-interview::before{background:#D97706}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-em{background:#059669;color:white}.btn-em:hover{background:#047857}
+.btn-outline{background:white;color:#374151;border:1px solid #E2E8F0}.btn-outline:hover{background:#F8FAFC}
+.btn-ghost{background:transparent;color:#64748B;padding:8px 12px}.btn-ghost:hover{background:#F1F5F9}
+.btn-danger{background:#DC2626;color:white}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#374151}
+.req{color:#DC2626}
+.form-control{width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;color:#1E293B;background:white;transition:border-color .2s}
+.form-control:focus{outline:none;border-color:#059669;box-shadow:0 0 0 3px rgba(5,150,105,.1)}
+textarea.form-control{resize:vertical;min-height:80px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-header h2{font-size:20px;font-weight:700}
+.ph-sub{font-size:13px;color:#64748B;margin-top:2px}
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:right;padding:10px 14px;background:#F8FAFC;color:#64748B;font-weight:600;font-size:12px;border-bottom:1px solid #E2E8F0;white-space:nowrap}
+.table td{padding:11px 14px;border-bottom:1px solid #F8FAFC;font-size:13px;vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tbody tr:hover td{background:#F0FDF4;cursor:pointer}
+.emp-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:white;flex-shrink:0}
+.kpi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
+.kpi-row:last-child{border-bottom:none}
+.kpi-label{color:#64748B}.kpi-val{font-weight:700}
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-select{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;color:#374151;cursor:pointer}
+.leave-card{background:white;border-radius:10px;padding:14px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:8px;display:flex;align-items:center;gap:14px;border-right:4px solid transparent}
+.lc-pending{border-right-color:#D97706}
+.lc-approved{border-right-color:#059669}
+.lc-rejected{border-right-color:#DC2626}
+.rating-stars{display:flex;gap:2px;font-size:16px}
+.score-bar-wrap{background:#F1F5F9;border-radius:4px;height:8px;flex:1}
+.score-bar{height:8px;border-radius:4px;background:#059669}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:16px;padding:24px;width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8}
+.modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #F1F5F9}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#F1F5F9}::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">👥</div>
+    <div><div class="logo-text">SocialPro</div><div class="logo-sub">الموارد البشرية</div></div>
+  </div>
+  <div class="sidebar-section">الفريق</div>
+  <div class="nav-item active" onclick="show('dashboard')"><span class="nav-icon">🏠</span> الرئيسية</div>
+  <div class="nav-item" onclick="show('team')"><span class="nav-icon">👥</span> الفريق</div>
+  <div class="nav-item" onclick="show('leaves')"><span class="nav-icon">🏖️</span> الإجازات<span class="nav-badge amber">3</span></div>
+  <div class="nav-item" onclick="show('attendance')"><span class="nav-icon">⏱️</span> الحضور والغياب</div>
+  <div class="sidebar-section">التطوير</div>
+  <div class="nav-item" onclick="show('performance')"><span class="nav-icon">⭐</span> تقييم الأداء</div>
+  <div class="nav-item" onclick="show('recruitment')"><span class="nav-icon">🔍</span> التوظيف<span class="nav-badge">2</span></div>
+  <div class="sidebar-section">الإدارة</div>
+  <div class="nav-item" onclick="show('sop')"><span class="nav-icon">📜</span> SOP القسم</div>
+  <div class="nav-item" onclick="show('manager')"><span class="nav-icon">👨‍💼</span> لوحة المدير</div>
+  <div class="sidebar-user">
+    <div class="s-avatar">ر</div>
+    <div><div class="user-name">رنا مصطفى</div><div class="user-role">مسؤولة HR</div></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">الرئيسية</div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="openModal('notif-modal')">🔔<div class="notif-dot"></div></div>
+      <button class="btn btn-em btn-sm" onclick="openModal('add-emp-modal')">➕ موظف جديد</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard" class="screen active">
+      <div style="margin-bottom:16px">
+        <div class="alert a-amber"><span class="alert-icon">⏳</span><span class="alert-text"><strong>3 طلبات إجازة</strong> معلقة تحتاج اعتماد — أقدم طلب منذ يومين</span><span class="alert-action" onclick="show('leaves')">راجع الطلبات ←</span></div>
+        <div class="alert a-red"><span class="alert-icon">📋</span><span class="alert-text"><strong>محمود عادل</strong> — انتهت فترة الاختبار (3 شهور) — قرار التثبيت مطلوب من المدير</span><span class="alert-action" onclick="openModal('probation-modal')">اتخذ قرار ←</span></div>
+        <div class="alert a-em"><span class="alert-icon">🎂</span><span class="alert-text"><strong>سارة محمود</strong> — عيد ميلادها اليوم 🎉 — لا تنسى تهنئتها</span></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-em">👥</div><div><div class="stat-label">إجمالي الفريق</div><div class="stat-value sv-em">8</div><div class="stat-sub">موظف نشط</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">🏖️</div><div><div class="stat-label">في إجازة اليوم</div><div class="stat-value sv-red">1</div><div class="stat-sub">خالد إبراهيم</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">⏳</div><div><div class="stat-label">طلبات معلقة</div><div class="stat-value sv-amber">3</div><div class="stat-sub">تحتاج اعتماد</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-purple">🔍</div><div><div class="stat-label">وظائف مفتوحة</div><div class="stat-value sv-purple">2</div><div class="stat-sub">مونتير + كاتب</div></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">👥 نظرة عامة على الفريق</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#F8FAFC;border-radius:8px">
+              <div class="emp-avatar" style="background:#059669">س</div>
+              <div style="flex:1"><div style="font-weight:700;font-size:13px">سارة محمود</div><div style="font-size:12px;color:#64748B">أكونت مانجر</div></div>
+              <span class="badge b-active">حاضر</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#F8FAFC;border-radius:8px">
+              <div class="emp-avatar" style="background:#2563EB">أ</div>
+              <div style="flex:1"><div style="font-weight:700;font-size:13px">أحمد السيد</div><div style="font-size:12px;color:#64748B">مدير مبيعات</div></div>
+              <span class="badge b-active">حاضر</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#FEF2F2;border-radius:8px">
+              <div class="emp-avatar" style="background:#94A3B8">خ</div>
+              <div style="flex:1"><div style="font-weight:700;font-size:13px">خالد إبراهيم</div><div style="font-size:12px;color:#64748B">مصمم جرافيك</div></div>
+              <span class="badge b-leave">إجازة</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#F8FAFC;border-radius:8px">
+              <div class="emp-avatar" style="background:#C026D3">م</div>
+              <div style="flex:1"><div style="font-weight:700;font-size:13px">محمود عادل</div><div style="font-size:12px;color:#64748B">مونتير</div></div>
+              <span class="badge b-probation">اختبار</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#F8FAFC;border-radius:8px">
+              <div class="emp-avatar" style="background:#0EA5E9">ن</div>
+              <div style="flex:1"><div style="font-weight:700;font-size:13px">نادية يوسف</div><div style="font-size:12px;color:#64748B">محاسبة</div></div>
+              <span class="badge b-active">حاضر</span>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-sm" style="margin-top:12px;width:100%" onclick="show('team')">عرض كل الفريق ←</button>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">📅 إجازات هذا الشهر</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#FEF2F2;border-radius:8px">
+                <div><div style="font-weight:700">خالد إبراهيم</div><div style="font-size:12px;color:#64748B">16 — 18 يونيو (3 أيام)</div></div>
+                <span class="badge b-approved">معتمدة</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#FFFBEB;border-radius:8px">
+                <div><div style="font-weight:700">مريم علي</div><div style="font-size:12px;color:#64748B">22 — 24 يونيو (3 أيام)</div></div>
+                <span class="badge b-pending">معلقة ⏳</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#FFFBEB;border-radius:8px">
+                <div><div style="font-weight:700">محمود عادل</div><div style="font-size:12px;color:#64748B">25 يونيو (يوم واحد)</div></div>
+                <span class="badge b-pending">معلقة ⏳</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📊 توزيع الفريق بالقسم</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:100px">مبيعات</span><div class="score-bar-wrap"><div class="score-bar" style="width:25%;background:#2563EB"></div></div><strong style="width:20px;text-align:left">2</strong></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:100px">أكونت</span><div class="score-bar-wrap"><div class="score-bar" style="width:12.5%;background:#7C3AED"></div></div><strong style="width:20px;text-align:left">1</strong></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:100px">تصميم</span><div class="score-bar-wrap"><div class="score-bar" style="width:25%;background:#F97316"></div></div><strong style="width:20px;text-align:left">2</strong></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:100px">كتابة محتوى</span><div class="score-bar-wrap"><div class="score-bar" style="width:12.5%;background:#0EA5E9"></div></div><strong style="width:20px;text-align:left">1</strong></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:100px">فيديو</span><div class="score-bar-wrap"><div class="score-bar" style="width:12.5%;background:#C026D3"></div></div><strong style="width:20px;text-align:left">1</strong></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:100px">محاسبة</span><div class="score-bar-wrap"><div class="score-bar" style="width:12.5%;background:#4F46E5"></div></div><strong style="width:20px;text-align:left">1</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div id="screen-team" class="screen">
+      <div class="page-header">
+        <div><h2>👥 الفريق</h2><div class="ph-sub">8 موظفين — 1 في إجازة — 1 فترة اختبار</div></div>
+        <button class="btn btn-em btn-sm" onclick="openModal('add-emp-modal')">➕ موظف جديد</button>
+      </div>
+      <div class="filter-bar">
+        <select class="filter-select"><option>كل الأقسام</option><option>مبيعات</option><option>أكونت</option><option>تصميم</option><option>كتابة</option><option>فيديو</option><option>محاسبة</option></select>
+        <select class="filter-select"><option>كل الحالات</option><option>نشط</option><option>إجازة</option><option>فترة اختبار</option></select>
+      </div>
+      <div class="card">
+        <table class="table">
+          <thead><tr><th>الموظف</th><th>المسمى الوظيفي</th><th>القسم</th><th>تاريخ التعيين</th><th>الراتب</th><th>رصيد الإجازة</th><th>الحالة</th><th></th></tr></thead>
+          <tbody>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#2563EB">أ</div><div><div style="font-weight:700">أحمد السيد</div><div style="font-size:11px;color:#64748B">ahmed@socialpro.com</div></div></div></td>
+              <td>مدير مبيعات</td><td>مبيعات</td><td>1 يناير 2024</td>
+              <td style="font-weight:700">12,000 ج</td>
+              <td><span style="color:#16A34A;font-weight:700">18 / 21</span></td>
+              <td><span class="badge b-active">نشط</span></td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openModal('emp-detail-modal')">عرض</button></td>
+            </tr>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#059669">س</div><div><div style="font-weight:700">سارة محمود</div><div style="font-size:11px;color:#64748B">sara@socialpro.com</div></div></div></td>
+              <td>أكونت مانجر</td><td>أكونت</td><td>1 مارس 2024</td>
+              <td style="font-weight:700">9,000 ج</td>
+              <td><span style="color:#16A34A;font-weight:700">15 / 21</span></td>
+              <td><span class="badge b-active">نشط</span></td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openModal('emp-detail-modal')">عرض</button></td>
+            </tr>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#F97316">خ</div><div><div style="font-weight:700">خالد إبراهيم</div><div style="font-size:11px;color:#64748B">khaled@socialpro.com</div></div></div></td>
+              <td>مصمم جرافيك</td><td>تصميم</td><td>1 يوليو 2023</td>
+              <td style="font-weight:700">8,500 ج</td>
+              <td><span style="color:#D97706;font-weight:700">9 / 21</span></td>
+              <td><span class="badge b-leave">إجازة</span></td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openModal('emp-detail-modal')">عرض</button></td>
+            </tr>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#0EA5E9">م</div><div><div style="font-weight:700">مريم علي</div><div style="font-size:11px;color:#64748B">mariam@socialpro.com</div></div></div></td>
+              <td>كاتبة محتوى</td><td>كتابة</td><td>1 يونيو 2024</td>
+              <td style="font-weight:700">7,000 ج</td>
+              <td><span style="color:#16A34A;font-weight:700">19 / 21</span></td>
+              <td><span class="badge b-active">نشط</span></td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openModal('emp-detail-modal')">عرض</button></td>
+            </tr>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#C026D3">م</div><div><div style="font-weight:700">محمود عادل</div><div style="font-size:11px;color:#64748B">mahmoud@socialpro.com</div></div></div></td>
+              <td>مونتير</td><td>فيديو</td><td>18 مارس 2025</td>
+              <td style="font-weight:700">7,500 ج</td>
+              <td><span style="color:#16A34A;font-weight:700">21 / 21</span></td>
+              <td><span class="badge b-probation">اختبار — ينتهي اليوم</span></td>
+              <td><button class="btn btn-em btn-sm" onclick="event.stopPropagation();openModal('probation-modal')">قرار ⚠️</button></td>
+            </tr>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#4F46E5">ن</div><div><div style="font-weight:700">نادية يوسف</div><div style="font-size:11px;color:#64748B">nadia@socialpro.com</div></div></div></td>
+              <td>محاسبة</td><td>محاسبة</td><td>1 سبتمبر 2023</td>
+              <td style="font-weight:700">8,000 ج</td>
+              <td><span style="color:#16A34A;font-weight:700">14 / 21</span></td>
+              <td><span class="badge b-active">نشط</span></td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openModal('emp-detail-modal')">عرض</button></td>
+            </tr>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#10B981">ه</div><div><div style="font-weight:700">هاجر رضا</div><div style="font-size:11px;color:#64748B">hajer@socialpro.com</div></div></div></td>
+              <td>مسؤولة نشر</td><td>نشر</td><td>1 أكتوبر 2024</td>
+              <td style="font-weight:700">6,500 ج</td>
+              <td><span style="color:#16A34A;font-weight:700">17 / 21</span></td>
+              <td><span class="badge b-active">نشط</span></td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openModal('emp-detail-modal')">عرض</button></td>
+            </tr>
+            <tr onclick="openModal('emp-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:10px"><div class="emp-avatar" style="background:#E11D48">ع</div><div><div style="font-weight:700">عمر حسين</div><div style="font-size:11px;color:#64748B">omar@socialpro.com</div></div></div></td>
+              <td>مدير إعلانات</td><td>Paid Ads</td><td>1 فبراير 2024</td>
+              <td style="font-weight:700">11,000 ج</td>
+              <td><span style="color:#16A34A;font-weight:700">16 / 21</span></td>
+              <td><span class="badge b-active">نشط</span></td>
+              <td><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openModal('emp-detail-modal')">عرض</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card" style="background:linear-gradient(135deg,#ECFDF5,#F0FDF4)">
+        <div class="card-title">💰 إجمالي كشف الرواتب — يونيو</div>
+        <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+          <div style="text-align:center"><div style="font-size:32px;font-weight:900;color:#059669">69,500 ج</div><div style="font-size:13px;color:#64748B">إجمالي الرواتب</div></div>
+          <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:13px">
+            <div style="padding:10px;background:white;border-radius:8px;text-align:center"><div style="font-weight:700">8</div><div style="color:#64748B">موظف</div></div>
+            <div style="padding:10px;background:white;border-radius:8px;text-align:center"><div style="font-weight:700;color:#16A34A">69,500 ج</div><div style="color:#64748B">إجمالي</div></div>
+            <div style="padding:10px;background:white;border-radius:8px;text-align:center"><div style="font-weight:700">1 يوليو</div><div style="color:#64748B">موعد الصرف</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEAVES -->
+    <div id="screen-leaves" class="screen">
+      <div class="page-header">
+        <div><h2>🏖️ إدارة الإجازات</h2><div class="ph-sub">3 طلبات معلقة تحتاج اعتماد</div></div>
+        <button class="btn btn-em btn-sm" onclick="openModal('leave-request-modal')">➕ طلب إجازة</button>
+      </div>
+      <div class="alert a-amber" style="margin-bottom:16px"><span class="alert-icon">⏳</span><span class="alert-text">3 طلبات لم تُعتمد بعد — أقدم طلب منذ يومين</span></div>
+
+      <div style="font-size:13px;font-weight:700;color:#D97706;margin-bottom:8px">⏳ معلقة — تحتاج اعتماد</div>
+      <div class="leave-card lc-pending">
+        <div class="emp-avatar" style="background:#0EA5E9">م</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">مريم علي — كاتبة محتوى</div>
+          <div style="font-size:12px;color:#64748B;margin-top:3px">22 — 24 يونيو (3 أيام) · رصيد متبقي: 19 يوم · السبب: ظروف شخصية</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-em btn-sm">✅ اعتماد</button>
+          <button class="btn btn-danger btn-sm">❌ رفض</button>
+        </div>
+      </div>
+      <div class="leave-card lc-pending">
+        <div class="emp-avatar" style="background:#C026D3">م</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">محمود عادل — مونتير</div>
+          <div style="font-size:12px;color:#64748B;margin-top:3px">25 يونيو (يوم واحد) · رصيد متبقي: 21 يوم · السبب: مناسبة عائلية</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-em btn-sm">✅ اعتماد</button>
+          <button class="btn btn-danger btn-sm">❌ رفض</button>
+        </div>
+      </div>
+      <div class="leave-card lc-pending">
+        <div class="emp-avatar" style="background:#10B981">ه</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">هاجر رضا — مسؤولة نشر</div>
+          <div style="font-size:12px;color:#64748B;margin-top:3px">28 — 30 يونيو (3 أيام) · رصيد متبقي: 17 يوم · السبب: سفر</div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-em btn-sm">✅ اعتماد</button>
+          <button class="btn btn-danger btn-sm">❌ رفض</button>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#DC2626;margin:16px 0 8px">🏖️ في إجازة الآن</div>
+      <div class="leave-card lc-approved">
+        <div class="emp-avatar" style="background:#F97316">خ</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">خالد إبراهيم — مصمم جرافيك</div>
+          <div style="font-size:12px;color:#64748B;margin-top:3px">16 — 18 يونيو (3 أيام) · يعود: 19 يونيو</div>
+        </div>
+        <span class="badge b-approved">معتمدة ✅</span>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:#16A34A;margin:16px 0 8px">✅ معتمدة سابقاً — هذا الشهر</div>
+      <div class="leave-card lc-approved" style="opacity:.7">
+        <div class="emp-avatar" style="background:#2563EB">أ</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">أحمد السيد — مدير مبيعات</div>
+          <div style="font-size:12px;color:#64748B;margin-top:3px">5 — 7 يونيو (3 أيام) · انتهت</div>
+        </div>
+        <span class="badge b-approved">منتهية</span>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">📊 رصيد الإجازات — يونيو 2025</div>
+        <table class="table">
+          <thead><tr><th>الموظف</th><th>الرصيد الكلي</th><th>مستخدم</th><th>متبقي</th><th>الحالة</th></tr></thead>
+          <tbody>
+            <tr><td>أحمد السيد</td><td>21</td><td>3</td><td style="color:#16A34A;font-weight:700">18</td><td><div style="background:#F1F5F9;border-radius:4px;height:6px;width:80px"><div style="background:#16A34A;height:6px;border-radius:4px;width:14%"></div></div></td></tr>
+            <tr><td>سارة محمود</td><td>21</td><td>6</td><td style="color:#16A34A;font-weight:700">15</td><td><div style="background:#F1F5F9;border-radius:4px;height:6px;width:80px"><div style="background:#16A34A;height:6px;border-radius:4px;width:28%"></div></div></td></tr>
+            <tr><td>خالد إبراهيم</td><td>21</td><td>12</td><td style="color:#D97706;font-weight:700">9</td><td><div style="background:#F1F5F9;border-radius:4px;height:6px;width:80px"><div style="background:#D97706;height:6px;border-radius:4px;width:57%"></div></div></td></tr>
+            <tr><td>مريم علي</td><td>21</td><td>2</td><td style="color:#16A34A;font-weight:700">19</td><td><div style="background:#F1F5F9;border-radius:4px;height:6px;width:80px"><div style="background:#16A34A;height:6px;border-radius:4px;width:9%"></div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE -->
+    <div id="screen-attendance" class="screen">
+      <div class="page-header"><h2>⏱️ الحضور والغياب</h2><div class="ph-sub">الأسبوع الحالي</div></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card"><div class="stat-icon si-em">✅</div><div><div class="stat-label">حاضر اليوم</div><div class="stat-value sv-em">7</div><div class="stat-sub">من 8</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">🏖️</div><div><div class="stat-label">إجازة</div><div class="stat-value sv-red">1</div><div class="stat-sub">خالد</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">⏰</div><div><div class="stat-label">تأخير هذا الأسبوع</div><div class="stat-value sv-amber">2</div><div class="stat-sub">مرات</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">📊</div><div><div class="stat-label">معدل الحضور</div><div class="stat-value sv-green">96%</div><div class="stat-sub">هذا الشهر</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📅 سجل الحضور — هذا الأسبوع</div>
+        <table class="table">
+          <thead><tr><th>الموظف</th><th>الأحد 15</th><th>الاثنين 16</th><th>الثلاثاء 17</th><th>الأربعاء 18</th><th>الخميس 19</th><th>المجموع</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#2563EB;width:28px;height:28px;font-size:11px">أ</div>أحمد السيد</div></td><td>✅ 9:00</td><td>✅ 9:05</td><td>✅ 9:00</td><td>✅ 9:00</td><td>—</td><td style="font-weight:700;color:#16A34A">4/4</td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#059669;width:28px;height:28px;font-size:11px">س</div>سارة محمود</div></td><td>✅ 9:00</td><td>✅ 9:15</td><td>✅ 9:00</td><td>✅ 9:00</td><td>—</td><td style="font-weight:700;color:#16A34A">4/4</td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#94A3B8;width:28px;height:28px;font-size:11px">خ</div>خالد إبراهيم</div></td><td>✅ 9:00</td><td>🏖️</td><td>🏖️</td><td>🏖️</td><td>—</td><td style="font-weight:700;color:#D97706">1/4</td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#0EA5E9;width:28px;height:28px;font-size:11px">م</div>مريم علي</div></td><td>✅ 9:00</td><td><span style="color:#D97706;font-weight:600">⚠️ 9:45</span></td><td>✅ 9:10</td><td>✅ 9:00</td><td>—</td><td style="font-weight:700;color:#D97706">4/4 ⚠️</td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#C026D3;width:28px;height:28px;font-size:11px">م</div>محمود عادل</div></td><td>✅ 9:00</td><td>✅ 9:00</td><td>✅ 9:00</td><td><span style="color:#D97706;font-weight:600">⚠️ 10:15</span></td><td>—</td><td style="font-weight:700;color:#D97706">4/4 ⚠️</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;font-size:12px;color:#64748B;display:flex;gap:16px"><span>✅ حاضر في الوقت</span><span style="color:#D97706">⚠️ تأخير</span><span>🏖️ إجازة</span><span>❌ غياب</span></div>
+      </div>
+    </div>
+
+    <!-- PERFORMANCE -->
+    <div id="screen-performance" class="screen">
+      <div class="page-header">
+        <div><h2>⭐ تقييم الأداء</h2><div class="ph-sub">الربع الثاني 2025 — أبريل / مايو / يونيو</div></div>
+        <button class="btn btn-em btn-sm" onclick="openModal('eval-modal')">➕ تقييم جديد</button>
+      </div>
+      <div class="alert a-em" style="margin-bottom:16px"><span class="alert-icon">📋</span><span class="alert-text">موعد تقييم الربع الثاني: 30 يونيو — اتواصل مع المديرين لتعبئة النماذج</span></div>
+      <div class="card">
+        <div class="card-title">📊 ملخص تقييمات الربع الأول (يناير — مارس)</div>
+        <table class="table">
+          <thead><tr><th>الموظف</th><th>الجودة</th><th>المواعيد</th><th>التعاون</th><th>المبادرة</th><th>المجموع</th><th>التقدير</th></tr></thead>
+          <tbody>
+            <tr onclick="openModal('eval-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#2563EB;width:28px;height:28px;font-size:11px">أ</div>أحمد السيد</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐⭐</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐⭐</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐☆</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐⭐</div></td>
+              <td style="font-weight:900;font-size:15px;color:#16A34A">95%</td>
+              <td><span style="background:#ECFDF5;color:#065F46;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">A ممتاز</span></td>
+            </tr>
+            <tr onclick="openModal('eval-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#059669;width:28px;height:28px;font-size:11px">س</div>سارة محمود</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐⭐</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐☆</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐⭐</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐☆</div></td>
+              <td style="font-weight:900;font-size:15px;color:#16A34A">88%</td>
+              <td><span style="background:#F0FDF4;color:#166534;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">B جيد جداً</span></td>
+            </tr>
+            <tr onclick="openModal('eval-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#F97316;width:28px;height:28px;font-size:11px">خ</div>خالد إبراهيم</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐⭐</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐☆☆</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐☆</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐☆</div></td>
+              <td style="font-weight:900;font-size:15px;color:#D97706">78%</td>
+              <td><span style="background:#FFFBEB;color:#92400E;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">B جيد</span></td>
+            </tr>
+            <tr onclick="openModal('eval-detail-modal')">
+              <td><div style="display:flex;align-items:center;gap:8px"><div class="emp-avatar" style="background:#0EA5E9;width:28px;height:28px;font-size:11px">م</div>مريم علي</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐☆</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐☆☆</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐⭐☆</div></td>
+              <td><div style="display:flex;gap:2px">⭐⭐⭐☆☆</div></td>
+              <td style="font-weight:900;font-size:15px;color:#D97706">72%</td>
+              <td><span style="background:#FFFBEB;color:#92400E;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700">C مقبول</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RECRUITMENT -->
+    <div id="screen-recruitment" class="screen">
+      <div class="page-header">
+        <div><h2>🔍 التوظيف</h2><div class="ph-sub">2 وظائف مفتوحة — 5 متقدمين</div></div>
+        <button class="btn btn-em btn-sm" onclick="openModal('new-job-modal')">➕ وظيفة جديدة</button>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div><div style="font-size:16px;font-weight:700">مونتير فيديو</div><div style="font-size:12px;color:#64748B;margin-top:2px">قسم الفيديو — دوام كامل</div></div>
+            <span class="badge b-open">مفتوحة</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;margin-bottom:14px">
+            <div class="kpi-row"><span class="kpi-label">الراتب</span><span class="kpi-val">7,000 — 9,000 ج</span></div>
+            <div class="kpi-row"><span class="kpi-label">الخبرة</span><span class="kpi-val">سنتين+</span></div>
+            <div class="kpi-row" style="border:none"><span class="kpi-label">متقدمين</span><span class="kpi-val" style="color:#7C3AED">3 متقدمين</span></div>
+          </div>
+          <div style="font-weight:700;font-size:13px;margin-bottom:8px">المتقدمين:</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:8px;font-size:13px">
+              <div><div style="font-weight:700">كريم محمد</div><div style="font-size:11px;color:#64748B">3 سنين خبرة — Premiere Pro</div></div>
+              <div class="btn-group"><span class="badge b-interview">مقابلة</span><button class="btn btn-ghost btn-sm">📞</button></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:8px;font-size:13px">
+              <div><div style="font-weight:700">ياسمين طه</div><div style="font-size:11px;color:#64748B">سنتين خبرة — CapCut + After Effects</div></div>
+              <div class="btn-group"><span class="badge b-pending">مراجعة CV</span><button class="btn btn-ghost btn-sm">📋</button></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:8px;font-size:13px">
+              <div><div style="font-weight:700">محمد فاروق</div><div style="font-size:11px;color:#64748B">سنة خبرة — مبتدئ</div></div>
+              <div class="btn-group"><span class="badge b-rejected">مرفوض</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+            <div><div style="font-size:16px;font-weight:700">كاتب محتوى</div><div style="font-size:12px;color:#64748B;margin-top:2px">قسم الكتابة — دوام كامل</div></div>
+            <span class="badge b-open">مفتوحة</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;margin-bottom:14px">
+            <div class="kpi-row"><span class="kpi-label">الراتب</span><span class="kpi-val">6,000 — 8,000 ج</span></div>
+            <div class="kpi-row"><span class="kpi-label">الخبرة</span><span class="kpi-val">سنة+</span></div>
+            <div class="kpi-row" style="border:none"><span class="kpi-label">متقدمين</span><span class="kpi-val" style="color:#7C3AED">2 متقدمين</span></div>
+          </div>
+          <div style="font-weight:700;font-size:13px;margin-bottom:8px">المتقدمين:</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:8px;font-size:13px">
+              <div><div style="font-weight:700">دينا سمير</div><div style="font-size:11px;color:#64748B">سنتين — تخصص سوشيال ميديا</div></div>
+              <div class="btn-group"><span class="badge b-interview">مقابلة غداً</span><button class="btn btn-ghost btn-sm">📞</button></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#F8FAFC;border-radius:8px;font-size:13px">
+              <div><div style="font-weight:700">عمرو جلال</div><div style="font-size:11px;color:#64748B">سنة — محتوى عربي وإنجليزي</div></div>
+              <div class="btn-group"><span class="badge b-pending">اختبار تحريري</span><button class="btn btn-ghost btn-sm">📋</button></div>
+            </div>
+          </div>
+          <button class="btn btn-em btn-sm" style="margin-top:12px;width:100%" onclick="openModal('interview-modal')">📅 جدولة مقابلة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOP -->
+    <div id="screen-sop" class="screen">
+      <div class="page-header"><h2>📜 SOP قسم الموارد البشرية</h2></div>
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-title">📋 سياسة الإجازات</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="padding:10px;background:#ECFDF5;border-radius:8px;border-right:3px solid #059669"><strong>الرصيد السنوي:</strong> 21 يوم مدفوع — يُحسب من تاريخ التعيين</div>
+              <div style="padding:10px;background:#F0F9FF;border-radius:8px;border-right:3px solid #0EA5E9"><strong>طريقة الطلب:</strong> الطلب يجب يكون قبل 3 أيام على الأقل (عدا الطوارئ) — عبر السيستم</div>
+              <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><strong>الاعتماد:</strong> مدير القسم → HR → المدير العام لو أكثر من 5 أيام متتالية</div>
+              <div style="padding:10px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626"><strong>ممنوع:</strong> إجازتين في نفس القسم في نفس الوقت — يتم التنسيق مسبقاً</div>
+              <div style="padding:10px;background:#F8FAFC;border-radius:8px;border-right:3px solid #94A3B8"><strong>الرصيد الزائد:</strong> لا يُنقل للسنة الجديدة — ما يُستهلك يُسقط</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔄 عملية التوظيف</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:10px;padding:10px;background:#ECFDF5;border-radius:8px;border-right:3px solid #059669"><div style="font-size:18px">1️⃣</div><div><div style="font-weight:700;margin-bottom:2px">تحديد الاحتياج</div><div style="font-size:12px;color:#475569">مدير القسم يرفع طلب — HR يعتمد الميزانية</div></div></div>
+              <div style="display:flex;gap:10px;padding:10px;background:#F0F9FF;border-radius:8px;border-right:3px solid #0EA5E9"><div style="font-size:18px">2️⃣</div><div><div style="font-weight:700;margin-bottom:2px">نشر الوظيفة</div><div style="font-size:12px;color:#475569">LinkedIn + المجموعات المتخصصة + الموقع</div></div></div>
+              <div style="display:flex;gap:10px;padding:10px;background:#FDF4FF;border-radius:8px;border-right:3px solid #C026D3"><div style="font-size:18px">3️⃣</div><div><div style="font-weight:700;margin-bottom:2px">فرز CVs</div><div style="font-size:12px;color:#475569">HR يفرز — مدير القسم يوافق على المختارين</div></div></div>
+              <div style="display:flex;gap:10px;padding:10px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><div style="font-size:18px">4️⃣</div><div><div style="font-weight:700;margin-bottom:2px">مقابلة + اختبار عملي</div><div style="font-size:12px;color:#475569">مقابلة مع HR + المدير المباشر — اختبار عملي في التخصص</div></div></div>
+              <div style="display:flex;gap:10px;padding:10px;background:#F0FDF4;border-radius:8px;border-right:3px solid #16A34A"><div style="font-size:18px">5️⃣</div><div><div style="font-weight:700;margin-bottom:2px">العرض والتعيين</div><div style="font-size:12px;color:#475569">عرض الراتب — توقيع العقد — فترة اختبار 3 شهور</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">⚠️ سياسة الإنذارات</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="padding:12px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><strong>إنذار شفهي:</strong> تأخير أكثر من 3 مرات في الشهر أو مخالفة بسيطة — يُسجَّل في ملف الموظف</div>
+              <div style="padding:12px;background:#FFF7ED;border-radius:8px;border-right:3px solid #EA580C"><strong>إنذار كتابي أول:</strong> تكرار المخالفة بعد الشفهي أو تأخير تسليمات متكرر</div>
+              <div style="padding:12px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626"><strong>إنذار كتابي ثاني:</strong> تكرار المخالفة — يرفع للمدير العام</div>
+              <div style="padding:12px;background:#1E293B;border-radius:8px;border-right:3px solid #DC2626"><strong style="color:white">إنهاء الخدمة:</strong> إنذار ثالث أو مخالفة جسيمة (سرقة / إفشاء سري) — قرار المدير العام</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⭐ معايير تقييم HR</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>سرعة اعتماد الإجازات</span><strong>25%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#059669;height:10px;border-radius:4px;width:25%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>جودة التوظيف (احتفاظ بعد سنة)</span><strong>35%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#059669;height:10px;border-radius:4px;width:35%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>دقة كشف الرواتب</span><strong>25%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#16A34A;height:10px;border-radius:4px;width:25%"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>إتمام دورة التقييم في الوقت</span><strong>15%</strong></div><div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#0EA5E9;height:10px;border-radius:4px;width:15%"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANAGER -->
+    <div id="screen-manager" class="screen">
+      <div class="page-header"><h2>👨‍💼 لوحة تحكم المدير — HR</h2></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-em">👥</div><div><div class="stat-label">الفريق</div><div class="stat-value sv-em">8</div><div class="stat-sub">موظفين</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">📊</div><div><div class="stat-label">معدل الاحتفاظ</div><div class="stat-value sv-green">100%</div><div class="stat-sub">لا استقالات هذا العام</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">⭐</div><div><div class="stat-label">متوسط الأداء</div><div class="stat-value sv-amber">83%</div><div class="stat-sub">الربع الأول</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-purple">🔍</div><div><div class="stat-label">وظائف مفتوحة</div><div class="stat-value sv-purple">2</div><div class="stat-sub">مونتير + كاتب</div></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">⚠️ قرارات مطلوبة من المدير</div>
+          <div style="padding:14px;background:#FEF2F2;border-radius:10px;border-right:4px solid #DC2626;margin-bottom:12px">
+            <div style="font-size:13px;font-weight:700;color:#991B1B;margin-bottom:6px">🔴 تثبيت محمود عادل — فترة الاختبار انتهت</div>
+            <div style="font-size:13px;color:#475569;margin-bottom:10px">أداء جيد — 1 تأخير في التسليم — تقييم المدير المباشر: 78%</div>
+            <div class="btn-group">
+              <button class="btn btn-em btn-sm" onclick="openModal('probation-modal')">✅ تثبيت</button>
+              <button class="btn btn-danger btn-sm">❌ إنهاء خدمة</button>
+              <button class="btn btn-outline btn-sm">🔄 تمديد شهر</button>
+            </div>
+          </div>
+          <div style="padding:14px;background:#FFFBEB;border-radius:10px;border-right:4px solid #D97706">
+            <div style="font-size:13px;font-weight:700;color:#92400E;margin-bottom:6px">🟡 3 طلبات إجازة معلقة</div>
+            <div style="font-size:13px;color:#475569;margin-bottom:10px">مريم علي (22-24) + محمود (25) + هاجر (28-30) — تحقق من عدم تعارض الأقسام</div>
+            <button class="btn btn-em btn-sm" onclick="show('leaves')">راجع الطلبات ←</button>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">💰 كشف الرواتب — يونيو</div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div class="kpi-row"><span class="kpi-label">إجمالي الرواتب</span><span class="kpi-val" style="color:#059669">69,500 ج</span></div>
+              <div class="kpi-row"><span class="kpi-label">موعد الصرف</span><span class="kpi-val">1 يوليو</span></div>
+              <div class="kpi-row"><span class="kpi-label">أعلى راتب</span><span class="kpi-val">أحمد السيد — 12,000 ج</span></div>
+              <div class="kpi-row"><span class="kpi-label">أقل راتب</span><span class="kpi-val">هاجر رضا — 6,500 ج</span></div>
+              <div class="kpi-row" style="border:none"><span class="kpi-label">خصومات</span><span class="kpi-val">0 ج</span></div>
+            </div>
+            <button class="btn btn-em btn-sm" style="margin-top:12px;width:100%">📤 إرسال كشف الرواتب للمحاسبة</button>
+          </div>
+          <div class="card">
+            <div class="card-title">📈 مؤشرات HR</div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div class="kpi-row"><span class="kpi-label">معدل الحضور</span><span class="kpi-val" style="color:#16A34A">96%</span></div>
+              <div class="kpi-row"><span class="kpi-label">متوسط وقت التوظيف</span><span class="kpi-val">18 يوم</span></div>
+              <div class="kpi-row"><span class="kpi-label">استقالات 2025</span><span class="kpi-val" style="color:#16A34A">0</span></div>
+              <div class="kpi-row" style="border:none"><span class="kpi-label">رضا الموظفين (آخر استبيان)</span><span class="kpi-val" style="color:#16A34A">87%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="add-emp-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">➕ إضافة موظف جديد</div><button class="modal-close" onclick="closeModal('add-emp-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">الاسم الكامل <span class="req">*</span></label><input class="form-control" placeholder="الاسم"></div>
+      <div class="form-group"><label class="form-label">البريد الإلكتروني</label><input class="form-control" placeholder="email@socialpro.com"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">المسمى الوظيفي <span class="req">*</span></label><input class="form-control" placeholder="مثال: مصمم جرافيك"></div>
+      <div class="form-group"><label class="form-label">القسم <span class="req">*</span></label><select class="form-control"><option>مبيعات</option><option>أكونت</option><option>تصميم</option><option>كتابة</option><option>فيديو</option><option>نشر</option><option>Paid Ads</option><option>محاسبة</option></select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">الراتب الأساسي <span class="req">*</span></label><input type="number" class="form-control"></div>
+      <div class="form-group"><label class="form-label">تاريخ التعيين</label><input type="date" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">رقم الموبايل</label><input class="form-control" placeholder="01X-XXXXXXXX"></div>
+    <div class="modal-footer"><button class="btn btn-em" onclick="closeModal('add-emp-modal')">✅ إضافة الموظف</button><button class="btn btn-ghost" onclick="closeModal('add-emp-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="emp-detail-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">👤 ملف أحمد السيد</div><button class="modal-close" onclick="closeModal('emp-detail-modal')">×</button></div>
+    <div style="display:flex;gap:16px;align-items:center;padding:16px;background:#ECFDF5;border-radius:10px;margin-bottom:16px">
+      <div class="emp-avatar" style="background:#2563EB;width:52px;height:52px;font-size:22px">أ</div>
+      <div><div style="font-size:18px;font-weight:700">أحمد السيد</div><div style="font-size:13px;color:#64748B">مدير مبيعات — قسم المبيعات</div><div style="font-size:12px;color:#059669;margin-top:4px">✅ موظف نشط — منذ يناير 2024</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0;margin-bottom:16px">
+      <div class="kpi-row"><span class="kpi-label">الراتب</span><span class="kpi-val" style="color:#059669">12,000 جنيه</span></div>
+      <div class="kpi-row"><span class="kpi-label">رصيد الإجازة</span><span class="kpi-val">18 / 21 يوم</span></div>
+      <div class="kpi-row"><span class="kpi-label">آخر تقييم</span><span class="kpi-val" style="color:#16A34A">95% — A ممتاز</span></div>
+      <div class="kpi-row"><span class="kpi-label">الموبايل</span><span class="kpi-val">0100-1234567</span></div>
+      <div class="kpi-row" style="border:none"><span class="kpi-label">البريد</span><span class="kpi-val">ahmed@socialpro.com</span></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-em" onclick="closeModal('emp-detail-modal')">✏️ تعديل البيانات</button><button class="btn btn-outline" onclick="closeModal('emp-detail-modal')">🏖️ إضافة إجازة</button><button class="btn btn-ghost" onclick="closeModal('emp-detail-modal')">إغلاق</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="leave-request-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">🏖️ طلب إجازة</div><button class="modal-close" onclick="closeModal('leave-request-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">الموظف <span class="req">*</span></label><select class="form-control"><option>-- اختر --</option><option>أحمد السيد</option><option>سارة محمود</option><option>مريم علي</option><option>محمود عادل</option></select></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">من <span class="req">*</span></label><input type="date" class="form-control"></div>
+      <div class="form-group"><label class="form-label">إلى <span class="req">*</span></label><input type="date" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">نوع الإجازة</label><select class="form-control"><option>إجازة سنوية</option><option>إجازة طارئة</option><option>إجازة مرضية</option><option>إجازة بدون مرتب</option></select></div>
+    <div class="form-group"><label class="form-label">السبب</label><textarea class="form-control" placeholder="سبب الإجازة..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-em" onclick="closeModal('leave-request-modal')">✅ تقديم الطلب</button><button class="btn btn-ghost" onclick="closeModal('leave-request-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="probation-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">📋 قرار فترة الاختبار — محمود عادل</div><button class="modal-close" onclick="closeModal('probation-modal')">×</button></div>
+    <div style="padding:14px;background:#F8FAFC;border-radius:10px;margin-bottom:16px;font-size:13px">
+      <div class="kpi-row"><span class="kpi-label">المسمى</span><span class="kpi-val">مونتير فيديو</span></div>
+      <div class="kpi-row"><span class="kpi-label">بداية الاختبار</span><span class="kpi-val">18 مارس 2025</span></div>
+      <div class="kpi-row"><span class="kpi-label">نهاية الاختبار</span><span class="kpi-val" style="color:#D97706">18 يونيو 2025 (اليوم)</span></div>
+      <div class="kpi-row"><span class="kpi-label">تقييم المدير</span><span class="kpi-val" style="color:#D97706">78% — B جيد</span></div>
+      <div class="kpi-row" style="border:none"><span class="kpi-label">ملاحظة</span><span class="kpi-val">تأخير واحد في التسليم — أداء جيد بشكل عام</span></div>
+    </div>
+    <div class="form-group"><label class="form-label">الراتب بعد التثبيت</label><input type="number" class="form-control" value="8000" placeholder="7500"></div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><textarea class="form-control" placeholder="أي ملاحظات للموظف..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-em" onclick="closeModal('probation-modal')">✅ تثبيت الموظف</button>
+      <button class="btn btn-outline" onclick="closeModal('probation-modal')">🔄 تمديد شهر</button>
+      <button class="btn btn-danger" onclick="closeModal('probation-modal')">❌ إنهاء خدمة</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="eval-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">⭐ تقييم أداء جديد</div><button class="modal-close" onclick="closeModal('eval-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">الموظف</label><select class="form-control"><option>أحمد السيد</option><option>سارة محمود</option><option>خالد إبراهيم</option><option>مريم علي</option></select></div>
+      <div class="form-group"><label class="form-label">الفترة</label><select class="form-control"><option>الربع الثاني 2025</option><option>الربع الأول 2025</option></select></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>جودة العمل</span><div style="display:flex;gap:4px">⭐⭐⭐⭐⭐</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>الالتزام بالمواعيد</span><div style="display:flex;gap:4px">⭐⭐⭐⭐☆</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>العمل الجماعي</span><div style="display:flex;gap:4px">⭐⭐⭐⭐⭐</div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>المبادرة والإبداع</span><div style="display:flex;gap:4px">⭐⭐⭐⭐☆</div></div>
+    </div>
+    <div class="form-group"><label class="form-label">نقاط القوة</label><textarea class="form-control" placeholder="ما يتميز به الموظف..."></textarea></div>
+    <div class="form-group"><label class="form-label">نقاط التطوير</label><textarea class="form-control" placeholder="ما يحتاج تحسين..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-em" onclick="closeModal('eval-modal')">💾 حفظ التقييم</button><button class="btn btn-ghost" onclick="closeModal('eval-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="new-job-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🔍 نشر وظيفة جديدة</div><button class="modal-close" onclick="closeModal('new-job-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">المسمى الوظيفي <span class="req">*</span></label><input class="form-control"></div>
+      <div class="form-group"><label class="form-label">القسم</label><select class="form-control"><option>مبيعات</option><option>تصميم</option><option>كتابة</option><option>فيديو</option><option>Paid Ads</option></select></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">الراتب من</label><input type="number" class="form-control"></div>
+      <div class="form-group"><label class="form-label">الراتب إلى</label><input type="number" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">الخبرة المطلوبة</label><select class="form-control"><option>حديث التخرج</option><option>سنة+</option><option>سنتين+</option><option>3 سنين+</option></select></div>
+    <div class="form-group"><label class="form-label">المهارات المطلوبة</label><textarea class="form-control" placeholder="اذكر الأدوات والمهارات..."></textarea></div>
+    <div class="modal-footer"><button class="btn btn-em" onclick="closeModal('new-job-modal')">📢 نشر الوظيفة</button><button class="btn btn-ghost" onclick="closeModal('new-job-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="interview-modal">
+  <div class="modal" style="width:440px">
+    <div class="modal-header"><div class="modal-title">📅 جدولة مقابلة</div><button class="modal-close" onclick="closeModal('interview-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">المتقدم</label><input class="form-control" value="دينا سمير"></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">التاريخ</label><input type="date" class="form-control"></div>
+      <div class="form-group"><label class="form-label">الوقت</label><input type="time" class="form-control"></div>
+    </div>
+    <div class="form-group"><label class="form-label">أعضاء لجنة المقابلة</label><select class="form-control"><option>HR + مدير الكتابة</option><option>HR فقط</option><option>HR + المدير العام</option></select></div>
+    <div class="form-group"><label class="form-label">نوع المقابلة</label><select class="form-control"><option>حضوري</option><option>أونلاين (Zoom)</option></select></div>
+    <div class="modal-footer"><button class="btn btn-em" onclick="closeModal('interview-modal')">📅 تأكيد الجدول</button><button class="btn btn-ghost" onclick="closeModal('interview-modal')">إلغاء</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="eval-detail-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">⭐ تقييم أحمد السيد — الربع الأول</div><button class="modal-close" onclick="closeModal('eval-detail-modal')">×</button></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span style="width:120px">جودة العمل</span><div style="flex:1;background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#059669;height:8px;border-radius:4px;width:100%"></div></div><strong>5/5</strong></div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span style="width:120px">المواعيد</span><div style="flex:1;background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#059669;height:8px;border-radius:4px;width:100%"></div></div><strong>5/5</strong></div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span style="width:120px">التعاون</span><div style="flex:1;background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#D97706;height:8px;border-radius:4px;width:80%"></div></div><strong>4/5</strong></div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span style="width:120px">المبادرة</span><div style="flex:1;background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#059669;height:8px;border-radius:4px;width:100%"></div></div><strong>5/5</strong></div>
+    </div>
+    <div style="padding:12px;background:#ECFDF5;border-radius:8px;font-size:13px;margin-bottom:8px"><strong>نقاط القوة:</strong> قيادة ممتازة — حقق 130% من تارجت المبيعات — مبادر في إيجاد عملاء جدد</div>
+    <div style="padding:12px;background:#FFFBEB;border-radius:8px;font-size:13px"><strong>نقاط التطوير:</strong> التواصل مع الفرق الأخرى يمكن تحسينه أكثر</div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('eval-detail-modal')">إغلاق</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal" style="width:380px">
+    <div class="modal-header"><div class="modal-title">🔔 الإشعارات</div><button class="modal-close" onclick="closeModal('notif-modal')">×</button></div>
+    <div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">📋</div><div><div style="font-size:13px"><strong>محمود عادل</strong> — فترة الاختبار انتهت اليوم</div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FFFBEB;display:flex;align-items:center;justify-content:center;flex-shrink:0">⏳</div><div><div style="font-size:13px">3 طلبات إجازة <strong>معلقة</strong></div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:36px;height:36px;border-radius:50%;background:#ECFDF5;display:flex;align-items:center;justify-content:center;flex-shrink:0">🎂</div><div><div style="font-size:13px">عيد ميلاد <strong>سارة محمود</strong> اليوم 🎉</div><div style="font-size:11px;color:#94A3B8">اليوم</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var titles={dashboard:'الرئيسية',team:'الفريق',leaves:'إدارة الإجازات',attendance:'الحضور والغياب',performance:'تقييم الأداء',recruitment:'التوظيف',sop:'SOP القسم',manager:'لوحة تحكم المدير'};
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  var s=document.getElementById('screen-'+id);if(s)s.classList.add('active');
+  document.getElementById('topbar-title').textContent=titles[id]||id;
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(function(el){
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+</script>
+</body>
+</html>

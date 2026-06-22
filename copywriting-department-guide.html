@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام قسم الكوبي رايتنج</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:#F1F5F9;color:#1E293B;font-size:14px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;background:#0F172A;color:white;flex-shrink:0;display:flex;flex-direction:column;position:fixed;top:0;right:0;bottom:0;z-index:50}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid #1E293B;display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:#0EA5E9;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700}.logo-sub{font-size:11px;color:#64748B}
+.sidebar-section{padding:16px 12px 4px;font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;font-size:13px;color:#94A3B8;transition:all .15s;border-radius:8px;margin:2px 8px}
+.nav-item:hover{background:#1E293B;color:white}
+.nav-item.active{background:#0EA5E9;color:white}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-right:auto;background:#DC2626;color:white;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700}
+.nav-badge.amber{background:#D97706}
+.sidebar-user{padding:16px;border-top:1px solid #1E293B;display:flex;align-items:center;gap:10px;margin-top:auto}
+.s-avatar{width:34px;height:34px;background:#0EA5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.user-name{font-size:13px;font-weight:600;color:white}.user-role{font-size:11px;color:#64748B}
+.main{flex:1;margin-right:230px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:white;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E2E8F0;position:sticky;top:0;z-index:40}
+.topbar-title{font-size:18px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.notif-btn{position:relative;cursor:pointer;background:#F1F5F9;border-radius:8px;padding:8px;font-size:16px}
+.notif-dot{position:absolute;top:6px;left:6px;width:8px;height:8px;background:#DC2626;border-radius:50%;border:2px solid white}
+.content{flex:1;padding:24px}
+.screen{display:none}.screen.active{display:block}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-sky{background:#F0F9FF}.si-green{background:#F0FDF4}.si-amber{background:#FFFBEB}.si-red{background:#FEF2F2}.si-purple{background:#F5F3FF}
+.stat-label{font-size:12px;color:#64748B;margin-bottom:4px}
+.stat-value{font-size:26px;font-weight:900;line-height:1}
+.sv-sky{color:#0EA5E9}.sv-green{color:#16A34A}.sv-amber{color:#D97706}.sv-red{color:#DC2626}.sv-purple{color:#7C3AED}
+.stat-sub{font-size:12px;color:#64748B;margin-top:3px}
+.up{color:#16A34A}.down{color:#DC2626}
+/* Alerts */
+.alert{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;margin-bottom:8px;font-size:13px}
+.a-red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.a-amber{background:#FFFBEB;border:1px solid #FDE68A;color:#92400E}
+.a-blue{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+.a-sky{background:#F0F9FF;border:1px solid #BAE6FD;color:#0369A1}
+.a-green{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.alert-icon{font-size:16px;flex-shrink:0}.alert-text{flex:1}
+.alert-action{font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;white-space:nowrap}
+/* Card */
+.card{background:white;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:20px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+/* Table */
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:right;padding:10px 14px;background:#F8FAFC;color:#64748B;font-weight:600;font-size:12px;border-bottom:1px solid #E2E8F0;white-space:nowrap}
+.table td{padding:12px 14px;border-bottom:1px solid #F8FAFC;vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tbody tr:hover td{background:#FAFBFE;cursor:pointer}
+.tw{overflow-x:auto}
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.b-new{background:#F0F9FF;color:#0369A1}.b-new::before{background:#0EA5E9}
+.b-writing{background:#F5F3FF;color:#6D28D9}.b-writing::before{background:#7C3AED}
+.b-review{background:#FFFBEB;color:#B45309}.b-review::before{background:#D97706}
+.b-approved{background:#F0FDF4;color:#15803D}.b-approved::before{background:#16A34A}
+.b-rejected{background:#FEF2F2;color:#B91C1C}.b-rejected::before{background:#DC2626}
+.b-done{background:#F0FDF4;color:#15803D}.b-done::before{background:#16A34A}
+.b-revision{background:#FFF7ED;color:#C2410C}.b-revision::before{background:#EA580C}
+/* Buttons */
+.btn{padding:9px 18px;border-radius:8px;border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-sky{background:#0EA5E9;color:white}.btn-sky:hover{background:#0284C7}
+.btn-success{background:#16A34A;color:white}.btn-success:hover{background:#15803D}
+.btn-danger{background:#DC2626;color:white}.btn-danger:hover{background:#B91C1C}
+.btn-outline{background:white;color:#374151;border:1px solid #E2E8F0}.btn-outline:hover{background:#F8FAFC}
+.btn-ghost{background:transparent;color:#64748B;padding:8px 12px}.btn-ghost:hover{background:#F1F5F9}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-group{display:flex;gap:8px}
+/* Form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#374151}
+.req{color:#DC2626}
+.form-control{width:100%;padding:10px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:14px;color:#1E293B;background:white;transition:border-color .2s}
+.form-control:focus{outline:none;border-color:#0EA5E9;box-shadow:0 0 0 3px rgba(14,165,233,.1)}
+textarea.form-control{resize:vertical;min-height:100px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-section{font-size:12px;font-weight:700;color:#64748B;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid #F1F5F9;text-transform:uppercase;letter-spacing:.3px}
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.page-header h2{font-size:20px;font-weight:700}
+.ph-sub{font-size:13px;color:#64748B;margin-top:2px}
+/* Task card */
+.task-card{background:white;border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:10px;border-right:4px solid transparent;cursor:pointer;transition:all .15s}
+.task-card:hover{box-shadow:0 3px 10px rgba(0,0,0,.1);transform:translateY(-1px)}
+.tc-urgent{border-right-color:#DC2626}
+.tc-today{border-right-color:#D97706}
+.tc-normal{border-right-color:#0EA5E9}
+.tc-done{border-right-color:#16A34A;opacity:.8}
+.tc-revision{border-right-color:#EA580C}
+.tc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.tc-client{font-size:12px;font-weight:700;color:#0EA5E9;margin-bottom:2px}
+.tc-title{font-size:14px;font-weight:700}
+.tc-meta{display:flex;gap:12px;font-size:12px;color:#64748B;flex-wrap:wrap}
+.tc-deadline{font-weight:600}
+/* Writing area */
+.writing-box{background:#FAFBFF;border:1.5px solid #E2E8F0;border-radius:10px;padding:16px;min-height:150px;font-size:14px;line-height:1.8;color:#1E293B;width:100%;font-family:'Cairo',sans-serif;resize:vertical}
+.writing-box:focus{outline:none;border-color:#0EA5E9;box-shadow:0 0 0 3px rgba(14,165,233,.1)}
+/* Brief box */
+.brief-box{background:#F0F9FF;border-radius:10px;padding:14px;margin-bottom:16px;border-right:3px solid #0EA5E9}
+.brief-item{display:flex;gap:8px;margin-bottom:6px;font-size:13px}
+.brief-label{color:#0369A1;font-weight:700;min-width:90px;flex-shrink:0}
+.brief-value{color:#1E293B}
+/* Revision item */
+.revision-item{background:#FFF7ED;border-radius:8px;padding:12px;margin-bottom:8px;border-right:3px solid #EA580C}
+.revision-who{font-size:12px;font-weight:700;color:#C2410C;margin-bottom:4px}
+.revision-text{font-size:13px;color:#475569;line-height:1.6}
+.revision-date{font-size:11px;color:#94A3B8;margin-top:4px}
+/* Brand card */
+.brand-card{background:white;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.brand-card:hover{border-color:#BAE6FD;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.brand-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.brand-avatar{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.brand-name{font-size:14px;font-weight:700}
+.brand-sub{font-size:12px;color:#64748B}
+.tone-tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;margin:2px}
+.tone-friendly{background:#F0FDF4;color:#15803D}
+.tone-premium{background:#F5F3FF;color:#6D28D9}
+.tone-modern{background:#F0F9FF;color:#0369A1}
+.tone-fun{background:#FFFBEB;color:#B45309}
+/* Detail layout */
+.detail-layout{display:grid;grid-template-columns:1fr 300px;gap:20px}
+/* KPI */
+.kpi-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F8FAFC;font-size:13px}
+.kpi-row:last-child{border-bottom:none}
+.kpi-label{color:#475569}
+.kpi-val{font-weight:700}
+/* Misc */
+.divider{height:1px;background:#F1F5F9;margin:16px 0}
+.text-muted{color:#94A3B8;font-size:12px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;background:#F1F5F9;color:#475569;margin:2px}
+.info-label{font-size:11px;color:#94A3B8;margin-bottom:3px;font-weight:600;text-transform:uppercase}
+.info-value{font-size:14px;font-weight:600}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* filter bar */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-select{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;color:#374151;cursor:pointer}
+.search-input{padding:8px 12px;border:1.5px solid #E2E8F0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;background:white;min-width:200px}
+/* char counter */
+.char-counter{font-size:12px;color:#94A3B8;text-align:left;margin-top:4px}
+/* hashtag input */
+.hashtag-area{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 12px;font-size:13px;width:100%;font-family:'Cairo',sans-serif;min-height:60px;resize:vertical}
+.hashtag-area:focus{outline:none;border-color:#0EA5E9}
+/* Performance */
+.perf-bar-wrap{background:#F1F5F9;border-radius:4px;height:8px;flex:1}
+.perf-bar{height:8px;border-radius:4px}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:white;border-radius:16px;padding:24px;width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8}
+.modal-close:hover{color:#1E293B}
+.modal-footer{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid #F1F5F9}
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:#F1F5F9}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">✍️</div>
+    <div><div class="logo-text">SocialPro</div><div class="logo-sub">قسم الكوبي رايتنج</div></div>
+  </div>
+  <div class="sidebar-section">شغلي</div>
+  <div class="nav-item active" onclick="show('dashboard')"><span class="nav-icon">🏠</span> الرئيسية</div>
+  <div class="nav-item" onclick="show('tasks')"><span class="nav-icon">📋</span> تاسكاتي<span class="nav-badge">6</span></div>
+  <div class="nav-item" onclick="show('writing')"><span class="nav-icon">✍️</span> منطقة الكتابة</div>
+  <div class="nav-item" onclick="show('revisions')"><span class="nav-icon">🔄</span> التعديلات<span class="nav-badge amber">3</span></div>
+  <div class="sidebar-section">المراجع</div>
+  <div class="nav-item" onclick="show('brands')"><span class="nav-icon">🎯</span> Brand Guides</div>
+  <div class="nav-item" onclick="show('library')"><span class="nav-icon">📚</span> مكتبة الكوبي</div>
+  <div class="sidebar-section">الإدارة</div>
+  <div class="nav-item" onclick="show('sop')"><span class="nav-icon">📜</span> SOP القسم</div>
+  <div class="nav-item" onclick="show('manager')"><span class="nav-icon">👨‍💼</span> لوحة المدير</div>
+  <div class="sidebar-user">
+    <div class="s-avatar">س</div>
+    <div><div class="user-name">سارة علي</div><div class="user-role">كوبي رايتر</div></div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">الرئيسية</div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="openModal('notif-modal')">🔔<div class="notif-dot"></div></div>
+      <button class="btn btn-sky btn-sm" onclick="show('writing')">✍️ ابدأ الكتابة</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div id="screen-dashboard" class="screen active">
+      <div style="margin-bottom:16px">
+        <div class="alert a-red"><span class="alert-icon">🔴</span><span class="alert-text"><strong>بوتيك لونا — ريلز الصيف</strong> Deadline اليوم 3م — لم يُسلَّم بعد</span><span class="alert-action" onclick="show('writing')">اكتب دلوقتي ←</span></div>
+        <div class="alert a-amber"><span class="alert-icon">⚠️</span><span class="alert-text"><strong>3 تعديلات</strong> وصلت من الأكونت — تحتاج رد خلال 24 ساعة</span><span class="alert-action" onclick="show('revisions')">افتح التعديلات ←</span></div>
+        <div class="alert a-sky"><span class="alert-icon">🆕</span><span class="alert-text"><strong>تاسك جديد وصل</strong> — شركة التك — 4 بوستات أغسطس</span><span class="alert-action" onclick="show('tasks')">شوف التاسك ←</span></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-sky">📝</div><div><div class="stat-label">تاسكات مفتوحة</div><div class="stat-value sv-sky">6</div><div class="stat-sub">هذا الأسبوع</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">🔄</div><div><div class="stat-label">تعديلات معلقة</div><div class="stat-value sv-amber">3</div><div class="stat-sub"><span class="down">تحتاج رد سريع</span></div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">سلّمت الشهر</div><div class="stat-value sv-green">47</div><div class="stat-sub"><span class="up">↑ من 38 الشهر اللي فات</span></div></div></div>
+        <div class="stat-card"><div class="stat-icon si-purple">⭐</div><div><div class="stat-label">نسبة التعديلات</div><div class="stat-value sv-purple">12%</div><div class="stat-sub"><span class="up">↓ تحسن عن 18%</span></div></div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">📅 تاسكات اليوم</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:6px;height:40px;border-radius:3px;background:#DC2626;flex-shrink:0"></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9">بوتيك لونا</div>
+                <div style="font-size:13px;font-weight:700">ريلز عرض الصيف</div>
+                <div style="font-size:12px;color:#DC2626;font-weight:600">⏰ Deadline 3:00 م — عاجل</div>
+              </div>
+              <button class="btn btn-sky btn-sm" onclick="show('writing')">اكتب</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:6px;height:40px;border-radius:3px;background:#EA580C;flex-shrink:0"></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9">شركة التك</div>
+                <div style="font-size:13px;font-weight:700">تعديل — بوست الخدمة الجديدة</div>
+                <div style="font-size:12px;color:#EA580C;font-weight:600">🔄 تعديل من الأكونت</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="show('revisions')">عدّل</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:6px;height:40px;border-radius:3px;background:#D97706;flex-shrink:0"></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9">كافيه ريلاكس</div>
+                <div style="font-size:13px;font-weight:700">4 بوستات يوليو</div>
+                <div style="font-size:12px;color:#D97706;font-weight:600">📅 Deadline غداً 12م</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="show('writing')">اكتب</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+              <div style="width:6px;height:40px;border-radius:3px;background:#0EA5E9;flex-shrink:0"></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9">مطعم الأصيل</div>
+                <div style="font-size:13px;font-weight:700">12 بوست — أول شهر</div>
+                <div style="font-size:12px;color:#64748B">📅 Deadline 22 يونيو</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="show('writing')">اكتب</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">📊 أدائي هذا الشهر</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>الالتزام بالـ Deadline</span><strong style="color:#16A34A">89%</strong></div>
+                <div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#16A34A;height:8px;border-radius:4px;width:89%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>بدون تعديلات من العميل</span><strong style="color:#0EA5E9">88%</strong></div>
+                <div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#0EA5E9;height:8px;border-radius:4px;width:88%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>سرعة رد التعديلات</span><strong style="color:#7C3AED">94%</strong></div>
+                <div style="background:#F1F5F9;border-radius:4px;height:8px"><div style="background:#7C3AED;height:8px;border-radius:4px;width:94%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🏆 تقييمي الشهر</div>
+            <div style="text-align:center;padding:10px 0">
+              <div style="font-size:48px;font-weight:900;color:#16A34A">A</div>
+              <div style="font-size:13px;color:#64748B;margin-top:4px">ممتاز — استمر هكذا</div>
+              <div style="margin-top:12px;font-size:12px;color:#475569;background:#F0FDF4;border-radius:8px;padding:8px">
+                ✅ 47 كوبي سُلِّم في الوقت<br>✅ نسبة تعديلات منخفضة 12%<br>✅ سرعة رد ممتازة على التعديلات
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TASKS ══ -->
+    <div id="screen-tasks" class="screen">
+      <div class="page-header">
+        <div><h2>📋 تاسكاتي</h2><div class="ph-sub">6 تاسكات مفتوحة — 3 تعديلات معلقة</div></div>
+      </div>
+      <div class="filter-bar">
+        <select class="filter-select"><option>كل العملاء</option><option>بوتيك لونا</option><option>شركة التك</option><option>كافيه ريلاكس</option><option>مطعم الأصيل</option></select>
+        <select class="filter-select"><option>كل الحالات</option><option>جديد</option><option>قيد الكتابة</option><option>مراجعة داخلية</option><option>تعديل</option><option>مكتمل</option></select>
+      </div>
+
+      <!-- Urgent -->
+      <div style="font-size:13px;font-weight:700;color:#DC2626;margin-bottom:10px;display:flex;align-items:center;gap:6px">🔴 عاجل</div>
+      <div class="task-card tc-urgent" onclick="show('writing')">
+        <div class="tc-top">
+          <div><div class="tc-client">بوتيك لونا</div><div class="tc-title">ريلز — عرض الصيف على الفساتين</div></div>
+          <span class="badge b-writing">قيد الكتابة</span>
+        </div>
+        <div class="tc-meta">
+          <span>📱 Instagram Reel</span>
+          <span class="tc-deadline" style="color:#DC2626">⏰ Deadline اليوم 3م</span>
+          <span>الأكونت: مي حسن</span>
+        </div>
+      </div>
+
+      <!-- Revisions -->
+      <div style="font-size:13px;font-weight:700;color:#EA580C;margin:16px 0 10px;display:flex;align-items:center;gap:6px">🔄 تعديلات وصلت</div>
+      <div class="task-card tc-revision" onclick="show('revisions')">
+        <div class="tc-top">
+          <div><div class="tc-client">شركة التك</div><div class="tc-title">تعديل — بوست خدمة جديدة</div></div>
+          <span class="badge b-revision">تعديل مطلوب</span>
+        </div>
+        <div class="tc-meta">
+          <span>📱 Facebook + Instagram</span>
+          <span class="tc-deadline" style="color:#EA580C">رد خلال 24 ساعة</span>
+          <span>ملاحظة: الـ CTA ضعيف</span>
+        </div>
+      </div>
+      <div class="task-card tc-revision" onclick="show('revisions')">
+        <div class="tc-top">
+          <div><div class="tc-client">كافيه ريلاكس</div><div class="tc-title">تعديل — بوست العروض الأسبوعية</div></div>
+          <span class="badge b-revision">تعديل مطلوب</span>
+        </div>
+        <div class="tc-meta">
+          <span>📱 Facebook</span>
+          <span class="tc-deadline" style="color:#EA580C">رد خلال 24 ساعة</span>
+          <span>ملاحظة: الطول أكتر من اللازم</span>
+        </div>
+      </div>
+
+      <!-- Today -->
+      <div style="font-size:13px;font-weight:700;color:#D97706;margin:16px 0 10px;display:flex;align-items:center;gap:6px">🟡 Deadline قريب</div>
+      <div class="task-card tc-today" onclick="show('writing')">
+        <div class="tc-top">
+          <div><div class="tc-client">كافيه ريلاكس</div><div class="tc-title">4 بوستات يوليو</div></div>
+          <span class="badge b-new">جديد</span>
+        </div>
+        <div class="tc-meta">
+          <span>📱 Facebook</span>
+          <span class="tc-deadline" style="color:#D97706">📅 Deadline غداً 12م</span>
+          <span>الأكونت: عمرو صلاح</span>
+        </div>
+      </div>
+      <div class="task-card tc-today" onclick="show('writing')">
+        <div class="tc-top">
+          <div><div class="tc-client">مطعم الأصيل</div><div class="tc-title">12 بوست — أول شهر (أونبوردينج)</div></div>
+          <span class="badge b-writing">قيد الكتابة</span>
+        </div>
+        <div class="tc-meta">
+          <span>📱 Facebook + Instagram</span>
+          <span class="tc-deadline">📅 22 يونيو</span>
+          <span style="color:#D97706">⚠️ عميل جديد — قرأ البريف كويس</span>
+        </div>
+      </div>
+
+      <!-- Normal -->
+      <div style="font-size:13px;font-weight:700;color:#0EA5E9;margin:16px 0 10px;display:flex;align-items:center;gap:6px">🔵 هذا الأسبوع</div>
+      <div class="task-card tc-normal" onclick="show('writing')">
+        <div class="tc-top">
+          <div><div class="tc-client">شركة التك</div><div class="tc-title">4 بوستات أغسطس — مجموعة أولى</div></div>
+          <span class="badge b-new">جديد</span>
+        </div>
+        <div class="tc-meta">
+          <span>📱 Facebook + LinkedIn</span>
+          <span class="tc-deadline">📅 25 يونيو</span>
+          <span>الأكونت: مي حسن</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ WRITING ══ -->
+    <div id="screen-writing" class="screen">
+      <div class="page-header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="btn btn-ghost btn-sm" onclick="show('tasks')">← رجوع</button>
+          <div><h2>✍️ منطقة الكتابة</h2><div class="ph-sub">بوتيك لونا — ريلز عرض الصيف</div></div>
+        </div>
+        <div class="btn-group">
+          <span class="badge b-writing" style="font-size:13px;padding:6px 14px">قيد الكتابة</span>
+          <span style="font-size:13px;font-weight:700;color:#DC2626;background:#FEF2F2;padding:6px 12px;border-radius:8px">⏰ Deadline: اليوم 3م</span>
+        </div>
+      </div>
+
+      <div class="detail-layout">
+        <div>
+          <!-- Brief -->
+          <div class="brief-box">
+            <div style="font-size:13px;font-weight:700;color:#0369A1;margin-bottom:10px">📋 البريف</div>
+            <div class="brief-item"><span class="brief-label">العميل:</span><span class="brief-value">بوتيك لونا</span></div>
+            <div class="brief-item"><span class="brief-label">المنصة:</span><span class="brief-value">Instagram Reel</span></div>
+            <div class="brief-item"><span class="brief-label">نوع البوست:</span><span class="brief-value">عرض صيف — كولكشن الفساتين</span></div>
+            <div class="brief-item"><span class="brief-label">الهدف:</span><span class="brief-value">زيادة المبيعات + توجيه للمحل</span></div>
+            <div class="brief-item"><span class="brief-label">Tone of Voice:</span><span class="brief-value">أنثوي — راقي — عصري — قريب</span></div>
+            <div class="brief-item"><span class="brief-label">ملاحظات:</span><span class="brief-value">إيموجي مناسب — هاشتاج #لونا_للأزياء — CTA واضح للزيارة</span></div>
+          </div>
+
+          <!-- Copy Writing Area -->
+          <div class="card">
+            <div class="card-title">
+              <span>✍️ الكوبي</span>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button class="btn btn-outline btn-sm" onclick="openModal('ai-assist-modal')">✨ مساعدة AI</button>
+                <button class="btn btn-outline btn-sm" onclick="show('library')">📚 من المكتبة</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">الكوبي الرئيسي <span class="req">*</span></label>
+              <textarea class="writing-box" id="main-copy" oninput="countChars()" placeholder="اكتب الكوبي هنا...">صيفك فيه لونا 🌸
+
+كولكشن الصيف وصل بألوان تشرح قلبك ✨
+فساتين بتجمع بين الأناقة والراحة — من 299 جنيه فقط!
+
+تعالي شوفي والباقي عليك 💕
+
+📍 فرعنا في المعادي والمهندسين
+🕐 يومياً من 11ص لـ 11م</textarea>
+              <div class="char-counter" id="char-count">الأحرف: 180</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">الهاشتاجات</label>
+              <textarea class="hashtag-area" placeholder="#هاشتاج_1 #هاشتاج_2">#لونا_للأزياء #موضة_صيف #فساتين #ستايل #مصر_الموضة #كولكشن_جديد #شوبينج</textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">الـ CTA (Call to Action)</label>
+              <select class="form-control">
+                <option>🔗 رابط في البايو</option>
+                <option>📞 تواصل معنا</option>
+                <option>📍 زورونا</option>
+                <option>🛒 اطلب دلوقتي</option>
+                <option>💬 تواصل واتساب</option>
+              </select>
+            </div>
+
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-sky">📤 تسليم للمراجعة الداخلية</button>
+              <button class="btn btn-outline">💾 حفظ مسودة</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div>
+          <div class="card">
+            <div class="card-title">🎯 Tone of Voice — بوتيك لونا</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">
+              <span class="tone-tag tone-premium">راقي</span>
+              <span class="tone-tag tone-friendly">ودود</span>
+              <span class="tone-tag tone-modern">عصري</span>
+            </div>
+            <div style="font-size:13px;color:#475569;line-height:1.8;background:#F8FAFC;border-radius:8px;padding:10px">
+              ✅ استخدم ضمير المؤنث (تعالي، روحي)<br>
+              ✅ إيموجي وردي وذهبي<br>
+              ✅ كلام قصير وخفيف<br>
+              ❌ تجنب الكلام الرسمي<br>
+              ❌ تجنب الأسعار بالكبسولات
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📏 حدود المنصة</div>
+            <div style="font-size:13px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F8FAFC"><span>Instagram Caption</span><strong>2,200 حرف</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F8FAFC"><span>Facebook Post</span><strong>63,206 حرف</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F8FAFC"><span>إيموجي مناسب؟</span><strong style="color:#16A34A">✅ نعم</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0"><span>هاشتاج مناسب؟</span><strong style="color:#16A34A">✅ نعم</strong></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">⚡ إجراءات</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F0F9FF;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#0369A1" onclick="openModal('ai-assist-modal')"><span>✨</span> مساعدة AI لتحسين الكوبي</div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8FAFC;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#374151" onclick="show('brands')"><span>🎯</span> Brand Guide كامل</div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F8FAFC;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#374151" onclick="show('library')"><span>📚</span> أمثلة من المكتبة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REVISIONS ══ -->
+    <div id="screen-revisions" class="screen">
+      <div class="page-header">
+        <div><h2>🔄 التعديلات المطلوبة</h2><div class="ph-sub">3 تعديلات — لازم ترد خلال 24 ساعة</div></div>
+      </div>
+
+      <div class="alert a-amber" style="margin-bottom:16px">
+        <span class="alert-icon">⏰</span>
+        <span class="alert-text">كل تعديل لازم يتعمل خلال 24 ساعة من استلامه — التأخير بيأثر على تقييمك</span>
+      </div>
+
+      <!-- Revision 1 -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#0EA5E9;margin-bottom:3px">شركة التك</div>
+            <div style="font-size:15px;font-weight:700">بوست — الخدمة الجديدة</div>
+            <div style="font-size:12px;color:#64748B;margin-top:2px">Facebook + Instagram · وصل التعديل منذ ساعتين</div>
+          </div>
+          <span class="badge b-revision">تعديل مطلوب</span>
+        </div>
+
+        <!-- Original copy -->
+        <div style="margin-bottom:12px">
+          <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px">الكوبي الأصلي:</div>
+          <div style="background:#F8FAFC;border-radius:8px;padding:12px;font-size:13px;color:#475569;line-height:1.8;border-right:3px solid #94A3B8">
+            خدمة جديدة وصلت 🚀 دلوقتي مع شركة التك تقدر تدير كل حاجة تقنية في شركتك من مكان واحد. اعرف أكتر ← رابط في البايو
+          </div>
+        </div>
+
+        <!-- Revision note -->
+        <div class="revision-item">
+          <div class="revision-who">✏️ ملاحظة الأكونت مانيجر — مي حسن</div>
+          <div class="revision-text">الـ CTA ضعيف جداً — "اعرف أكتر" مش كافي. المطلوب CTA أقوى يشجع على التواصل المباشر. كمان ضيف فايدة واضحة للعميل في أول السطر.</div>
+          <div class="revision-date">اليوم 11:30 ص</div>
+        </div>
+
+        <!-- New copy writing area -->
+        <div class="form-group" style="margin-top:12px">
+          <label class="form-label">الكوبي بعد التعديل</label>
+          <textarea class="writing-box" style="min-height:120px" placeholder="اكتب الكوبي المعدّل هنا..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sky btn-sm">📤 تسليم التعديل</button>
+          <button class="btn btn-outline btn-sm" onclick="openModal('revision-note-modal')">💬 رد على الملاحظة</button>
+        </div>
+      </div>
+
+      <!-- Revision 2 -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#0EA5E9;margin-bottom:3px">كافيه ريلاكس</div>
+            <div style="font-size:15px;font-weight:700">بوست — العروض الأسبوعية</div>
+            <div style="font-size:12px;color:#64748B;margin-top:2px">Facebook · وصل التعديل أمس</div>
+          </div>
+          <span class="badge b-revision">تعديل مطلوب</span>
+        </div>
+        <div class="revision-item">
+          <div class="revision-who">✏️ ملاحظة الأكونت مانيجر — عمرو صلاح</div>
+          <div class="revision-text">الكوبي طويل جداً — العميل طلب تخفيفه. Facebook Post المثالي 3-4 أسطر بس. اختصر وحافظ على الرسالة الأساسية.</div>
+          <div class="revision-date">أمس 4:00 م</div>
+        </div>
+        <div class="form-group" style="margin-top:12px">
+          <label class="form-label">الكوبي بعد التعديل</label>
+          <textarea class="writing-box" style="min-height:100px" placeholder="اكتب النسخة المختصرة..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sky btn-sm">📤 تسليم التعديل</button>
+          <button class="btn btn-outline btn-sm" onclick="openModal('revision-note-modal')">💬 رد</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BRANDS ══ -->
+    <div id="screen-brands" class="screen">
+      <div class="page-header">
+        <div><h2>🎯 Brand Guides</h2><div class="ph-sub">Tone of Voice لكل عميل — مرجعك قبل الكتابة</div></div>
+      </div>
+
+      <div class="brand-card" onclick="openModal('brand-detail-modal')">
+        <div class="brand-header">
+          <div class="brand-avatar" style="background:#FDF2F8;color:#BE185D">ل</div>
+          <div><div class="brand-name">بوتيك لونا</div><div class="brand-sub">أزياء نسائية · Facebook + Instagram</div></div>
+        </div>
+        <div style="margin-bottom:8px"><span class="tone-tag tone-premium">راقي</span><span class="tone-tag tone-friendly">ودود</span><span class="tone-tag tone-modern">عصري</span></div>
+        <div style="font-size:13px;color:#475569;line-height:1.8">
+          <strong>✅ استخدم:</strong> ضمير المؤنث — إيموجي وردي — جمل قصيرة — كلمات مثل "أناقة، راحة، تألقي"<br>
+          <strong>❌ تجنب:</strong> الكلام الرسمي — الجمل الطويلة — الأسعار بشكل مزعج<br>
+          <strong>🏷️ هاشتاج ثابت:</strong> #لونا_للأزياء
+        </div>
+      </div>
+
+      <div class="brand-card" onclick="openModal('brand-detail-modal')">
+        <div class="brand-header">
+          <div class="brand-avatar" style="background:#EFF6FF;color:#1D4ED8">ت</div>
+          <div><div class="brand-name">شركة التك</div><div class="brand-sub">تقنية معلومات · Facebook + Instagram + LinkedIn</div></div>
+        </div>
+        <div style="margin-bottom:8px"><span class="tone-tag tone-modern">احترافي</span><span class="tone-tag tone-friendly">ثقة</span></div>
+        <div style="font-size:13px;color:#475569;line-height:1.8">
+          <strong>✅ استخدم:</strong> لغة عصرية مع احترافية — أرقام وإحصائيات — كلمات مثل "حل، كفاءة، نمو"<br>
+          <strong>❌ تجنب:</strong> اللهجة العامية الشديدة — إيموجي كتير — مبالغة في الوعود<br>
+          <strong>🏷️ هاشتاج ثابت:</strong> #شركة_التك #تقنية
+        </div>
+      </div>
+
+      <div class="brand-card" onclick="openModal('brand-detail-modal')">
+        <div class="brand-header">
+          <div class="brand-avatar" style="background:#FEF3C7;color:#92400E">أ</div>
+          <div><div class="brand-name">مطعم الأصيل</div><div class="brand-sub">مأكولات مصرية · Facebook + Instagram</div></div>
+        </div>
+        <div style="margin-bottom:8px"><span class="tone-tag tone-friendly">ودود</span><span class="tone-tag tone-fun">شعبي</span></div>
+        <div style="font-size:13px;color:#475569;line-height:1.8">
+          <strong>✅ استخدم:</strong> لهجة مصرية دافية — إيموجي أكل — كلمات مثل "أصيل، أكلة بيتية، نفس جدتنا"<br>
+          <strong>❌ تجنب:</strong> الإنجليزي — الفصحى المتكلفة<br>
+          <strong>🏷️ هاشتاج ثابت:</strong> #الأصيل #أكل_مصري
+        </div>
+      </div>
+
+      <div class="brand-card" onclick="openModal('brand-detail-modal')">
+        <div class="brand-header">
+          <div class="brand-avatar" style="background:#F0FDF4;color:#15803D">ك</div>
+          <div><div class="brand-name">كافيه ريلاكس</div><div class="brand-sub">كافيه · Facebook + Instagram</div></div>
+        </div>
+        <div style="margin-bottom:8px"><span class="tone-tag tone-fun">مريح</span><span class="tone-tag tone-friendly">شبابي</span></div>
+        <div style="font-size:13px;color:#475569;line-height:1.8">
+          <strong>✅ استخدم:</strong> كلام خفيف — إيموجي قهوة وطبيعة — جمل قصيرة — "خد برياك، استرخي"<br>
+          <strong>❌ تجنب:</strong> الضغط أو الإلحاح الشديد في البيع<br>
+          <strong>🏷️ هاشتاج ثابت:</strong> #ريلاكس_كافيه #وقت_القهوة
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LIBRARY ══ -->
+    <div id="screen-library" class="screen">
+      <div class="page-header">
+        <div><h2>📚 مكتبة الكوبي</h2><div class="ph-sub">أمثلة ناجحة وتمبلتس جاهزة</div></div>
+        <button class="btn btn-sky btn-sm" onclick="openModal('save-copy-modal')">💾 حفظ كوبي جديد</button>
+      </div>
+
+      <div class="filter-bar">
+        <select class="filter-select"><option>كل العملاء</option><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option></select>
+        <select class="filter-select"><option>كل الأنواع</option><option>عرض / Offer</option><option>تعريفي</option><option>تشجيعي</option><option>Reel</option><option>Story</option></select>
+        <input class="search-input" placeholder="🔍 ابحث في المكتبة...">
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="card" style="cursor:pointer" onclick="openModal('library-item-modal')">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9;margin-bottom:2px">بوتيك لونا</div>
+                <div style="font-size:14px;font-weight:700">كوبي عرض سعر — أداء ممتاز</div>
+              </div>
+              <span style="background:#F0FDF4;color:#15803D;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700">⭐ الأعلى تفاعل</span>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px;font-size:13px;color:#475569;line-height:1.8;margin-bottom:10px">
+              صيفك فيه لونا 🌸 كولكشن الصيف وصل بألوان تشرح قلبك — من 299 جنيه فقط! تعالي شوفي والباقي عليك 💕
+            </div>
+            <div style="display:flex;gap:8px;font-size:12px;color:#64748B"><span>📱 Instagram</span><span>·</span><span>Reach: 5,200</span><span>·</span><span>Engagement: 4.8%</span></div>
+          </div>
+
+          <div class="card" style="cursor:pointer" onclick="openModal('library-item-modal')">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9;margin-bottom:2px">مطعم الأصيل</div>
+                <div style="font-size:14px;font-weight:700">كوبي تعريفي — يوم الجمعة</div>
+              </div>
+              <span class="tag">تشجيعي</span>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px;font-size:13px;color:#475569;line-height:1.8;margin-bottom:10px">
+              الجمعة من غير أكل مصري أصيل؟ 🍛 تعالوا عندنا وجربوا الفرق — أكلة بيتية زي ما بتحبوا 💛
+            </div>
+            <div style="display:flex;gap:8px;font-size:12px;color:#64748B"><span>📱 Facebook</span><span>·</span><span>Reach: 3,100</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="cursor:pointer" onclick="openModal('library-item-modal')">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9;margin-bottom:2px">كافيه ريلاكس</div>
+                <div style="font-size:14px;font-weight:700">تمبلت — بوست الصبح</div>
+              </div>
+              <span class="tag">تمبلت</span>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px;font-size:13px;color:#475569;line-height:1.8;margin-bottom:10px">
+              صباحك [☀️/🌧️] وقهوتك من ريلاكس ☕ تعالى خد نفسك قبل ما اليوم يبدأ 🍃 [عنوان الفرع]
+            </div>
+            <div style="display:flex;gap:8px;font-size:12px;color:#64748B"><span>📱 Facebook + Instagram</span><span>·</span><span>تمبلت قابل للتعديل</span></div>
+          </div>
+
+          <div class="card" style="cursor:pointer" onclick="openModal('library-item-modal')">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#0EA5E9;margin-bottom:2px">شركة التك</div>
+                <div style="font-size:14px;font-weight:700">كوبي خدمة جديدة — LinkedIn</div>
+              </div>
+              <span class="tag">احترافي</span>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px;font-size:13px;color:#475569;line-height:1.8;margin-bottom:10px">
+              🚀 خدمة جديدة: [اسم الخدمة] — الحل الأمثل لـ [المشكلة]. جرّبها مجاناً لمدة 14 يوم ← [CTA]
+            </div>
+            <div style="display:flex;gap:8px;font-size:12px;color:#64748B"><span>📱 LinkedIn</span><span>·</span><span>تمبلت B2B</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SOP ══ -->
+    <div id="screen-sop" class="screen">
+      <div class="page-header"><h2>📜 SOP قسم الكوبي رايتنج</h2></div>
+      <div class="two-col">
+        <div>
+          <div class="card">
+            <div class="card-title">🔄 خطوات العمل — من التاسك للتسليم</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:12px;padding:12px;background:#F0F9FF;border-radius:8px;border-right:3px solid #0EA5E9">
+                <div style="font-size:20px;flex-shrink:0">1️⃣</div>
+                <div><div style="font-weight:700;margin-bottom:3px">استلام التاسك</div><div style="font-size:13px;color:#475569">اقرأ البريف كامل + افتح Brand Guide العميل + اسأل لو في حاجة مش واضحة</div></div>
+              </div>
+              <div style="display:flex;gap:12px;padding:12px;background:#F5F3FF;border-radius:8px;border-right:3px solid #7C3AED">
+                <div style="font-size:20px;flex-shrink:0">2️⃣</div>
+                <div><div style="font-weight:700;margin-bottom:3px">الكتابة</div><div style="font-size:13px;color:#475569">كتابة الكوبي + الهاشتاجات + الـ CTA مع الالتزام بـ Tone of Voice</div></div>
+              </div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706">
+                <div style="font-size:20px;flex-shrink:0">3️⃣</div>
+                <div><div style="font-weight:700;margin-bottom:3px">مراجعة ذاتية</div><div style="font-size:13px;color:#475569">راجع الإملاء — تأكد من الـ CTA — تأكد من الهاشتاج الثابت</div></div>
+              </div>
+              <div style="display:flex;gap:12px;padding:12px;background:#F0FDF4;border-radius:8px;border-right:3px solid #16A34A">
+                <div style="font-size:20px;flex-shrink:0">4️⃣</div>
+                <div><div style="font-weight:700;margin-bottom:3px">التسليم</div><div style="font-size:13px;color:#475569">سلّم للأكونت مانيجر قبل الـ Deadline بـ 48 ساعة على الأقل</div></div>
+              </div>
+              <div style="display:flex;gap:12px;padding:12px;background:#FFF7ED;border-radius:8px;border-right:3px solid #EA580C">
+                <div style="font-size:20px;flex-shrink:0">5️⃣</div>
+                <div><div style="font-weight:700;margin-bottom:3px">التعديلات</div><div style="font-size:13px;color:#475569">رد على أي تعديل خلال 24 ساعة — قبل الرد اقرأ الملاحظة كويس</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">⚠️ القواعد الأساسية</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="padding:10px;background:#FEF2F2;border-radius:8px;border-right:3px solid #DC2626"><strong style="color:#991B1B">🚫 ممنوع:</strong> تسليم كوبي بدون مراجعة إملاء — تسليم بعد الـ Deadline بدون إبلاغ — كتابة بدون قراءة البريف</div>
+              <div style="padding:10px;background:#F0FDF4;border-radius:8px;border-right:3px solid #16A34A"><strong style="color:#166534">✅ مطلوب:</strong> الهاشتاج الثابت في كل بوست — CTA في كل بوست — الالتزام بـ Tone of Voice</div>
+              <div style="padding:10px;background:#FFFBEB;border-radius:8px;border-right:3px solid #D97706"><strong style="color:#92400E">⚠️ لو Deadline مش هينفع:</strong> أبلغ الأكونت قبل 24 ساعة — مش بعد ما الوقت يعدي</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">⭐ معايير التقييم الشهري</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>الالتزام بالـ Deadline</span><strong>30%</strong></div>
+                <div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#0EA5E9;height:10px;border-radius:4px;width:30%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>جودة الكوبي (نسبة التعديلات)</span><strong>30%</strong></div>
+                <div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#7C3AED;height:10px;border-radius:4px;width:30%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>سرعة رد التعديلات</span><strong>20%</strong></div>
+                <div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#16A34A;height:10px;border-radius:4px;width:20%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>الالتزام بـ Tone of Voice</span><strong>20%</strong></div>
+                <div style="background:#F1F5F9;border-radius:4px;height:10px"><div style="background:#D97706;height:10px;border-radius:4px;width:20%"></div></div>
+              </div>
+            </div>
+            <div style="margin-top:14px;padding:12px;background:#F0F9FF;border-radius:8px;font-size:12px;color:#0369A1;line-height:1.8">
+              <strong>A:</strong> 90%+ · <strong>B:</strong> 75-89% · <strong>C:</strong> 60-74% · <strong>D:</strong> أقل من 60%
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📏 المعايير الفنية</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F8FAFC"><span>Facebook Post مثالي</span><strong>3-4 أسطر</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F8FAFC"><span>Instagram Caption</span><strong>4-6 أسطر</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F8FAFC"><span>هاشتاجات Instagram</span><strong>5-10 هاشتاج</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F8FAFC"><span>هاشتاجات Facebook</span><strong>2-3 بس</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:7px 0"><span>الـ CTA</span><strong>جملة واحدة واضحة</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ MANAGER ══ -->
+    <div id="screen-manager" class="screen">
+      <div class="page-header"><h2>👨‍💼 لوحة تحكم المدير</h2></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-sky">📝</div><div><div class="stat-label">كوبي سُلِّم الشهر</div><div class="stat-value sv-sky">47</div><div class="stat-sub up">↑ عن 38 الشهر السابق</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green">✅</div><div><div class="stat-label">في الوقت</div><div class="stat-value sv-green">89%</div><div class="stat-sub">42 من 47 تاسك</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber">🔄</div><div><div class="stat-label">نسبة التعديلات</div><div class="stat-value sv-amber">12%</div><div class="stat-sub up">↓ تحسن من 18%</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red">⏰</div><div><div class="stat-label">تعديلات متأخرة</div><div class="stat-value sv-red">1</div><div class="stat-sub">أكثر من 24 ساعة</div></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">👥 أداء الكوبي رايترز</div>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC">
+              <div style="width:36px;height:36px;border-radius:50%;background:#F0F9FF;color:#0369A1;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">س</div>
+              <div style="flex:1.5"><div style="font-size:13px;font-weight:700">سارة علي</div><div style="font-size:11px;color:#64748B">كوبي رايتر أول</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#0EA5E9">47</div><div style="font-size:10px;color:#94A3B8">تسليم</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#16A34A">89%</div><div style="font-size:10px;color:#94A3B8">في الوقت</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#D97706">12%</div><div style="font-size:10px;color:#94A3B8">تعديلات</div></div>
+              <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#F0FDF4;color:#15803D">A</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
+              <div style="width:36px;height:36px;border-radius:50%;background:#FFFBEB;color:#92400E;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">م</div>
+              <div style="flex:1.5"><div style="font-size:13px;font-weight:700">مريم خالد</div><div style="font-size:11px;color:#64748B">كوبي رايتر</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#0EA5E9">31</div><div style="font-size:10px;color:#94A3B8">تسليم</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#D97706">74%</div><div style="font-size:10px;color:#94A3B8">في الوقت</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:16px;font-weight:900;color:#DC2626">24%</div><div style="font-size:10px;color:#94A3B8">تعديلات</div></div>
+              <span style="padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;background:#FFFBEB;color:#B45309">C</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="card-title">🚨 تنبيهات</div>
+            <div class="alert a-amber"><span class="alert-icon">⚠️</span><span class="alert-text"><strong>مريم خالد</strong> — نسبة تعديلات مرتفعة 24% — تحتاج متابعة وتدريب</span></div>
+            <div class="alert a-red"><span class="alert-icon">🔴</span><span class="alert-text"><strong>تعديل شركة التك</strong> — متأخر عن 24 ساعة</span></div>
+            <div class="alert a-sky"><span class="alert-icon">📊</span><span class="alert-text">نسبة الالتزام بالـ Deadline انخفضت هذا الشهر — راجع الأسباب</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">📋 أكثر أسباب التعديلات</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>CTA ضعيف أو غائب</span><div style="display:flex;align-items:center;gap:8px"><div style="background:#F1F5F9;border-radius:4px;height:8px;width:80px"><div style="background:#DC2626;height:8px;border-radius:4px;width:60%"></div></div><strong>35%</strong></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>الكوبي طويل جداً</span><div style="display:flex;align-items:center;gap:8px"><div style="background:#F1F5F9;border-radius:4px;height:8px;width:80px"><div style="background:#D97706;height:8px;border-radius:4px;width:45%"></div></div><strong>25%</strong></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>Tone خاطئ</span><div style="display:flex;align-items:center;gap:8px"><div style="background:#F1F5F9;border-radius:4px;height:8px;width:80px"><div style="background:#7C3AED;height:8px;border-radius:4px;width:30%"></div></div><strong>20%</strong></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span>أخطاء إملائية</span><div style="display:flex;align-items:center;gap:8px"><div style="background:#F1F5F9;border-radius:4px;height:8px;width:80px"><div style="background:#0EA5E9;height:8px;border-radius:4px;width:20%"></div></div><strong>10%</strong></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<div class="modal-overlay" id="ai-assist-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">✨ مساعدة AI لتحسين الكوبي</div><button class="modal-close" onclick="closeModal('ai-assist-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">الكوبي الحالي</label><textarea class="form-control" style="min-height:80px">صيفك فيه لونا 🌸 كولكشن الصيف وصل...</textarea></div>
+    <div class="form-group"><label class="form-label">تحسين في</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;background:#F8FAFC;padding:7px 12px;border-radius:8px;border:1.5px solid #E2E8F0"><input type="checkbox" checked> قوّي الـ CTA</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;background:#F8FAFC;padding:7px 12px;border-radius:8px;border:1.5px solid #E2E8F0"><input type="checkbox"> اختصر الكوبي</label>
+        <label style="display:flex;align-items:center;gap=6px;cursor:pointer;font-size:13px;background:#F8FAFC;padding:7px 12px;border-radius:8px;border:1.5px solid #E2E8F0"><input type="checkbox"> حسّن الـ Hook</label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;background:#F8FAFC;padding:7px 12px;border-radius:8px;border:1.5px solid #E2E8F0"><input type="checkbox"> عدّل الـ Tone</label>
+      </div>
+    </div>
+    <div style="background:#F0F9FF;border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:#0369A1;margin-bottom:8px">✨ اقتراح AI:</div>
+      <div style="font-size:13px;color:#1E293B;line-height:1.8">صيفك مش كامل من غير لونا 🌸<br>كولكشن الصيف وصل — ألوان تتكلم عنك ✨<br>من 299 جنيه فقط!<br><strong>تعالي دلوقتي واختاري اللي يعبر عنك 💕</strong><br>#لونا_للأزياء</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sky" onclick="closeModal('ai-assist-modal')">✅ استخدم الاقتراح</button>
+      <button class="btn btn-outline" onclick="closeModal('ai-assist-modal')">جرب تاني</button>
+      <button class="btn btn-ghost" onclick="closeModal('ai-assist-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="revision-note-modal">
+  <div class="modal" style="width:460px">
+    <div class="modal-header"><div class="modal-title">💬 رد على ملاحظة التعديل</div><button class="modal-close" onclick="closeModal('revision-note-modal')">×</button></div>
+    <div class="form-group"><label class="form-label">ردك على الملاحظة</label><textarea class="form-control" placeholder="لو في استفسار أو إيضاح..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-sky" onclick="closeModal('revision-note-modal')">📤 إرسال</button>
+      <button class="btn btn-ghost" onclick="closeModal('revision-note-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="save-copy-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">💾 حفظ كوبي في المكتبة</div><button class="modal-close" onclick="closeModal('save-copy-modal')">×</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">العميل</label><select class="form-control"><option>بوتيك لونا</option><option>شركة التك</option><option>مطعم الأصيل</option><option>كافيه ريلاكس</option></select></div>
+      <div class="form-group"><label class="form-label">النوع</label><select class="form-control"><option>عرض</option><option>تعريفي</option><option>تشجيعي</option><option>Reel</option><option>تمبلت</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">الكوبي</label><textarea class="form-control" style="min-height:120px" placeholder="الكوبي الناجح..."></textarea></div>
+    <div class="form-group"><label class="form-label">نتيجة الأداء (اختياري)</label><input type="text" class="form-control" placeholder="مثال: Reach 5,200 — Engagement 4.8%"></div>
+    <div class="modal-footer">
+      <button class="btn btn-sky" onclick="closeModal('save-copy-modal')">💾 حفظ في المكتبة</button>
+      <button class="btn btn-ghost" onclick="closeModal('save-copy-modal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="brand-detail-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🎯 Brand Guide — بوتيك لونا</div><button class="modal-close" onclick="closeModal('brand-detail-modal')">×</button></div>
+    <div class="form-section">الهوية والأسلوب</div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;margin-bottom:16px">
+      <div style="padding:10px;background:#F8FAFC;border-radius:8px"><strong>النشاط:</strong> بوتيك أزياء نسائية — فساتين وإكسسوارات</div>
+      <div style="padding:10px;background:#F8FAFC;border-radius:8px"><strong>الجمهور:</strong> سيدات 22-40 سنة — محبات الموضة</div>
+      <div style="padding:10px;background:#FDF2F8;border-radius:8px"><strong>Tone of Voice:</strong> راقي — أنثوي — عصري — قريب</div>
+      <div style="padding:10px;background:#F0FDF4;border-radius:8px"><strong>✅ كلمات مفضلة:</strong> أناقة — تألقي — راحة — اختاري — كولكشن</div>
+      <div style="padding:10px;background:#FEF2F2;border-radius:8px"><strong>❌ كلمات ممنوعة:</strong> رخيص — أرخص — خصم كبير جداً</div>
+      <div style="padding:10px;background:#FFFBEB;border-radius:8px"><strong>الهاشتاج الثابت:</strong> #لونا_للأزياء — يكون في كل بوست</div>
+      <div style="padding:10px;background:#F0F9FF;border-radius:8px"><strong>الإيموجي المفضل:</strong> 🌸 💕 ✨ 👗 💛 — وردي وذهبي</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sky" onclick="closeModal('brand-detail-modal')">✅ فهمت</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="library-item-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📚 كوبي من المكتبة</div><button class="modal-close" onclick="closeModal('library-item-modal')">×</button></div>
+    <div style="background:#F0F9FF;border-radius:10px;padding:14px;margin-bottom:16px;font-size:14px;color:#1E293B;line-height:1.8">
+      صيفك فيه لونا 🌸 كولكشن الصيف وصل بألوان تشرح قلبك — من 299 جنيه فقط! تعالي شوفي والباقي عليك 💕 #لونا_للأزياء
+    </div>
+    <div style="font-size:12px;color:#64748B;margin-bottom:16px">📱 Instagram · Reach: 5,200 · Engagement: 4.8% · يونيو 2025</div>
+    <div class="modal-footer">
+      <button class="btn btn-sky" onclick="closeModal('library-item-modal')">📋 نسخ للكتابة</button>
+      <button class="btn btn-ghost" onclick="closeModal('library-item-modal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="notif-modal">
+  <div class="modal" style="width:400px">
+    <div class="modal-header"><div class="modal-title">🔔 الإشعارات</div><button class="modal-close" onclick="closeModal('notif-modal')">×</button></div>
+    <div style="display:flex;flex-direction:column">
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FEF2F2;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔴</div><div><div style="font-size:13px;line-height:1.5">Deadline <strong>بوتيك لونا — ريلز الصيف</strong> اليوم 3م</div><div style="font-size:11px;color:#94A3B8">منذ ساعة</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #F8FAFC"><div style="width:36px;height:36px;border-radius:50%;background:#FFF7ED;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔄</div><div><div style="font-size:13px;line-height:1.5">تعديل جديد من <strong>شركة التك</strong> — الرد خلال 24 ساعة</div><div style="font-size:11px;color:#94A3B8">منذ ساعتين</div></div></div>
+      <div style="display:flex;gap:12px;padding:12px 0"><div style="width:36px;height:36px;border-radius:50%;background:#F0F9FF;display:flex;align-items:center;justify-content:center;flex-shrink:0">🆕</div><div><div style="font-size:13px;line-height:1.5">تاسك جديد: <strong>شركة التك — 4 بوستات أغسطس</strong></div><div style="font-size:11px;color:#94A3B8">اليوم 9:00 ص</div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var titles = {
+  dashboard:'الرئيسية', tasks:'تاسكاتي', writing:'منطقة الكتابة',
+  revisions:'التعديلات', brands:'Brand Guides', library:'مكتبة الكوبي',
+  sop:'SOP القسم', manager:'لوحة تحكم المدير'
+};
+function show(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  var s = document.getElementById('screen-' + id);
+  if(s) s.classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(function(el){
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')});
+});
+function countChars(){
+  var t = document.getElementById('main-copy');
+  var c = document.getElementById('char-count');
+  if(t && c) c.textContent = 'الأحرف: ' + t.value.length;
+}
+</script>
+</body>
+</html>

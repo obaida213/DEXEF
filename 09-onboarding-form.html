@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نموذج استيعاب العميل — Onboarding Form</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+:root {
+  --bg:     #F5F7FA;
+  --white:  #FFFFFF;
+  --border: #E2E8F0;
+  --text:   #1A2535;
+  --muted:  #64748B;
+  --faint:  #94A3B8;
+  --accent: #1E3A5F;
+  --gold:   #D97706;
+  --green:  #15803D;
+  --r: 10px;
+}
+
+body { font-family:'Segoe UI',system-ui,sans-serif; direction:rtl; background:var(--bg); color:var(--text); font-size:14px; line-height:1.7; -webkit-font-smoothing:antialiased; padding:0 0 60px }
+::-webkit-scrollbar { width:5px } ::-webkit-scrollbar-thumb { background:#CBD5E1; border-radius:3px }
+
+/* TOPBAR - screen only */
+.topbar { height:54px; background:var(--white); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 32px; gap:14px; position:sticky; top:0; z-index:100 }
+.tb-chip { font-size:10.5px; font-weight:800; background:var(--accent); color:#fff; padding:3px 10px; border-radius:6px }
+.tb-title { font-size:13px; font-weight:600; color:var(--muted) }
+.tb-btns { margin-right:auto; display:flex; gap:10px }
+.btn { border:1px solid var(--border); background:none; color:var(--muted); font-size:12.5px; padding:6px 18px; border-radius:7px; cursor:pointer; font-family:inherit; transition:.15s }
+.btn:hover { border-color:var(--accent); color:var(--accent) }
+.btn.primary { background:var(--accent); color:#fff; border-color:var(--accent) }
+.btn.primary:hover { background:#162C47 }
+
+/* WRAPPER */
+.wrapper { max-width:800px; margin:36px auto; padding:0 20px }
+
+/* FORM HEADER */
+.form-header { background:var(--accent); border-radius:var(--r); padding:32px 36px; margin-bottom:32px; display:flex; justify-content:space-between; align-items:flex-start; gap:20px }
+.fh-left h1 { font-size:22px; font-weight:800; color:#fff; margin-bottom:6px }
+.fh-left p  { font-size:13px; color:rgba(255,255,255,.65); line-height:1.6 }
+.fh-right   { flex-shrink:0 }
+.form-meta  { display:flex; flex-direction:column; gap:8px }
+.fm-row     { display:flex; flex-direction:column; gap:3px }
+.fm-label   { font-size:10.5px; font-weight:700; color:rgba(255,255,255,.5); letter-spacing:.8px }
+.fm-val     { font-size:13px; font-weight:600; color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:6px; padding:4px 12px; min-width:160px }
+.fm-val input { background:none; border:none; outline:none; color:#fff; font-family:inherit; font-size:13px; font-weight:600; width:100%; direction:rtl }
+.fm-val input::placeholder { color:rgba(255,255,255,.4); font-weight:400 }
+
+/* SECTION */
+.section { background:var(--white); border-radius:var(--r); border:1px solid var(--border); margin-bottom:20px; overflow:hidden }
+.sec-head { display:flex; align-items:center; gap:12px; padding:16px 24px; border-bottom:1px solid var(--border) }
+.sec-num  { width:28px; height:28px; border-radius:7px; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; flex-shrink:0 }
+.sec-title { font-size:14.5px; font-weight:800; color:var(--text) }
+.sec-sub   { font-size:12.5px; color:var(--faint); margin-right:auto }
+.sec-body  { padding:24px }
+
+/* FIELD */
+.field { margin-bottom:20px }
+.field:last-child { margin-bottom:0 }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:16px }
+.field-row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px }
+label { display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:6px; letter-spacing:.3px }
+label span.req { color:var(--gold); margin-right:2px }
+label span.hint { font-size:11px; color:var(--faint); font-weight:400; margin-right:6px }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+select,
+textarea {
+  width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:8px;
+  font-family:inherit; font-size:13.5px; color:var(--text); background:var(--bg);
+  outline:none; transition:.15s; line-height:1.6; direction:rtl
+}
+input:focus, select:focus, textarea:focus { border-color:var(--accent); background:var(--white); box-shadow:0 0 0 3px rgba(30,58,95,.07) }
+textarea { resize:vertical; min-height:80px }
+select { cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:left 12px center }
+
+/* CHECKBOX & RADIO GROUP */
+.check-group, .radio-group { display:flex; flex-wrap:wrap; gap:10px; margin-top:4px }
+.check-item, .radio-item  { display:flex; align-items:center; gap:7px; cursor:pointer; padding:8px 14px; border:1px solid var(--border); border-radius:8px; background:var(--bg); transition:.15s; user-select:none; font-size:13px }
+.check-item:hover, .radio-item:hover { border-color:var(--accent); background:var(--white) }
+.check-item input, .radio-item input { width:15px; height:15px; accent-color:var(--accent); cursor:pointer; flex-shrink:0 }
+.check-item:has(input:checked), .radio-item:has(input:checked) { border-color:var(--accent); background:#EFF6FF; font-weight:600 }
+
+/* RATING ROW */
+.rating-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap }
+.rating-row label { margin-bottom:0; font-size:12px }
+.rating-btn { width:34px; height:34px; border:1px solid var(--border); border-radius:7px; background:var(--bg); cursor:pointer; font-size:13px; font-weight:600; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:.15s }
+.rating-btn:hover { border-color:var(--accent); color:var(--accent) }
+.rating-btn.on { background:var(--accent); color:#fff; border-color:var(--accent) }
+
+/* DIVIDER LABEL */
+.divider-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--faint); margin:20px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border) }
+
+/* NOTE BOX */
+.note-box { background:#FFFBEB; border:1px solid #FDE68A; border-radius:8px; padding:12px 16px; font-size:12.5px; color:#92400E; margin-top:12px; line-height:1.6 }
+
+/* COMPETITORS TABLE */
+.comp-table { width:100%; border-collapse:collapse }
+.comp-table th { font-size:11px; font-weight:700; color:var(--faint); letter-spacing:.8px; text-transform:uppercase; padding:8px 12px; text-align:right; border-bottom:2px solid var(--border) }
+.comp-table td { padding:6px 8px; border-bottom:1px solid var(--border) }
+.comp-table td input { background:none; border:none; border-bottom:1px solid var(--border); border-radius:0; padding:6px 4px; font-size:13px; outline:none }
+.comp-table td input:focus { border-bottom-color:var(--accent) }
+.comp-table tr:last-child td { border-bottom:none }
+.comp-table td:first-child { font-size:12px; color:var(--faint); font-weight:600; padding-right:12px; white-space:nowrap }
+
+/* SIGN AREA */
+.sign-area { background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:24px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px }
+.sign-box { display:flex; flex-direction:column; gap:6px }
+.sign-box label { font-size:11px; font-weight:700; color:var(--faint); letter-spacing:.8px; text-transform:uppercase }
+.sign-line { height:44px; border-bottom:2px solid var(--border); display:flex; align-items:flex-end; padding-bottom:4px }
+.sign-line input { border:none; background:none; font-family:inherit; font-size:13px; width:100%; outline:none }
+
+/* PRINT STYLES */
+@media print {
+  .topbar, .no-print { display:none!important }
+  body { background:#fff; padding:0 }
+  .wrapper { max-width:100%; margin:0; padding:20px 24px }
+  .section, .form-header { box-shadow:none }
+  input, textarea, select { background:#fff!important; border-color:#CBD5E1!important }
+  .check-item, .radio-item { break-inside:avoid }
+  .section { page-break-inside:avoid }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar no-print">
+  <span class="tb-chip">FORM</span>
+  <span class="tb-title">نموذج استيعاب العميل</span>
+  <div class="tb-btns">
+    <button class="btn" onclick="clearForm()">مسح الكل</button>
+    <button class="btn primary" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+  </div>
+</div>
+
+<div class="wrapper">
+
+<!-- HEADER -->
+<div class="form-header">
+  <div class="fh-left">
+    <h1>نموذج استيعاب العميل</h1>
+    <p>يُرجى ملء هذا النموذج بأكبر قدر من التفاصيل<br>كل المعلومات سرية وتُستخدم فقط لتقديم أفضل خدمة ممكنة</p>
+  </div>
+  <div class="fh-right">
+    <div class="form-meta">
+      <div class="fm-row">
+        <span class="fm-label">رقم النموذج</span>
+        <div class="fm-val"><input type="text" placeholder="OB-001" id="formNum"></div>
+      </div>
+      <div class="fm-row">
+        <span class="fm-label">تاريخ التعاقد</span>
+        <div class="fm-val"><input type="text" placeholder="يوم / شهر / سنة" id="formDate"></div>
+      </div>
+      <div class="fm-row">
+        <span class="fm-label">مدير الحساب</span>
+        <div class="fm-val"><input type="text" placeholder="الاسم" id="formAM"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 1: بيانات الشركة -->
+<div class="section" id="s1">
+  <div class="sec-head">
+    <div class="sec-num">١</div>
+    <div class="sec-title">بيانات الشركة الأساسية</div>
+    <div class="sec-sub">المعلومات التعريفية</div>
+  </div>
+  <div class="sec-body">
+    <div class="field field-row">
+      <div>
+        <label>اسم الشركة / العلامة التجارية <span class="req">*</span></label>
+        <input type="text" placeholder="الاسم الذي سيظهر على السوشيال ميديا">
+      </div>
+      <div>
+        <label>النشاط التجاري <span class="req">*</span></label>
+        <input type="text" placeholder="مثال: مطعم / عيادة / متجر ملابس">
+      </div>
+    </div>
+    <div class="field field-row">
+      <div>
+        <label>المنطقة الجغرافية <span class="req">*</span></label>
+        <input type="text" placeholder="المحافظة / المدينة / الحي">
+      </div>
+      <div>
+        <label>سنة تأسيس النشاط</label>
+        <input type="text" placeholder="مثال: ٢٠١٨">
+      </div>
+    </div>
+    <div class="field field-row">
+      <div>
+        <label>رقم الواتساب <span class="req">*</span></label>
+        <input type="tel" placeholder="+20 1XX XXX XXXX">
+      </div>
+      <div>
+        <label>البريد الإلكتروني</label>
+        <input type="email" placeholder="example@company.com">
+      </div>
+    </div>
+    <div class="field">
+      <label>الموقع الإلكتروني <span class="hint">(لو موجود)</span></label>
+      <input type="url" placeholder="https://www.example.com">
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 2: المنتجات والخدمات -->
+<div class="section" id="s2">
+  <div class="sec-head">
+    <div class="sec-num">٢</div>
+    <div class="sec-title">المنتجات والخدمات</div>
+    <div class="sec-sub">عشان نفهم إيه اللي بتبيعه</div>
+  </div>
+  <div class="sec-body">
+    <div class="field">
+      <label>وصف المنتجات / الخدمات الرئيسية <span class="req">*</span></label>
+      <textarea rows="4" placeholder="اكتب بالتفصيل: إيه اللي بتقدمه؟ إيه اللي بيميزك عن غيرك؟"></textarea>
+    </div>
+    <div class="field field-row">
+      <div>
+        <label>نطاق الأسعار</label>
+        <input type="text" placeholder="مثال: من ٥٠٠ لـ ٣٠٠٠ جنيه">
+      </div>
+      <div>
+        <label>أكثر منتج / خدمة مطلوبة</label>
+        <input type="text" placeholder="الأكثر مبيعاً">
+      </div>
+    </div>
+    <div class="field">
+      <label>الميزة التنافسية <span class="req">*</span> <span class="hint">ليه الناس تشتري منك مش من غيرك؟</span></label>
+      <textarea rows="3" placeholder="مثال: أسعار أقل / جودة أعلى / خدمة أسرع / موقع مريح / ضمان / خبرة طويلة..."></textarea>
+    </div>
+    <div class="field">
+      <label>في فروع ولا موقع واحد؟</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="branches" value="one">موقع واحد</label>
+        <label class="radio-item"><input type="radio" name="branches" value="multi">أكثر من فرع</label>
+        <label class="radio-item"><input type="radio" name="branches" value="online">أونلاين فقط</label>
+        <label class="radio-item"><input type="radio" name="branches" value="both">أونلاين + وجود فعلي</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 3: الجمهور المستهدف -->
+<div class="section" id="s3">
+  <div class="sec-head">
+    <div class="sec-num">٣</div>
+    <div class="sec-title">الجمهور المستهدف</div>
+    <div class="sec-sub">مين العميل المثالي بتاعك؟</div>
+  </div>
+  <div class="sec-body">
+    <div class="field field-row">
+      <div>
+        <label>الفئة العمرية <span class="req">*</span></label>
+        <div class="check-group" style="margin-top:4px">
+          <label class="check-item"><input type="checkbox" name="age">١٨–٢٤</label>
+          <label class="check-item"><input type="checkbox" name="age">٢٥–٣٤</label>
+          <label class="check-item"><input type="checkbox" name="age">٣٥–٤٤</label>
+          <label class="check-item"><input type="checkbox" name="age">٤٥–٥٤</label>
+          <label class="check-item"><input type="checkbox" name="age">٥٥+</label>
+        </div>
+      </div>
+      <div>
+        <label>الجنس</label>
+        <div class="radio-group" style="margin-top:4px">
+          <label class="radio-item"><input type="radio" name="gender" value="male">ذكور بشكل رئيسي</label>
+          <label class="radio-item"><input type="radio" name="gender" value="female">إناث بشكل رئيسي</label>
+          <label class="radio-item"><input type="radio" name="gender" value="both">الجنسين</label>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label>المنطقة الجغرافية للجمهور</label>
+      <input type="text" placeholder="مثال: محافظة القاهرة / الدلتا / كل مصر / خليج...">
+    </div>
+    <div class="field">
+      <label>اهتمامات الجمهور المستهدف</label>
+      <textarea rows="2" placeholder="مثال: صحة ولياقة / تكنولوجيا / أزياء / سفر / طعام..."></textarea>
+    </div>
+    <div class="field">
+      <label>المشكلة اللي بيحلها منتجك/خدمتك للعميل</label>
+      <textarea rows="2" placeholder="إيه الألم أو الحاجة اللي بتعالجها؟"></textarea>
+    </div>
+    <div class="field">
+      <label>مستوى الدخل التقريبي للجمهور</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="income" value="low">منخفض</label>
+        <label class="radio-item"><input type="radio" name="income" value="mid">متوسط</label>
+        <label class="radio-item"><input type="radio" name="income" value="high">فوق المتوسط</label>
+        <label class="radio-item"><input type="radio" name="income" value="vhigh">مرتفع</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 4: الأهداف -->
+<div class="section" id="s4">
+  <div class="sec-head">
+    <div class="sec-num">٤</div>
+    <div class="sec-title">الأهداف من السوشيال ميديا</div>
+    <div class="sec-sub">إيه اللي تريد يحصل؟</div>
+  </div>
+  <div class="sec-body">
+    <div class="field">
+      <label>الأهداف الرئيسية <span class="req">*</span> <span class="hint">اختار كل اللي ينطبق</span></label>
+      <div class="check-group">
+        <label class="check-item"><input type="checkbox" name="goal">وعي بالعلامة التجارية</label>
+        <label class="check-item"><input type="checkbox" name="goal">جذب عملاء جدد</label>
+        <label class="check-item"><input type="checkbox" name="goal">زيادة المبيعات المباشرة</label>
+        <label class="check-item"><input type="checkbox" name="goal">زيادة الزيارات للموقع</label>
+        <label class="check-item"><input type="checkbox" name="goal">التفاعل مع الجمهور</label>
+        <label class="check-item"><input type="checkbox" name="goal">خدمة عملاء</label>
+        <label class="check-item"><input type="checkbox" name="goal">بناء ثقة ومصداقية</label>
+        <label class="check-item"><input type="checkbox" name="goal">الاحتفاظ بالعملاء الحاليين</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>الهدف الأهم من بينهم — بكلماتك</label>
+      <textarea rows="2" placeholder="اكتب الهدف الأساسي الذي تريد تحقيقه خلال الـ ٣ أشهر القادمة"></textarea>
+    </div>
+    <div class="field">
+      <label>هل عندك توقع لنتيجة معينة؟ <span class="hint">(اختياري)</span></label>
+      <input type="text" placeholder="مثال: ١٠٠ لايك / ١٠ استفسار شهرياً / إلخ">
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 5: الحسابات الحالية -->
+<div class="section" id="s5">
+  <div class="sec-head">
+    <div class="sec-num">٥</div>
+    <div class="sec-title">الحسابات الحالية والوصول</div>
+    <div class="sec-sub">بيانات الحسابات الموجودة</div>
+  </div>
+  <div class="sec-body">
+
+    <div class="divider-label">فيسبوك</div>
+    <div class="field field-row">
+      <div>
+        <label>لينك صفحة الفيسبوك</label>
+        <input type="url" placeholder="https://www.facebook.com/...">
+      </div>
+      <div>
+        <label>عدد المتابعين الحاليين</label>
+        <input type="text" placeholder="مثال: ٥,٠٠٠">
+      </div>
+    </div>
+    <div class="field">
+      <label>هل أنت Admin على الصفحة؟</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="fbadmin" value="yes">نعم أنا Admin</label>
+        <label class="radio-item"><input type="radio" name="fbadmin" value="need">محتاج مساعدة في الوصول</label>
+        <label class="radio-item"><input type="radio" name="fbadmin" value="none">مش عندي صفحة</label>
+      </div>
+    </div>
+
+    <div class="divider-label">إنستجرام</div>
+    <div class="field field-row">
+      <div>
+        <label>يوزرنيم الإنستجرام</label>
+        <input type="text" placeholder="@username">
+      </div>
+      <div>
+        <label>عدد المتابعين الحاليين</label>
+        <input type="text" placeholder="مثال: ١,٢٠٠">
+      </div>
+    </div>
+    <div class="field">
+      <label>هل الحساب Professional Account؟</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="igtype" value="biz">Business Account</label>
+        <label class="radio-item"><input type="radio" name="igtype" value="creator">Creator Account</label>
+        <label class="radio-item"><input type="radio" name="igtype" value="personal">شخصي</label>
+        <label class="radio-item"><input type="radio" name="igtype" value="none">مش عندي إنستجرام</label>
+      </div>
+    </div>
+
+    <div class="divider-label">إعلانات فيسبوك</div>
+    <div class="field">
+      <label>هل عندك Ads Account (حساب إعلانات) على Meta؟</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="ads" value="yes">نعم وشغال</label>
+        <label class="radio-item"><input type="radio" name="ads" value="old">عندي بس ما شغلتوش</label>
+        <label class="radio-item"><input type="radio" name="ads" value="none">لأ مش عندي</label>
+        <label class="radio-item"><input type="radio" name="ads" value="bm">عندي Business Manager</label>
+      </div>
+    </div>
+    <div class="field field-row">
+      <div>
+        <label>طريقة الدفع على الإعلانات</label>
+        <div class="radio-group">
+          <label class="radio-item"><input type="radio" name="payment" value="card">بطاقة بنكية</label>
+          <label class="radio-item"><input type="radio" name="payment" value="pp">PayPal</label>
+          <label class="radio-item"><input type="radio" name="payment" value="none">مفيش لسه</label>
+        </div>
+      </div>
+      <div>
+        <label>الميزانية الإعلانية الشهرية</label>
+        <input type="text" placeholder="مثال: ١٥٠٠ جنيه">
+      </div>
+    </div>
+
+    <div class="note-box">
+      ⚠️ لا نحتاج كلمة مرور أي حساب — كل الوصول يكون عن طريق إضافتنا كـ Admin أو Partner رسمي على Meta Business Suite
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 6: المنافسون -->
+<div class="section" id="s6">
+  <div class="sec-head">
+    <div class="sec-num">٦</div>
+    <div class="sec-title">المنافسون</div>
+    <div class="sec-sub">نحتاجهم لدراسة السوق والتميز عنهم</div>
+  </div>
+  <div class="sec-body">
+    <div class="field">
+      <label>المنافسون الرئيسيون <span class="hint">اذكر ٣ على الأقل</span></label>
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>اسم المنافس</th>
+            <th>لينك صفحته على فيسبوك / إنستجرام</th>
+            <th>ملاحظة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>١</td><td><input type="text" placeholder="اسم الشركة"></td><td><input type="url" placeholder="الرابط"></td><td><input type="text" placeholder="قوي / ضعيف / مشابه"></td></tr>
+          <tr><td>٢</td><td><input type="text" placeholder="اسم الشركة"></td><td><input type="url" placeholder="الرابط"></td><td><input type="text" placeholder="قوي / ضعيف / مشابه"></td></tr>
+          <tr><td>٣</td><td><input type="text" placeholder="اسم الشركة"></td><td><input type="url" placeholder="الرابط"></td><td><input type="text" placeholder="قوي / ضعيف / مشابه"></td></tr>
+          <tr><td>٤</td><td><input type="text" placeholder="اسم الشركة"></td><td><input type="url" placeholder="الرابط"></td><td><input type="text" placeholder="قوي / ضعيف / مشابه"></td></tr>
+          <tr><td>٥</td><td><input type="text" placeholder="اسم الشركة"></td><td><input type="url" placeholder="الرابط"></td><td><input type="text" placeholder="قوي / ضعيف / مشابه"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 7: الهوية البصرية والمحتوى -->
+<div class="section" id="s7">
+  <div class="sec-head">
+    <div class="sec-num">٧</div>
+    <div class="sec-title">الهوية البصرية والمحتوى</div>
+    <div class="sec-sub">عشان نعمل محتوى يعبر عنك</div>
+  </div>
+  <div class="sec-body">
+
+    <div class="divider-label">الهوية البصرية</div>
+    <div class="field">
+      <label>هل عندك هوية بصرية جاهزة (لوجو + ألوان + فونت)؟</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="brand" value="full">نعم كاملة</label>
+        <label class="radio-item"><input type="radio" name="brand" value="partial">جزئية (لوجو فقط)</label>
+        <label class="radio-item"><input type="radio" name="brand" value="none">لأ محتاج تصميم</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>ألوان علامتك التجارية <span class="hint">(لو بتعرف الكودات)</span></label>
+      <input type="text" placeholder="مثال: أزرق غامق + ذهبي — أو: #1E3A5F + #D97706">
+    </div>
+    <div class="field">
+      <label>حسابات على السوشيال ميديا بيعجبك تصميمها أو أسلوبها</label>
+      <textarea rows="2" placeholder="اكتب الأسماء أو اللينكات — لا يلزم نفس مجالك"></textarea>
+    </div>
+
+    <div class="divider-label">أسلوب المحتوى</div>
+    <div class="field">
+      <label>الـ Tone المفضل في الكتابة <span class="req">*</span></label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="tone" value="formal">رسمي ومهني</label>
+        <label class="radio-item"><input type="radio" name="tone" value="friendly">ودود وقريب</label>
+        <label class="radio-item"><input type="radio" name="tone" value="fun">مرح وخفيف</label>
+        <label class="radio-item"><input type="radio" name="tone" value="inspire">ملهم وتحفيزي</label>
+        <label class="radio-item"><input type="radio" name="tone" value="edu">تعليمي ومعلوماتي</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>اللغة المفضلة للمحتوى</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="lang" value="ar">عربي فصيح</label>
+        <label class="radio-item"><input type="radio" name="lang" value="am">عامية مصرية</label>
+        <label class="radio-item"><input type="radio" name="lang" value="en">إنجليزي</label>
+        <label class="radio-item"><input type="radio" name="lang" value="mix">مزيج عربي وإنجليزي</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>مواضيع لا تريد الحديث عنها نهائياً</label>
+      <textarea rows="2" placeholder="مثال: السياسة / الدين / المنافسين بالاسم / أسعار معينة..."></textarea>
+    </div>
+    <div class="field">
+      <label>أي تعليمات أو قيود خاصة يجب أن يعرفها الفريق</label>
+      <textarea rows="2" placeholder="مثال: لا نذكر اسم منتج معين / لا نستخدم صور الأشخاص / إلخ..."></textarea>
+    </div>
+
+    <div class="divider-label">الأصول المتاحة</div>
+    <div class="field">
+      <label>ما الذي يمكنك توفيره من أصول؟ <span class="hint">اختار كل ما ينطبق</span></label>
+      <div class="check-group">
+        <label class="check-item"><input type="checkbox" name="assets">ملف اللوجو (AI/PSD/PNG)</label>
+        <label class="check-item"><input type="checkbox" name="assets">صور المنتجات</label>
+        <label class="check-item"><input type="checkbox" name="assets">صور الفريق</label>
+        <label class="check-item"><input type="checkbox" name="assets">صور المقر / الفرع</label>
+        <label class="check-item"><input type="checkbox" name="assets">فيديوهات</label>
+        <label class="check-item"><input type="checkbox" name="assets">ملف Brand Guidelines</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 8: التجربة السابقة -->
+<div class="section" id="s8">
+  <div class="sec-head">
+    <div class="sec-num">٨</div>
+    <div class="sec-title">التجربة السابقة</div>
+    <div class="sec-sub">نتعلم من تجاربك السابقة</div>
+  </div>
+  <div class="sec-body">
+    <div class="field">
+      <label>هل سبق التعامل مع وكالة سوشيال ميديا من قبل؟</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="prev" value="no">لأ — هذه المرة الأولى</label>
+        <label class="radio-item"><input type="radio" name="prev" value="yes">نعم</label>
+        <label class="radio-item"><input type="radio" name="prev" value="self">كنت بعمل بنفسي</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>ما الذي نجح في تجربتك السابقة؟ <span class="hint">(لو في تجربة)</span></label>
+      <textarea rows="2" placeholder="إيه اللي كان بيشتغل كويس؟"></textarea>
+    </div>
+    <div class="field">
+      <label>ما الذي لم ينجح أو أزعجك؟</label>
+      <textarea rows="2" placeholder="إيه اللي ما كنتش مبسوط منه؟ — تواصل ضعيف / تصاميم مش بتعجبك / مش بيلتزم بالمواعيد؟"></textarea>
+    </div>
+    <div class="field">
+      <label>ما هي توقعاتك من الوكالة؟</label>
+      <textarea rows="3" placeholder="كيف تريد أن تكون العلاقة؟ ماذا تتوقع في التواصل والإنجاز؟"></textarea>
+    </div>
+  </div>
+</div>
+
+
+<!-- SECTION 9: ملاحظات إضافية -->
+<div class="section" id="s9">
+  <div class="sec-head">
+    <div class="sec-num">٩</div>
+    <div class="sec-title">ملاحظات وطلبات إضافية</div>
+    <div class="sec-sub">أي شيء مهم لم يُذكر</div>
+  </div>
+  <div class="sec-body">
+    <div class="field">
+      <label>أي معلومة إضافية تريد أن يعرفها الفريق</label>
+      <textarea rows="4" placeholder="مثال: موسمية المبيعات / مناسبات مهمة / حدث قادم / قيود تشغيلية / إلخ..."></textarea>
+    </div>
+    <div class="field">
+      <label>طريقة التواصل المفضلة معك</label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="comm" value="wa">واتساب فقط</label>
+        <label class="radio-item"><input type="radio" name="comm" value="call">كول</label>
+        <label class="radio-item"><input type="radio" name="comm" value="email">إيميل</label>
+        <label class="radio-item"><input type="radio" name="comm" value="meet">اجتماع أسبوعي</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>أفضل وقت للتواصل</label>
+      <input type="text" placeholder="مثال: صباحاً من ١٠ص لـ ١ظ — أو بعد المغرب">
+    </div>
+  </div>
+</div>
+
+
+<!-- SIGNATURE -->
+<div class="section" id="sign">
+  <div class="sec-head">
+    <div class="sec-num" style="background:var(--green)">✓</div>
+    <div class="sec-title">التوقيع والموافقة</div>
+  </div>
+  <div class="sec-body">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.7">
+      بتوقيعك على هذا النموذج، تؤكد أن المعلومات المدونة صحيحة وتوافق على بدء العمل وفق الشروط المتفق عليها في العقد.
+    </p>
+    <div class="sign-area">
+      <div class="sign-box">
+        <label>اسم العميل</label>
+        <div class="sign-line"><input type="text" placeholder="الاسم الكامل"></div>
+      </div>
+      <div class="sign-box">
+        <label>التوقيع</label>
+        <div class="sign-line"><input type="text" placeholder="—"></div>
+      </div>
+      <div class="sign-box">
+        <label>التاريخ</label>
+        <div class="sign-line"><input type="text" placeholder="يوم / شهر / سنة"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrapper -->
+
+<script>
+function clearForm() {
+  if (!confirm('هل تريد مسح كل البيانات المدخلة؟')) return
+  document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], textarea').forEach(el => el.value = '')
+  document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(el => el.checked = false)
+}
+</script>
+</body>
+</html>

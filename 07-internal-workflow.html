@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رحلة الشغل الداخلية — من استلام العميل لحد التقرير</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+:root {
+  --bg:     #F5F7FA;
+  --white:  #FFFFFF;
+  --border: #E2E8F0;
+  --text:   #1A2535;
+  --muted:  #64748B;
+  --faint:  #94A3B8;
+
+  /* departments */
+  --am:     #1E3A5F;
+  --copy:   #6D28D9;
+  --design: #0369A1;
+  --mb:     #B91C1C;
+  --cm:     #15803D;
+
+  --am-bg:     #EFF6FF;
+  --copy-bg:   #F5F3FF;
+  --design-bg: #F0F9FF;
+  --mb-bg:     #FFF1F2;
+  --cm-bg:     #F0FDF4;
+
+  --r: 10px;
+}
+
+body { font-family:'Segoe UI',system-ui,sans-serif; direction:rtl; background:var(--bg); color:var(--text); font-size:14px; line-height:1.8; -webkit-font-smoothing:antialiased }
+::-webkit-scrollbar { width:5px } ::-webkit-scrollbar-thumb { background:#CBD5E1; border-radius:3px }
+
+/* ── TOPBAR ── */
+.topbar { height:54px; background:var(--white); border-bottom:1px solid var(--border); position:fixed; top:0; right:0; left:0; z-index:200; display:flex; align-items:center; padding:0 24px; gap:14px }
+.tb-chip { font-size:10.5px; font-weight:800; background:var(--am); color:#fff; padding:3px 10px; border-radius:6px; letter-spacing:.5px }
+.tb-title { font-size:13px; font-weight:600; color:var(--muted) }
+.tb-print { margin-right:auto; border:1px solid var(--border); background:none; color:var(--faint); font-size:12px; padding:5px 14px; border-radius:7px; cursor:pointer; font-family:inherit; transition:.15s }
+.tb-print:hover { border-color:var(--am); color:var(--am) }
+
+/* ── LEGEND ── */
+.legend { display:flex; align-items:center; gap:16px; margin-right:auto }
+.lg-item { display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--muted) }
+.lg-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0 }
+
+/* ── SIDEBAR ── */
+.sidebar { width:210px; position:fixed; top:54px; right:0; bottom:0; background:var(--white); border-left:1px solid var(--border); overflow-y:auto; padding:18px 0 60px }
+.nav-label { font-size:10px; font-weight:700; color:var(--faint); letter-spacing:1.5px; text-transform:uppercase; padding:10px 20px 4px; display:block }
+.nav-link  { display:flex; align-items:center; gap:10px; padding:7px 20px; font-size:12.5px; color:var(--muted); cursor:pointer; transition:.12s; border-right:2px solid transparent }
+.nav-link:hover { color:var(--text); background:#F8FAFD }
+.nav-link.on { color:var(--am); border-right-color:var(--am); font-weight:600 }
+.nav-n { width:22px; height:22px; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; background:var(--bg); color:var(--faint); transition:.12s }
+.nav-link.on .nav-n { background:var(--am); color:#fff }
+
+/* ── WRAP ── */
+.wrap { display:flex; margin-top:54px }
+.main { margin-right:210px; padding:44px 52px 100px; max-width:880px; width:100% }
+
+/* ── PHASE HEADER ── */
+.phase { margin-bottom:72px }
+.ph-top { display:flex; align-items:flex-start; gap:16px; margin-bottom:10px }
+.ph-num { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800; color:#fff; flex-shrink:0; margin-top:2px }
+.ph-h2  { font-size:21px; font-weight:800; color:var(--text); margin-bottom:4px }
+.ph-sub { font-size:13.5px; color:var(--muted) }
+.ph-meta { display:flex; gap:10px; margin-top:8px }
+.ph-tag { font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; background:var(--bg); color:var(--muted); border:1px solid var(--border) }
+.ph-tag.dur { background:#FFFBEB; color:#92400E; border-color:#FDE68A }
+.ph-divider { height:1px; background:var(--border); margin:16px 0 24px }
+
+/* ── DEPARTMENT BLOCK ── */
+.dept-grid { display:flex; flex-direction:column; gap:16px; margin-bottom:24px }
+.dept { border-radius:var(--r); overflow:hidden; border:1px solid var(--border) }
+.dept-head { display:flex; align-items:center; gap:10px; padding:12px 18px; border-bottom:1px solid var(--border) }
+.dept-head h3 { font-size:13.5px; font-weight:700; flex:1 }
+.dept-role { font-size:11px; font-weight:600; color:var(--muted) }
+.dept-tag { font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; color:#fff }
+.dept-body { padding:16px 20px 18px; background:var(--white) }
+
+/* dept colors */
+.d-am     { border-color:#BFDBFE } .d-am     .dept-head { background:var(--am-bg) }     .d-am     .dept-head h3 { color:var(--am) }     .d-am     .dept-tag { background:var(--am) }
+.d-copy   { border-color:#DDD6FE } .d-copy   .dept-head { background:var(--copy-bg) }   .d-copy   .dept-head h3 { color:var(--copy) }   .d-copy   .dept-tag { background:var(--copy) }
+.d-design { border-color:#BAE6FD } .d-design .dept-head { background:var(--design-bg) } .d-design .dept-head h3 { color:var(--design) } .d-design .dept-tag { background:var(--design) }
+.d-mb     { border-color:#FECACA } .d-mb     .dept-head { background:var(--mb-bg) }     .d-mb     .dept-head h3 { color:var(--mb) }     .d-mb     .dept-tag { background:var(--mb) }
+.d-cm     { border-color:#BBF7D0 } .d-cm     .dept-head { background:var(--cm-bg) }     .d-cm     .dept-head h3 { color:var(--cm) }     .d-cm     .dept-tag { background:var(--cm) }
+
+/* ── TASK LIST ── */
+.tlist { display:flex; flex-direction:column; gap:0 }
+.titem { display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border) }
+.titem:last-child { border-bottom:none }
+.titem input { width:15px; height:15px; margin-top:3px; flex-shrink:0; cursor:pointer }
+.titem input[data-dept="am"]     { accent-color:var(--am) }
+.titem input[data-dept="copy"]   { accent-color:var(--copy) }
+.titem input[data-dept="design"] { accent-color:var(--design) }
+.titem input[data-dept="mb"]     { accent-color:var(--mb) }
+.titem input[data-dept="cm"]     { accent-color:var(--cm) }
+.titem:has(input:checked) .ti-title { color:var(--faint); text-decoration:line-through }
+.ti-title { font-size:13.5px; font-weight:600; color:var(--text); display:block }
+.ti-sub   { font-size:12.5px; color:var(--muted); line-height:1.55 }
+.ti-how   { font-size:12px; color:var(--faint); margin-top:3px; padding-right:10px; border-right:2px solid var(--border); line-height:1.55 }
+
+/* ── DELIVER BOX ── */
+.deliver { background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:0 }
+.deliver-title { font-size:11px; font-weight:700; color:var(--faint); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px }
+.d-items { display:flex; flex-wrap:wrap; gap:8px }
+.d-item { background:var(--white); border:1px solid var(--border); border-radius:20px; font-size:12.5px; font-weight:600; color:var(--text); padding:4px 13px }
+
+/* ── HANDOFF ── */
+.handoff { display:flex; align-items:center; gap:10px; margin:20px 0 0; font-size:12.5px; color:var(--muted) }
+.handoff::before { content:''; flex:1; height:1px; background:var(--border) }
+.hf-arr { font-size:16px }
+.hf-text { font-weight:600; color:var(--am) }
+
+/* ── NOTE ── */
+.note { font-size:13px; color:var(--muted); padding-right:12px; border-right:3px solid var(--border); margin-top:14px; line-height:1.65 }
+.note.warn   { border-color:var(--mb);   color:var(--mb) }
+.note.caution{ border-color:#D97706;     color:#92400E }
+.note.good   { border-color:var(--cm);   color:var(--cm) }
+.note.info   { border-color:var(--am);   color:var(--am) }
+
+/* ── PHASE SEP ── */
+.sep { display:flex; align-items:center; gap:14px; margin:56px 0 48px }
+.sep::before, .sep::after { content:''; flex:1; height:1px; background:var(--border) }
+.sep span { font-size:10.5px; font-weight:800; color:var(--am); letter-spacing:2px; text-transform:uppercase; white-space:nowrap }
+
+/* ── TABLE ── */
+.tbl { width:100%; border-collapse:collapse; font-size:13px }
+.tbl th { font-size:11px; font-weight:700; color:var(--faint); letter-spacing:.8px; text-transform:uppercase; padding:9px 14px; text-align:right; border-bottom:2px solid var(--border) }
+.tbl td { padding:11px 14px; border-bottom:1px solid var(--border); color:var(--text); line-height:1.6; vertical-align:top }
+.tbl tr:last-child td { border-bottom:none }
+
+/* PRINT */
+@media print {
+  .sidebar, .topbar, .no-print { display:none!important }
+  .main { margin:0!important; padding:20px!important }
+  .phase { page-break-inside:avoid }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar no-print">
+  <span class="tb-chip">SOP</span>
+  <span class="tb-title">رحلة الشغل الداخلية — من استلام العميل لحد التقرير</span>
+  <div class="legend">
+    <div class="lg-item"><div class="lg-dot" style="background:var(--am)"></div>مدير الحساب</div>
+    <div class="lg-item"><div class="lg-dot" style="background:var(--copy)"></div>كاتب المحتوى</div>
+    <div class="lg-item"><div class="lg-dot" style="background:var(--design)"></div>المصمم</div>
+    <div class="lg-item"><div class="lg-dot" style="background:var(--mb)"></div>Media Buyer</div>
+    <div class="lg-item"><div class="lg-dot" style="background:var(--cm)"></div>Community Manager</div>
+  </div>
+  <button class="tb-print" onclick="window.print()">طباعة</button>
+</div>
+
+<div class="wrap">
+<nav class="sidebar no-print">
+  <span class="nav-label">مراحل العمل</span>
+  <div class="nav-link on"  onclick="go('p1')"><span class="nav-n">01</span>استلام العميل</div>
+  <div class="nav-link"     onclick="go('p2')"><span class="nav-n">02</span>جمع الأصول</div>
+  <div class="nav-link"     onclick="go('p3')"><span class="nav-n">03</span>الاستراتيجية</div>
+  <div class="nav-link"     onclick="go('p4')"><span class="nav-n">04</span>إنتاج المحتوى</div>
+  <div class="nav-link"     onclick="go('p5')"><span class="nav-n">05</span>موافقة العميل</div>
+  <div class="nav-link"     onclick="go('p6')"><span class="nav-n">06</span>النشر</div>
+  <div class="nav-link"     onclick="go('p7')"><span class="nav-n">07</span>الإعلانات</div>
+  <div class="nav-link"     onclick="go('p8')"><span class="nav-n">08</span>المتابعة اليومية</div>
+  <div class="nav-link"     onclick="go('p9')"><span class="nav-n">09</span>التقرير الشهري</div>
+</nav>
+
+<div class="main">
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 1 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p1">
+  <div class="ph-top">
+    <div class="ph-num" style="background:var(--am)">01</div>
+    <div>
+      <div class="ph-h2">استلام العميل وفتح الملف</div>
+      <div class="ph-sub">من لحظة توقيع العقد واستلام الدفعة — الفريق بيتحرك كله</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ يوم ١ — نفس اليوم</span>
+        <span class="ph-tag">يبدأ: مدير الحساب</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">بيبدأ كل حاجة</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يتأكد من استلام العقد الموقع + الدفعة الأولى</span><span class="ti-sub">مش بيتفتح الملف ومش بيتكلم الفريق قبل الاتنين</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يفتح فولدر العميل على Google Drive</span><span class="ti-sub">الهيكل الثابت: 00_Admin / 01_Brand Assets / 02_Strategy / 03_Content / 04_Reports</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يكتب Internal Brief للفريق</span><span class="ti-sub">ملف واحد فيه: اسم العميل، نشاطه، الهدف، الجمهور، الباقة، تاريخ البداية، ملاحظات مهمة</span><span class="ti-how">يتحط في 00_Admin في Drive — كل الفريق بيقرأه قبل ما يبدأ</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يضيف العميل في أداة إدارة المشاريع</span><span class="ti-sub">Trello أو Notion — بيخلق Board جديد بنفس اسم العميل وبيضيف الفريق عليه</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يبعت Kickoff Message للعميل</span><span class="ti-sub">رسالة واتساب فيها: مرحب، تاريخ البداية، Checklist الأصول المطلوبة، لينك Drive</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يعمل Internal Kickoff Meeting مع الفريق</span><span class="ti-sub">١٥ دقيقة كافية — كل واحد يقرأ الـ Brief ويفهم دوره من الأول</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات المرحلة</div>
+    <div class="d-items">
+      <span class="d-item">📁 Drive Folder مفتوح</span>
+      <span class="d-item">📄 Internal Brief</span>
+      <span class="d-item">📋 Board على أداة المشاريع</span>
+      <span class="d-item">💬 Kickoff Message أُرسل</span>
+    </div>
+  </div>
+  <div class="handoff"><span class="hf-arr">↓</span><span class="hf-text">يبلّغ الفريق كله — تنطلق المرحلة التانية</span><span></span></div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 2 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p2">
+  <div class="ph-top">
+    <div class="ph-num" style="background:#0369A1">02</div>
+    <div>
+      <div class="ph-h2">جمع الأصول والوصول</div>
+      <div class="ph-sub">الفريق بيشتغل بالموجود — مش بيستنى يكتمل كل حاجة</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ يوم ١ → ٧</span>
+        <span class="ph-tag">موازي مع المرحلة الثالثة</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">بيتابع العميل</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يبعت Checklist الأصول للعميل</span><span class="ti-sub">لوجو + ألوان + صور + Admin Access + Onboarding Form</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يتابع Facebook Admin Access</span><span class="ti-sub">يبعت الخطوات خطوة بخطوة — ولو في مشكلة يعمل Screen Share</span><span class="ti-how">تأكيد: يقدر ينشر بوست من حسابه على الصفحة</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يتابع Meta Business Manager</span><span class="ti-sub">إضافة الشركة كـ Partner — مش Admin شخصي</span><span class="ti-how">تأكيد: الصفحة والأد أكاونت ظاهرين في business.facebook.com</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يتأكد من وصول Onboarding Form معبي</span><span class="ti-sub">لو ناقص بيكمله في كول مع العميل مش بيستنى</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يحط كل الأصول في Drive في أماكنها الصح</span><span class="ti-sub">لوجو في 01_Brand Assets/Logo — صور في Photos — إلخ</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-design">
+      <div class="dept-head">
+        <span class="dept-tag">Design</span>
+        <h3>المصمم</h3>
+        <span class="dept-role">بيشتغل بمجرد وصول اللوجو</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يعمل النسخ المطلوبة من اللوجو</span><span class="ti-sub">شفاف PNG + أبيض + داكن + مربع لـ Profile Picture</span><span class="ti-how">يحفظهم في: 01_Brand Assets/Logo/ بأسماء واضحة</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يستخرج كودات الألوان Hex</span><span class="ti-sub">من اللوجو باستخدام Adobe Color أو Photoshop Eyedropper</span><span class="ti-how">يحطهم في ملف Colors.txt في Brand Assets</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يحدد الفونتات أو يختار بديل</span><span class="ti-sub">WhatTheFont للتعرف — لو مش موجود يختار من: Cairo, Tajawal, Almarai</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يعمل أول Template أساسي للبوست</span><span class="ti-sub">Frame واحد بالألوان والفونتات — للموافقة الداخلية من AM قبل ما يكمل</span></div></div>
+        </div>
+        <p class="note info">لو ما وصلوش لوجو — يبدأ بـ Competitor Analysis البصري ويستعد للـ Templates</p>
+      </div>
+    </div>
+
+    <div class="dept d-copy">
+      <div class="dept-head">
+        <span class="dept-tag">Copy</span>
+        <h3>كاتب المحتوى</h3>
+        <span class="dept-role">بيبدأ من يوم ١ بدون ما يستنى</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يقرأ Internal Brief و Onboarding Form</span><span class="ti-sub">لازم يفهم: المنتج + الجمهور + الهدف + الـ Tone قبل ما يكتب كلمة</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يعمل Competitor Analysis لـ ٣–٥ منافسين</span><span class="ti-sub">إيه اللي بيبوستوه؟ ليه بيشتغل؟ إيه نقاط ضعفهم؟</span><span class="ti-how">يحفظه في: 02_Strategy/Competitor_Analysis.pdf</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يكتب Audience Persona</span><span class="ti-sub">عمر / جنس / اهتمامات / مشكلة بيحلها المنتج / أين يتواجدون</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات المرحلة</div>
+    <div class="d-items">
+      <span class="d-item">🔑 Facebook + BM Access ✓</span>
+      <span class="d-item">🖼️ Logo Pack جاهز</span>
+      <span class="d-item">🎨 Colors.txt</span>
+      <span class="d-item">🖼️ Template أولي</span>
+      <span class="d-item">📊 Competitor Analysis</span>
+      <span class="d-item">👥 Audience Persona</span>
+    </div>
+  </div>
+  <div class="handoff"><span class="hf-arr">↓</span><span class="hf-text">AM بيجمع المخرجات ويبدأ Internal Strategy Meeting</span><span></span></div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 3 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p3">
+  <div class="ph-top">
+    <div class="ph-num" style="background:#6D28D9">03</div>
+    <div>
+      <div class="ph-h2">الاستراتيجية</div>
+      <div class="ph-sub">الاستراتيجية هي أساس كل القرارات — بتتبنى مرة وبتتراجع كل ٣ شهور</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ يوم ٥ → ١٠</span>
+        <span class="ph-tag">ينتهي بموافقة العميل الكتابية</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-copy">
+      <div class="dept-head">
+        <span class="dept-tag">Copy</span>
+        <h3>كاتب المحتوى</h3>
+        <span class="dept-role">بيكتب Strategy Document</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يكتب Strategy Document كامل</span><span class="ti-sub">فيه: Audience Persona + Content Pillars (٤–٥) + Tone of Voice + KPIs الشهرية</span><span class="ti-how">يحفظه في: 02_Strategy/Content_Strategy_M01.pdf</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يكتب ٣–٥ نماذج بوستات للإشارة</span><span class="ti-sub">مش للنشر — بس عشان العميل يشوف الـ Tone المقترح</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يحدد Content Pillars مع أمثلة</span><span class="ti-sub">مثلاً: تعليمي (٤٠٪) / ترفيهي (٢٠٪) / تسويقي (٣٠٪) / إنساني (١٠٪)</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-design">
+      <div class="dept-head">
+        <span class="dept-tag">Design</span>
+        <h3>المصمم</h3>
+        <span class="dept-role">بيعمل Style Guide بصري</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يعمل Style Guide مرئي</span><span class="ti-sub">صفحة واحدة: الألوان + الفونتات + أسلوب الصور + نموذج تصميم</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يقترح ٢–٣ اتجاهات تصميم مختلفة</span><span class="ti-sub">عشان العميل يختار — كل اتجاه بيوضح نظرة بصرية مختلفة</span><span class="ti-how">تأكيد: AM بيوافق داخلياً قبل ما يتبعت للعميل</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">ينهي Template الأساسي بعد موافقة الاتجاه</span><span class="ti-sub">بوست مربع + استوري + cover — الـ ٣ templates الأساسية</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-mb">
+      <div class="dept-head">
+        <span class="dept-tag">MB</span>
+        <h3>Media Buyer</h3>
+        <span class="dept-role">بيجهز الجانب الإعلاني</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يبحث Audience في Ads Manager</span><span class="ti-sub">يحدد: الجنس / العمر / الاهتمامات / الموقع الجغرافي</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يقترح توزيع الميزانية الإعلانية</span><span class="ti-sub">Awareness / Traffic / Conversion — ونسبة كل نوع</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يتأكد من Ads Account جاهز وعنده Payment Method</span><span class="ti-sub">لو مش جاهز — بيبلّغ AM فوراً</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">بيراجع، بيرتب، وبيبعت للعميل</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يعمل Internal Review على الاستراتيجية الكاملة</span><span class="ti-sub">بيتأكد إن كل حاجة متسقة: الـ Tone في الكتابة مطابق للـ Style البصري</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يبعت Strategy Doc للعميل قبل الكول بيوم</span><span class="ti-sub">PDF كامل — العميل لازم يقرأ قبل الكول مش في نفس الوقت</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يعمل Strategy Presentation Call مع العميل</span><span class="ti-sub">٣٠ دقيقة: شرح الاستراتيجية + إجابة الأسئلة + أخذ الـ Feedback</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يأخذ موافقة كتابية من العميل</span><span class="ti-sub">رسالة واتساب "موافق على الاستراتيجية؟" — لا يكمل بدونها</span></div></div>
+        </div>
+        <p class="note warn">بعد الموافقة — أي تغيير جوهري في الاستراتيجية = Extra بيتحسب</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات المرحلة</div>
+    <div class="d-items">
+      <span class="d-item">📄 Strategy Document موافق عليه</span>
+      <span class="d-item">🎨 Style Guide</span>
+      <span class="d-item">📐 Templates أساسية</span>
+      <span class="d-item">📊 Audience Research</span>
+      <span class="d-item">✅ موافقة العميل الكتابية</span>
+    </div>
+  </div>
+  <div class="handoff"><span class="hf-arr">↓</span><span class="hf-text">AM يبعت Content Calendar Template للـ Copywriter + Designer يبدأوا الإنتاج</span><span></span></div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 4 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p4">
+  <div class="ph-top">
+    <div class="ph-num" style="background:#0891B2">04</div>
+    <div>
+      <div class="ph-h2">إنتاج المحتوى</div>
+      <div class="ph-sub">الكتابة والتصميم بيتعملوا بالتوازي — وبيتراجعوا داخلياً قبل ما يوصلوا للعميل</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ يوم ١٠ → ١٧</span>
+        <span class="ph-tag">Copywriter + Designer بالتوازي</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-copy">
+      <div class="dept-head">
+        <span class="dept-tag">Copy</span>
+        <h3>كاتب المحتوى</h3>
+        <span class="dept-role">بيكتب كل المحتوى الشهر</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يملأ Content Calendar بكل الكابشنات</span><span class="ti-sub">كل بوست فيه: التاريخ + الـ Pillar + الكابشن كامل + الـ CTA + الهاشتاجات</span><span class="ti-how">الشيت في 03_Content/Month_01/Content_Calendar.xlsx</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يكتب نصوص الاستوريز</span><span class="ti-sub">قصيرة + فاعلة + فيها CTA واضح</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يكتب Ad Copy لكل إعلان</span><span class="ti-sub">Headline + Body + CTA — بيبعتها للـ Media Buyer</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يعمل Self-Review قبل التسليم للـ AM</span><span class="ti-sub">إملاء ✓ / Tone متسق ✓ / CTA موجود ✓ / لا يكرر نفس الكلام ✓</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-design">
+      <div class="dept-head">
+        <span class="dept-tag">Design</span>
+        <h3>المصمم</h3>
+        <span class="dept-role">بيصمم بالتوازي مع الكتابة</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يصمم كل بوستات الشهر</span><span class="ti-sub">بيشتغل من Content Calendar — كل بوست ليه ملف بالاسم واليوم</span><span class="ti-how">حفظ في: 03_Content/Month_01/Designs/ — اسم الملف: 01_post_Jan15.png</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يصمم الاستوريز</span><span class="ti-sub">أبعاد 1080×1920 — متسقة في الشكل مع البوستات</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يصمم Ad Creatives للـ Media Buyer</span><span class="ti-sub">صورة واحدة على الأقل وفيديو لو ممكن — أبعاد مناسبة للإعلانات</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يعمل Self-Review قبل التسليم للـ AM</span><span class="ti-sub">الألوان صح ✓ / اللوجو موجود ✓ / الفونت صح ✓ / الصور واضحة ✓</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب — Internal Review</h3>
+        <span class="dept-role">البوابة الأخيرة قبل العميل</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يراجع كل الكابشنات على الـ Calendar</span><span class="ti-sub">الـ Tone مطابق للاستراتيجية؟ / CTA موجود؟ / في تكرار؟ / إملاء صح؟</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يراجع كل التصاميم</span><span class="ti-sub">الهوية البصرية ثابتة؟ / اللوجو في مكانه؟ / الألوان صح؟ / الجودة كويسة؟</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يرجع ملاحظاته للفريق في نفس اليوم</span><span class="ti-sub">تعديل صغير: Copywriter أو Designer بيخلصوا في ساعتين<br>تعديل كبير: بيبلّغ AM اللي بيقرر التأجير أو التصرف</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يجمع كل المحتوى في مكان واحد جاهز للإرسال</span><span class="ti-sub">PDF أو Google Sheet — مرتب بالتاريخ وسهل يفهمه العميل</span></div></div>
+        </div>
+        <p class="note info">مش بيبعت للعميل إلا لما بيبقى راضي عن كل حاجة — العميل مش Proofreader بتاعنا</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات المرحلة</div>
+    <div class="d-items">
+      <span class="d-item">📅 Content Calendar كامل</span>
+      <span class="d-item">🖼️ كل التصاميم جاهزة</span>
+      <span class="d-item">✍️ كل الكابشنات كتابة</span>
+      <span class="d-item">📢 Ad Creatives + Copy</span>
+      <span class="d-item">✅ Internal Review تم</span>
+    </div>
+  </div>
+  <div class="handoff"><span class="hf-arr">↓</span><span class="hf-text">AM يرسل المحتوى للعميل للموافقة</span><span></span></div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 5 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p5">
+  <div class="ph-top">
+    <div class="ph-num" style="background:#D97706">05</div>
+    <div>
+      <div class="ph-h2">موافقة العميل والتعديلات</div>
+      <div class="ph-sub">نظام واضح بيحمي الفريق من تعديلات لا تنتهي</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ يوم ١٧ → ٢١</span>
+        <span class="ph-tag">٤٨ ساعة للعميل للرد</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">بيدير عملية الموافقة</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يبعت Content Calendar للعميل</span><span class="ti-sub">PDF أو Google Sheet — مرتب ومفهوم — مع رسالة واضحة "عندك ٤٨ ساعة"</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">بعد ٢٤ ساعة بدون رد — يبعت Reminder</span><span class="ti-sub">"[الاسم]، محتاجين موافقتك قبل [التاريخ] عشان نبدأ في الوقت"</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">بعد ٤٨ ساعة بدون رد — بنعتبره موافق</span><span class="ti-sub">بيبلّغه إن المحتوى هيتنشر — ده في العقد</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يجمع الـ Feedback ويصنفه</span><span class="ti-sub">تعديل صغير (كلمة / لون): يوزعه مباشرة<br>تعديل كبير (تغيير كامل): بيقيّم لو داخل العقد ولا لأ</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">بعد التعديل — يأخذ موافقة نهائية</span><span class="ti-sub">"تمام؟ نكمل؟" — رسالة واتساب بسيطة</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-copy">
+      <div class="dept-head">
+        <span class="dept-tag">Copy</span>
+        <h3>كاتب المحتوى</h3>
+        <span class="dept-role">بينفذ تعديلات الكتابة</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">ينفذ تعديلات الـ Copy في نفس اليوم</span><span class="ti-sub">لو التعديل أكتر من ٣ بوستات — بيبلّغ AM قبل ما يكمل</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="copy"><div><span class="ti-title">يحفظ النسخة الجديدة على الـ Calendar بنفس المكان</span><span class="ti-sub">مش فايل جديد — يعدل على نفس الشيت بتأريخ التعديل</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-design">
+      <div class="dept-head">
+        <span class="dept-tag">Design</span>
+        <h3>المصمم</h3>
+        <span class="dept-role">بينفذ تعديلات التصميم</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">ينفذ تعديلات التصميم في نفس اليوم</span><span class="ti-sub">تعديل لون أو نص = ساعة. تعديل Layout كامل = بيبلّغ AM</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="design"><div><span class="ti-title">يحفظ النسخة المعدلة باسم واضح</span><span class="ti-sub">01_post_Jan15_v2.png — مش "final_final_new.png"</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات المرحلة</div>
+    <div class="d-items">
+      <span class="d-item">✅ Content Calendar موافق عليه</span>
+      <span class="d-item">💬 موافقة كتابية من العميل</span>
+      <span class="d-item">📁 كل الملفات نهائية في Drive</span>
+    </div>
+  </div>
+  <div class="handoff"><span class="hf-arr">↓</span><span class="hf-text">AM يجدول المحتوى — CM يبدأ المتابعة — MB يطلق الإعلانات</span><span></span></div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 6 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p6">
+  <div class="ph-top">
+    <div class="ph-num" style="background:var(--cm)">06</div>
+    <div>
+      <div class="ph-h2">النشر وإدارة المجتمع</div>
+      <div class="ph-sub">النشر مش ضغطة زر — وإدارة المجتمع مش رد عشوائي</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ طوال الشهر — يومي</span>
+        <span class="ph-tag">CM + AM مسؤولين</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">بيجدول ويتابع أداء النشر</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يجدول المحتوى على Meta Business Suite</span><span class="ti-sub">كل بوست بالتاريخ والوقت الصح — يتأكد من الصورة ظهرت صح والكابشن كامل</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يتابع أداء أول ٢–٣ بوستات</span><span class="ti-sub">Reach + Engagement في أول ٢٤ ساعة — لو أقل من المتوقع بيبلّغ الفريق</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يوثق أوقات النشر وأداءها</span><span class="ti-sub">عشان يحسن التوقيت الشهر القادم بناءً على بيانات حقيقية</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-cm">
+      <div class="dept-head">
+        <span class="dept-tag">CM</span>
+        <h3>Community Manager</h3>
+        <span class="dept-role">عيون الصفحة يومياً</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يراجع التعليقات والرسائل يومياً مرتين</span><span class="ti-sub">صباحاً (٩–١٠ ص) ومساءً (٧–٨ م) — مش أقل من كده</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يرد بناءً على قاموس الردود الجاهز</span><span class="ti-sub">لو السؤال مش في القاموس — يبعت للـ AM قبل ما يرد</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يسجل الأسئلة الكتيرة في Weekly Log</span><span class="ti-sub">دي بيانات ذهبية — بتساعد في تحسين المحتوى وإضافة ردود جديدة للقاموس</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يبلّغ AM فوراً بأي شيء غير عادي</span><span class="ti-sub">شكوى متكررة / تعليق مسيء / سؤال حساس / بداية أزمة</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يخفي التعليقات المسيئة — مش يحذفها</span><span class="ti-sub">Hide أولاً — Delete بس بعد موافقة AM أو العميل</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات يومية</div>
+    <div class="d-items">
+      <span class="d-item">📢 بوستات منشورة في وقتها</span>
+      <span class="d-item">💬 تعليقات مردود عليها</span>
+      <span class="d-item">📒 Weekly Comment Log</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 7 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p7">
+  <div class="ph-top">
+    <div class="ph-num" style="background:var(--mb)">07</div>
+    <div>
+      <div class="ph-h2">الإعلانات</div>
+      <div class="ph-sub">الإعلانات مش "ابوست بلحسة" — في استراتيجية وتحسين يومي</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ يوم ١ من الشهر</span>
+        <span class="ph-tag">Media Buyer مسؤول كامل</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-mb">
+      <div class="dept-head">
+        <span class="dept-tag">MB</span>
+        <h3>Media Buyer</h3>
+        <span class="dept-role">من الإعداد للتحسين اليومي</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يبني Campaign Structure</span><span class="ti-sub">Campaign ← Ad Set ← Ads — مش بيحط كل حاجة في Ad Set واحدة</span><span class="ti-how">مثلاً: Campaign Awareness ← Ad Set (Women 25-40 Cairo) ← Ad (Creative A + B)</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يرفع الـ Ad Creatives من الـ Designer</span><span class="ti-sub">صورة + فيديو لو متاح — دايماً ٢ Creatives على الأقل للـ A/B Testing</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يضبط الـ Audience Targeting بدقة</span><span class="ti-sub">Demographic + Interest + Lookalike (لو في بيانات قديمة)</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يحدد الميزانية اليومية لكل Ad Set</span><span class="ti-sub">مش الميزانية الكلية على Campaign مباشرة — CBO أو ABO بناءً على الحجم</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يتابع يومياً: CTR + CPC + ROAS</span><span class="ti-sub">أول ٣ أيام: مش بيعدل — بيدي Facebook وقت للـ Learning Phase</span><span class="ti-how">بعد ٣ أيام: الـ Ad Set اللي CTR أقل من ١٪ بيوقفه أو يعدل عليه</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يبعت Weekly Performance Update للـ AM</span><span class="ti-sub">أرقام مختصرة: إنفاق + Reach + Clicks + Cost per Result</span></div></div>
+        </div>
+        <p class="note warn">لا يشغل إعلان من ميزانيته هو — الميزانية دايماً من Ads Account العميل</p>
+      </div>
+    </div>
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">بيربط الإعلانات بالعميل</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يتأكد من Payment Method شغال على Ads Account</span><span class="ti-sub">قبل ما MB يشغل أي إعلان — الفاتورة بتيجي على العميل مش علينا</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يبلّغ العميل بالميزانية المصروفة كل أسبوع</span><span class="ti-sub">رسالة بسيطة: "الأسبوع ده اتصرف X — وصلنا Y شخص"</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات أسبوعية</div>
+    <div class="d-items">
+      <span class="d-item">📊 حملات شغالة ومتحسّنة</span>
+      <span class="d-item">📈 Weekly Performance Update</span>
+      <span class="d-item">💬 العميل على علم بالإنفاق</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 8 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p8">
+  <div class="ph-top">
+    <div class="ph-num" style="background:#475569">08</div>
+    <div>
+      <div class="ph-h2">المتابعة الأسبوعية</div>
+      <div class="ph-sub">بين بداية الشهر ونهايته — في نظام متابعة بيخلي العميل يحس بحضورك</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ كل أسبوع</span>
+        <span class="ph-tag">دور كل قسم محدد</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">بيحافظ على العلاقة مع العميل</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">Weekly Check-in مع العميل كل أسبوع</span><span class="ti-sub">رسالة واتساب — مش ضروري كول: "الأسبوع ده وصلنا X شخص — أعلى بوست كان كذا"</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يراجع Insights فيسبوك أسبوعياً</span><span class="ti-sub">بيشوف: إيه أحسن بوست؟ إيه أسوأ؟ ليه؟ — بيأثر على المحتوى الأسبوع الجاي</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">لو في Content Request من العميل</span><span class="ti-sub">بيملأ Content Request Form — بيوزعه على الفريق مع الـ Priority والـ Deadline</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-cm">
+      <div class="dept-head">
+        <span class="dept-tag">CM</span>
+        <h3>Community Manager</h3>
+        <span class="dept-role">بيبعت تقرير مختصر أسبوعي</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يعمل Weekly Summary للـ AM</span><span class="ti-sub">عدد الردود / الأسئلة الكتيرة / أي شيء لافت / تعليقات تستحق تتحول محتوى</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-mb">
+      <div class="dept-head">
+        <span class="dept-tag">MB</span>
+        <h3>Media Buyer</h3>
+        <span class="dept-role">تحسين يومي وتقرير أسبوعي</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">تحسين يومي للحملات</span><span class="ti-sub">وقّف الـ Ad Set اللي مش شغال / ضاعف على اللي شغال / جرب Creative جديد</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">Weekly Optimization Report داخلي للـ AM</span><span class="ti-sub">ماذا عملنا + ماذا نجح + ماذا وقفنا + التوصية للأسبوع القادم</span></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات أسبوعية</div>
+    <div class="d-items">
+      <span class="d-item">💬 Weekly Client Update</span>
+      <span class="d-item">📒 Community Summary</span>
+      <span class="d-item">📊 Ads Optimization Log</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- PHASE 9 -->
+<!-- ══════════════════════════════════════ -->
+<div class="phase" id="p9">
+  <div class="ph-top">
+    <div class="ph-num" style="background:#B45309">09</div>
+    <div>
+      <div class="ph-h2">التقرير الشهري</div>
+      <div class="ph-sub">التقرير مش مجرد أرقام — هو محادثة عن القيمة اللي بتقدمها</div>
+      <div class="ph-meta">
+        <span class="ph-tag dur">⏱ يوم ٢٥ → ٣٠</span>
+        <span class="ph-tag">ينتهي بـ Review Call</span>
+      </div>
+    </div>
+  </div>
+  <div class="ph-divider"></div>
+
+  <div class="dept-grid">
+
+    <div class="dept d-mb">
+      <div class="dept-head">
+        <span class="dept-tag">MB</span>
+        <h3>Media Buyer</h3>
+        <span class="dept-role">يوم ٢٥ — بيجمع بيانات الإعلانات</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يصدّر Ads Report من Ads Manager</span><span class="ti-sub">Reach / Impressions / Clicks / CTR / CPC / Amount Spent / ROAS</span><span class="ti-how">يحفظه في 04_Reports/Month_01/Ads_Data.xlsx</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يكتب Ads Summary مختصر</span><span class="ti-sub">أفضل حملة + أسوأ حملة + ليه + توصية للشهر القادم</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="mb"><div><span class="ti-title">يبعت كل حاجة للـ AM قبل يوم ٢٧</span><span class="ti-sub">AM محتاج وقت يجمع كل البيانات ويكتب التقرير</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-cm">
+      <div class="dept-head">
+        <span class="dept-tag">CM</span>
+        <h3>Community Manager</h3>
+        <span class="dept-role">يوم ٢٥ — بيجمع بيانات المجتمع</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يعمل ملخص شهري للتعليقات والرسائل</span><span class="ti-sub">عدد الردود / أكتر سؤال / Sentiment عام (إيجابي / سلبي / محايد)</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="cm"><div><span class="ti-title">يحدد أهم ٣ تعليقات تستحق تتحول محتوى</span><span class="ti-sub">أسئلة متكررة = أفكار محتوى شهر قادم</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept d-am">
+      <div class="dept-head">
+        <span class="dept-tag">AM</span>
+        <h3>مدير الحساب</h3>
+        <span class="dept-role">يوم ٢٧–٢٩ — بيكتب ويبعت التقرير</span>
+      </div>
+      <div class="dept-body">
+        <div class="tlist">
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يجمع Organic Insights من فيسبوك وإنستجرام</span><span class="ti-sub">Reach / Engagement / Followers Growth / Best Posts</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يكتب التقرير الشهري الكامل</span><span class="ti-sub">يستخدم Template التقرير الجاهز — بيضيف الأرقام + التحليل + التوصيات</span><span class="ti-how">يحفظه في: 04_Reports/Report_Month_01.pdf</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يبعت التقرير للعميل يوم ٢٨ → قبل الكول بيوم</span><span class="ti-sub">مش في نفس وقت الكول — محتاج يقرأ ويتأهل</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">يعمل Monthly Review Call</span><span class="ti-sub">٣٠ دقيقة: الأرقام + ما نجح + ما لم ينجح + خطة القادم + التجديد</span></div></div>
+          <div class="titem"><input type="checkbox" data-dept="am"><div><span class="ti-title">بعد الكول — يبدأ تخطيط الشهر القادم</span><span class="ti-sub">بيفتح Content Calendar جديد + بيبلّغ الفريق بملاحظات العميل</span></div></div>
+        </div>
+        <p class="note good">في نهاية كول التقرير: "هل أنت راضي؟ في حاجة تحب نضيفها الشهر القادم؟" — سؤال بيفتح باب التجديد والـ Upsell</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="deliver">
+    <div class="deliver-title">مخرجات المرحلة</div>
+    <div class="d-items">
+      <span class="d-item">📊 Monthly Report PDF</span>
+      <span class="d-item">📞 Review Call تم</span>
+      <span class="d-item">📅 خطة الشهر القادم بدأت</span>
+      <span class="d-item">🔄 دورة جديدة تبدأ</span>
+    </div>
+  </div>
+
+  <div class="note info" style="margin-top:20px">
+    ♻️ بعد التقرير — الدورة بتبدأ من المرحلة ٤ مباشرة (إنتاج المحتوى) لأن الاستراتيجية والأصول موجودة بالفعل
+  </div>
+
+</div>
+
+
+<!-- SUMMARY TABLE -->
+<div class="sep"><span>ملخص أدوار الأقسام</span></div>
+
+<div style="background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden">
+  <table class="tbl">
+    <thead><tr><th>القسم</th><th>المرحلة الرئيسية</th><th>الدور الأساسي</th><th>المخرج الرئيسي</th></tr></thead>
+    <tbody>
+      <tr><td><strong style="color:var(--am)">مدير الحساب</strong></td><td>كل المراحل</td><td>يرتب، يراجع، يتواصل مع العميل، يحل المشاكل</td><td>Internal Brief + Monthly Report</td></tr>
+      <tr><td><strong style="color:var(--copy)">كاتب المحتوى</strong></td><td>٣، ٤</td><td>يكتب الاستراتيجية + كل الكابشنات + Ad Copy</td><td>Strategy Doc + Content Calendar (كتابة)</td></tr>
+      <tr><td><strong style="color:var(--design)">المصمم</strong></td><td>٢، ٣، ٤</td><td>يجهز البراند أصولز + التصاميم + الـ Ad Creatives</td><td>Brand Assets + تصاميم الشهر</td></tr>
+      <tr><td><strong style="color:var(--mb)">Media Buyer</strong></td><td>٣، ٧، ٨، ٩</td><td>استراتيجية الإعلانات + تشغيل + تحسين يومي</td><td>Running Campaigns + Ads Report</td></tr>
+      <tr><td><strong style="color:var(--cm)">Community Manager</strong></td><td>٦، ٨</td><td>إدارة التعليقات والرسائل يومياً</td><td>Comment Log + Community Summary</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /main -->
+</div><!-- /wrap -->
+
+<script>
+function go(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior:'smooth', block:'start' })
+}
+const sections = document.querySelectorAll('.phase[id]')
+window.addEventListener('scroll', () => {
+  let cur = ''
+  sections.forEach(s => { if (scrollY >= s.offsetTop - 130) cur = s.id })
+  document.querySelectorAll('.nav-link').forEach(n => {
+    const oc = n.getAttribute('onclick') || ''
+    n.classList.toggle('on', oc.includes(cur))
+  })
+}, { passive:true })
+</script>
+</body>
+</html>

@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل استلام أصول العميل — مرجع داخلي للفريق</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Calibri','Arial',sans-serif;direction:rtl;background:#f0f4f8;color:#2C3E50;font-size:14px;line-height:1.75}
+@media print{
+  body{background:#fff;font-size:12px}
+  .sidebar,.topbar,.no-print{display:none!important}
+  .main{margin:0!important;padding:20px!important}
+  .section{page-break-inside:avoid;margin-bottom:20px}
+  h2{page-break-after:avoid}
+}
+
+/* ── LAYOUT ── */
+.topbar{background:#1E3A5F;color:#fff;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;right:0;left:0;z-index:200;height:50px}
+.topbar h1{font-size:14px;font-weight:600}
+.topbar-btns{display:flex;gap:8px}
+.tbtn{padding:5px 14px;border-radius:5px;border:none;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit}
+.tbtn-gold{background:#F4A923;color:#1E3A5F}
+.tbtn-out{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)}
+
+.layout{display:flex;margin-top:50px;min-height:calc(100vh - 50px)}
+
+.sidebar{width:230px;background:#152C47;position:fixed;top:50px;right:0;bottom:0;overflow-y:auto;padding:14px 0;flex-shrink:0}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+
+.nav-section{margin-bottom:6px}
+.nav-section-title{font-size:10px;font-weight:700;color:#F4A923;letter-spacing:1.5px;padding:8px 18px 4px;text-transform:uppercase}
+.nav-item{display:block;padding:7px 18px;color:rgba(255,255,255,.65);font-size:12.5px;cursor:pointer;transition:all .15s;border-right:3px solid transparent;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-item.active{background:rgba(244,169,35,.12);color:#F4A923;border-right-color:#F4A923;font-weight:600}
+
+.main{margin-right:230px;padding:28px 36px 60px;max-width:920px}
+
+/* ── SECTIONS ── */
+.section{margin-bottom:36px}
+.section-anchor{padding-top:6px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #e8ecf0}
+.section-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.section-header h2{font-size:20px;font-weight:800;color:#1E3A5F}
+.section-header p{font-size:12.5px;color:#888;margin-top:2px}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:14px}
+.card-title{font-size:15px;font-weight:700;color:#1E3A5F;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card-title .badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700}
+.badge-red{background:#FEF3F2;color:#C0392B}
+.badge-yellow{background:#FFF9E6;color:#856404}
+.badge-green{background:#f0fdf4;color:#27AE60}
+.badge-blue{background:#EEF4F8;color:#1E3A5F}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;background:#f8fafc;border-radius:8px;border-right:3px solid #e8ecf0}
+.step.s-red{border-right-color:#C0392B;background:#FEF3F2}
+.step.s-green{border-right-color:#27AE60;background:#f0fdf4}
+.step.s-gold{border-right-color:#F4A923;background:#FFF9E6}
+.step-num{width:26px;height:26px;min-width:26px;border-radius:6px;background:#1E3A5F;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.step-num.gold{background:#F4A923;color:#1E3A5F}
+.step-num.green{background:#27AE60}
+.step-num.red{background:#C0392B}
+.step h4{font-size:13.5px;font-weight:700;color:#1E3A5F;margin-bottom:2px}
+.step p{font-size:12.5px;color:#555;line-height:1.6}
+.step code{background:#e8ecf0;padding:1px 6px;border-radius:4px;font-family:monospace;font-size:12px;color:#1E3A5F}
+
+/* ── SCENARIO ── */
+.scenario-group{display:flex;flex-direction:column;gap:10px}
+.scenario{border-radius:10px;overflow:hidden;border:1.5px solid #e8ecf0}
+.scenario-head{padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.scenario-head:hover{opacity:.85}
+.scenario-icon{font-size:18px}
+.scenario-head h4{font-size:13.5px;font-weight:700;flex:1}
+.scenario-head .arrow{font-size:12px;color:#aaa;transition:transform .2s}
+.scenario-body{padding:12px 14px;border-top:1px solid #e8ecf0;background:#fff;display:none}
+.scenario-body.open{display:block}
+.sc-bad{background:#FEF3F2;border-color:#e8b4b0}
+.sc-bad .scenario-head{background:#FEF3F2}
+.sc-bad .scenario-head h4{color:#7B241C}
+.sc-ok{background:#FFF9E6;border-color:#f0dba0}
+.sc-ok .scenario-head{background:#FFF9E6}
+.sc-ok .scenario-head h4{color:#856404}
+.sc-good{background:#f0fdf4;border-color:#a8e0bc}
+.sc-good .scenario-head{background:#f0fdf4}
+.sc-good .scenario-head h4{color:#1a5c35}
+
+/* ── MSG TEMPLATE ── */
+.msg-box{background:#f0f8ff;border:1.5px solid #b8d4ea;border-radius:10px;padding:14px 16px;margin-top:10px;position:relative}
+.msg-box .msg-label{font-size:10.5px;font-weight:700;color:#1E3A5F;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.msg-box p{font-size:13px;color:#2C3E50;line-height:1.8;white-space:pre-line}
+.copy-btn{position:absolute;top:10px;left:12px;background:#1E3A5F;color:#fff;border:none;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:inherit}
+.copy-btn:hover{background:#2A5480}
+
+/* ── TABLE ── */
+.dtable{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.dtable th{background:#1E3A5F;color:#fff;padding:9px 13px;text-align:right;font-weight:600}
+.dtable td{padding:8px 13px;border-bottom:1px solid #eee;vertical-align:top}
+.dtable tr:nth-child(even) td{background:#f8fafc}
+.dtable td.c{color:#27AE60;font-weight:700;font-size:16px;text-align:center}
+.dtable td.x{color:#aaa;font-size:16px;text-align:center}
+.dtable td strong{color:#1E3A5F}
+
+/* ── FOLDER TREE ── */
+.tree{background:#1a1a2e;border-radius:10px;padding:16px;font-family:'Courier New',monospace;font-size:13px;color:#a8b3c8;line-height:1.9;overflow-x:auto}
+.tree .folder{color:#F4A923;font-weight:700}
+.tree .file{color:#7ec8e3}
+.tree .comment{color:#555;font-style:italic}
+
+/* ── NOTE BOXES ── */
+.note{background:#FFF9E6;border-right:4px solid #F4A923;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#856404;margin-top:10px}
+.warn{background:#FEF3F2;border-right:4px solid #C0392B;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#7B241C;margin-top:10px}
+.info{background:#EEF4F8;border-right:4px solid #1E3A5F;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#1E3A5F;margin-top:10px}
+.success{background:#f0fdf4;border-right:4px solid #27AE60;padding:11px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#1a5c35;margin-top:10px}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ── CHECKLIST INTERACTIVE ── */
+.checklist{display:flex;flex-direction:column;gap:7px}
+.chk{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;background:#f8fafc;border-radius:8px;border:1.5px solid #e8ecf0;transition:all .2s}
+.chk:has(input:checked){background:#f0fdf4;border-color:#27AE60;opacity:.75}
+.chk input{width:16px;height:16px;margin-top:2px;cursor:pointer;accent-color:#27AE60;flex-shrink:0}
+.chk-lbl strong{font-size:13px;color:#1E3A5F;display:block;margin-bottom:1px}
+.chk-lbl span{font-size:12px;color:#777}
+.chk.req{border-color:#F4A923;background:#fffdf5}
+.rbadge{background:#F4A923;color:#1E3A5F;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-right:4px}
+
+/* ── PRIORITY TABLE ── */
+.pri-row{display:flex;align-items:stretch;gap:0;border-radius:10px;overflow:hidden;border:1.5px solid #e8ecf0;margin-bottom:8px}
+.pri-day{background:#1E3A5F;color:#F4A923;font-size:11px;font-weight:700;writing-mode:vertical-rl;text-orientation:mixed;padding:10px 8px;display:flex;align-items:center;justify-content:center;min-width:32px;letter-spacing:1px}
+.pri-items{flex:1;padding:10px 14px;background:#fff}
+.pri-items h4{font-size:13px;font-weight:700;color:#1E3A5F;margin-bottom:6px}
+.pri-tag{display:inline-flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #e0e8f0;border-radius:6px;padding:4px 10px;font-size:12.5px;color:#555;margin:2px}
+
+/* ── TOOL CARD ── */
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tool-card{background:#fff;border-radius:10px;padding:13px;border:1.5px solid #e8ecf0;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.tool-card .tool-icon{font-size:22px;margin-bottom:5px}
+.tool-card h4{font-size:13px;font-weight:700;color:#1E3A5F;margin-bottom:3px}
+.tool-card p{font-size:12px;color:#666;line-height:1.5}
+.tool-card .tool-link{font-size:11.5px;color:#1E3A5F;font-weight:600;display:inline-block;margin-top:5px;text-decoration:underline;direction:ltr}
+
+/* ── BLOCKER ALERT ── */
+.blocker-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.blocker-card{border-radius:10px;padding:12px 14px;border:1.5px solid}
+.b-red{background:#FEF3F2;border-color:#e8b4b0}
+.b-yellow{background:#FFF9E6;border-color:#f0dba0}
+.b-red h4{font-size:13px;font-weight:700;color:#C0392B;margin-bottom:6px}
+.b-yellow h4{font-size:13px;font-weight:700;color:#E67E22;margin-bottom:6px}
+.blocker-card li{font-size:12.5px;color:#555;margin-right:12px;margin-bottom:3px}
+
+/* ── PROGRESS INDICATOR ── */
+.progress-bar-wrap{background:#e8ecf0;border-radius:20px;height:8px;margin-top:8px;overflow:hidden}
+.progress-bar-fill{height:8px;border-radius:20px;background:linear-gradient(to left,#27AE60,#F4A923)}
+
+/* ── INLINE CODE ── */
+code{background:#e8ecf0;padding:1px 6px;border-radius:4px;font-family:monospace;font-size:12px;color:#C0392B}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#c0ccd8;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar no-print">
+  <h1>📚 دليل استلام أصول العميل — للاستخدام الداخلي فقط</h1>
+  <div class="topbar-btns">
+    <button class="tbtn tbtn-out" onclick="window.print()">🖨️ طباعة</button>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar no-print">
+  <div class="nav-section">
+    <div class="nav-section-title">البداية</div>
+    <a class="nav-item active" onclick="scrollTo('overview')">نظرة عامة + الأولويات</a>
+    <a class="nav-item" onclick="scrollTo('checklist')">Checklist الاستلام</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">الصلاحيات</div>
+    <a class="nav-item" onclick="scrollTo('facebook')">فيسبوك بيدج</a>
+    <a class="nav-item" onclick="scrollTo('business-manager')">Meta Business Manager</a>
+    <a class="nav-item" onclick="scrollTo('instagram')">إنستجرام</a>
+    <a class="nav-item" onclick="scrollTo('ads-account')">الأد أكاونت</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">الأصول البصرية</div>
+    <a class="nav-item" onclick="scrollTo('logo')">اللوجو</a>
+    <a class="nav-item" onclick="scrollTo('colors')">الألوان</a>
+    <a class="nav-item" onclick="scrollTo('fonts')">الفونتات</a>
+    <a class="nav-item" onclick="scrollTo('photos')">الصور والفيديو</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">التنظيم</div>
+    <a class="nav-item" onclick="scrollTo('folder')">هيكل Google Drive</a>
+    <a class="nav-item" onclick="scrollTo('client-types')">أنواع العملاء</a>
+    <a class="nav-item" onclick="scrollTo('messages')">رسائل جاهزة</a>
+    <a class="nav-item" onclick="scrollTo('parallel')">الشغل بدون انتظار</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">مشاكل شائعة</div>
+    <a class="nav-item" onclick="scrollTo('blockers')">البلوكرز لكل فريق</a>
+    <a class="nav-item" onclick="scrollTo('tools')">أدوات مفيدة</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- ═══════════════════════════════ -->
+<!-- OVERVIEW -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="overview">
+  <div class="section-header">
+    <div class="section-icon" style="background:#EEF4F8">🗺️</div>
+    <div><h2>نظرة عامة — إيه اللي بيوقف مين</h2><p>ابدأ من هنا عشان تعرف تتحرك صح من أول يوم</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⏱️ ترتيب الأولويات — يوم بيوم</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <div class="pri-row">
+        <div class="pri-day">يوم ١</div>
+        <div class="pri-items">
+          <h4>بلوكر كامل — بدونه مفيش شغل</h4>
+          <span class="pri-tag">🔑 Facebook Admin Access</span>
+          <span class="pri-tag">🏢 Meta Business Manager</span>
+          <span class="pri-tag">🖼️ اللوجو PNG شفاف</span>
+          <span class="pri-tag">🎨 كودات الألوان Hex</span>
+          <span class="pri-tag">💳 استلام الدفعة الأولى</span>
+        </div>
+      </div>
+      <div class="pri-row">
+        <div class="pri-day" style="background:#E67E22">أسبوع ١</div>
+        <div class="pri-items">
+          <h4>بدونها شغلك ناقص ومش احترافي</h4>
+          <span class="pri-tag">📸 صور المنتجات</span>
+          <span class="pri-tag">🔤 الفونتات</span>
+          <span class="pri-tag">📞 بيانات التواصل للنشر</span>
+          <span class="pri-tag">📷 Instagram Access</span>
+          <span class="pri-tag">📋 Onboarding Form مكتمل</span>
+        </div>
+      </div>
+      <div class="pri-row">
+        <div class="pri-day" style="background:#27AE60">أسبوع ٢</div>
+        <div class="pri-items">
+          <h4>بتكمل الصورة وبتحسن الجودة</h4>
+          <span class="pri-tag">🏢 كواليس وصور الفريق</span>
+          <span class="pri-tag">🎬 فيديوهات قديمة</span>
+          <span class="pri-tag">📑 كتالوج منتجات بأسعار</span>
+          <span class="pri-tag">📊 Ads Account Access</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blocker-grid">
+    <div class="blocker-card b-red">
+      <h4>🛑 اللي بيوقف الفريق كله</h4>
+      <ul>
+        <li>مفيش Facebook Admin → Designer + Copywriter بيشتغلوا بس مش قادرين ينشروا</li>
+        <li>مفيش لوجو → Designer واقف خالص</li>
+        <li>مفيش Business Manager → Media Buyer واقف خالص</li>
+      </ul>
+    </div>
+    <div class="blocker-card b-yellow">
+      <h4>⚠️ اللي بيأخر جودة الشغل</h4>
+      <ul>
+        <li>صور رديئة → تصاميم مش على مستوى</li>
+        <li>مش عنده فونتات → consistency بتتكسر</li>
+        <li>Onboarding Form فاضي → الاستراتيجية بتتبنى على افتراضات</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- CHECKLIST -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="checklist">
+  <div class="section-header">
+    <div class="section-icon" style="background:#f0fdf4">✅</div>
+    <div><h2>Checklist الاستلام</h2><p>بتشيل عليها مع كل عميل جديد — حفظها بتُعاد لكل عميل</p></div>
+  </div>
+  <div class="card">
+    <div class="card-title">
+      🔴 <span class="badge badge-red">يوم ١ — لا تبدأ بدونها</span>
+    </div>
+    <div class="checklist">
+      <div class="chk req"><input type="checkbox"><div class="chk-lbl"><strong><span class="rbadge">مطلوب</span>Facebook Page — Admin Access مضاف</strong><span>تأكيد: تقدر تنشر بوست من حسابك على الصفحة</span></div></div>
+      <div class="chk req"><input type="checkbox"><div class="chk-lbl"><strong><span class="rbadge">مطلوب</span>Meta Business Manager — Partner أو Admin</strong><span>تأكيد: صفحته وأد أكاونته ظاهرين في business.facebook.com بتاعك</span></div></div>
+      <div class="chk req"><input type="checkbox"><div class="chk-lbl"><strong><span class="rbadge">مطلوب</span>لوجو PNG بخلفية شفافة — 500px فأكتر</strong><span>تأكيد: افتحه في Photoshop — الخلفية بتظهر مربعات رمادية/بيضاء = شفاف</span></div></div>
+      <div class="chk req"><input type="checkbox"><div class="chk-lbl"><strong><span class="rbadge">مطلوب</span>كودات Hex للألوان الأساسية</strong><span>تأكيد: عندك كود على شكل #XXXXXX للون الرئيسي على الأقل</span></div></div>
+      <div class="chk req"><input type="checkbox"><div class="chk-lbl"><strong><span class="rbadge">مطلوب</span>عقد موقع + دفعة أولى مستلمة</strong><span>مش هيبدأ أي تنفيذ قبل الاتنين</span></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🟡 أسبوع الأول</div>
+    <div class="checklist">
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>Instagram — Professional Account مربوط بالبيزنس</strong><span>تأكيد: ظاهر في Business Manager تحت الـ Assets</span></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>صور المنتجات والخدمات</strong><span>على Drive — مش واتساب — جودة مقبولة للطباعة</span></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>بيانات التواصل للنشر</strong><span>رقم واتساب، إيميل، عنوان، ساعات العمل</span></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>اسم الفونت أو الملف</strong><span>لو مش لاقيه: شوف قسم الفونتات في الدليل ده</span></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>Onboarding Form معبي بالكامل</strong><span>الجمهور + الأهداف + الخط الأحمر + المنافسين</span></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🟢 الأسبوع الثاني</div>
+    <div class="checklist">
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>Ads Account Access — Advertiser على الأقل</strong></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>Facebook Pixel مثبت على الموقع (لو موجود)</strong></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>صور الفريق والكواليس</strong></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>فيديوهات قديمة أو محتوى سابق</strong></div></div>
+      <div class="chk"><input type="checkbox"><div class="chk-lbl"><strong>ملف اللوجو الأصلي AI/EPS/SVG</strong></div></div>
+    </div>
+  </div>
+  <div class="note">💡 احفظ حالة الـ Checklist ده لكل عميل في الـ Drive بتاعه — بيوفر على مدير الحساب تعداد اللي ناقص في كل مرة</div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- FACEBOOK ACCESS -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="facebook">
+  <div class="section-header">
+    <div class="section-icon" style="background:#e8f0fe">📘</div>
+    <div><h2>فيسبوك بيدج — الصلاحية خطوة بخطوة</h2><p>ابعت الخطوات دي للعميل بالضبط</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">الطريقة الصح على الكمبيوتر</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">١</div><div><h4>افتح الصفحة على فيسبوك</h4><p>من الكمبيوتر — مش التطبيق على الموبايل (الإعدادات بتكون مختلفة)</p></div></div>
+      <div class="step"><div class="step-num">٢</div><div><h4>اضغط على Settings &amp; Privacy ثم Settings</h4><p>في القايمة اليسار — أو من أيقونة الإعدادات على الصفحة مباشرة</p></div></div>
+      <div class="step"><div class="step-num">٣</div><div><h4>Page Setup ← Page Roles</h4><p>لو الصفحة بـ New Pages Experience: Manage → Page Access</p></div></div>
+      <div class="step"><div class="step-num">٤</div><div><h4>Assign a New Page Role</h4><p>ادخل إيميل حساب الفيسبوك بتاعنا أو اسم الحساب بالضبط</p></div></div>
+      <div class="step"><div class="step-num s-gold">٥</div><div><h4>اختار Role: Admin</h4><p><strong>مش Editor ومش Moderator</strong> — Admin فقط عشان نقدر نربط البيزنس Manager وندير الإعلانات</p></div></div>
+      <div class="step"><div class="step-num">٦</div><div><h4>اضغط Add وأدخل كلمة سرك أنت</h4><p>فيسبوك بيطلب كده للتأكيد — طبيعي</p></div></div>
+    </div>
+    <div class="success">✅ تأكيد إن الصلاحية وصلت: افتح الصفحة من حسابك — المفروض تشوف زر "Manage" وتقدر تعمل بوست</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">السيناريوهات الصعبة <span class="badge badge-red">شايفها كتير</span></div>
+    <div class="scenario-group">
+
+      <div class="scenario sc-bad">
+        <div class="scenario-head" onclick="toggleScenario(this)">
+          <div class="scenario-icon">😤</div>
+          <h4>"مش لاقي مكان Page Roles في إعداداتي"</h4>
+          <div class="arrow">▼</div>
+        </div>
+        <div class="scenario-body">
+          <p style="font-size:13px;color:#555;margin-bottom:8px">ده بيحصل لأنه على New Pages Experience — الأماكن اتغيرت</p>
+          <div class="steps">
+            <div class="step s-gold"><div class="step-num gold">١</div><div><h4>Professional Dashboard → Settings</h4></div></div>
+            <div class="step s-gold"><div class="step-num gold">٢</div><div><h4>New Pages Experience → Page Access</h4><p>هيلاقي: "People with Facebook Access" و "People with Task Access"</p></div></div>
+            <div class="step s-gold"><div class="step-num gold">٣</div><div><h4>Add New → Full Control</h4><p>Full Control = Admin القديم</p></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario sc-bad">
+        <div class="scenario-head" onclick="toggleScenario(this)">
+          <div class="scenario-icon">📱</div>
+          <h4>"أنا شغال على الموبايل بس"</h4>
+          <div class="arrow">▼</div>
+        </div>
+        <div class="scenario-body">
+          <p style="font-size:13px;color:#555;margin-bottom:8px">على التطبيق الأماكن بتختلف — الأسهل:</p>
+          <div class="steps">
+            <div class="step s-gold"><div class="step-num gold">١</div><div><h4>Facebook App → الصفحة → الـ 3 نقاط (المزيد)</h4></div></div>
+            <div class="step s-gold"><div class="step-num gold">٢</div><div><h4>Page Settings → Page Roles</h4></div></div>
+            <div class="step s-gold"><div class="step-num gold">٣</div><div><h4>لو مش لاقيه: جرب Meta Business Suite App بدل Facebook App</h4></div></div>
+          </div>
+          <div class="warn" style="margin-top:8px">الأسهل: ابعتله Loom فيديو قصير 2 دقيقة بيوضح الخطوات على شاشتك</div>
+        </div>
+      </div>
+
+      <div class="scenario sc-bad">
+        <div class="scenario-head" onclick="toggleScenario(this)">
+          <div class="scenario-icon">🔒</div>
+          <h4>بيدج مربوط ببيزنس شخص تاني (المصمم القديم أو شريك)</h4>
+          <div class="arrow">▼</div>
+        </div>
+        <div class="scenario-body">
+          <p style="font-size:13px;color:#555;margin-bottom:8px">ده موقف حساس — مش انت اللي بتحله</p>
+          <div class="steps">
+            <div class="step s-red"><div class="step-num red">١</div><div><h4>وضح للعميل إن Admin البيزنس القديم هو اللي لازم يضيفك</h4></div></div>
+            <div class="step s-red"><div class="step-num red">٢</div><div><h4>لو مش عارف يتواصل بيه</h4><p>ممكن يطلب الإزالة من البيزنس القديم ويعمل بيزنس جديد — بس ده بيأخد وقت</p></div></div>
+            <div class="step s-red"><div class="step-num red">٣</div><div><h4>حل مؤقت: ربط الصفحة ببيزنس بتاعنا</h4><p>من: Business Settings → Accounts → Pages → Add → Request Access to a Page</p></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- BUSINESS MANAGER -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="business-manager">
+  <div class="section-header">
+    <div class="section-icon" style="background:#e8f0fe">🏢</div>
+    <div><h2>Meta Business Manager — الأهم على الإطلاق</h2><p>ده مركز التحكم الحقيقي — بدونه مفيش إعلانات ومفيش أمان على الأصول</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">ليه Business Manager أهم من البيدج نفسه؟</div>
+    <table class="dtable">
+      <thead><tr><th>الميزة</th><th>بدون BM</th><th>مع BM</th></tr></thead>
+      <tbody>
+        <tr><td>الإعلانات</td><td class="x">✗ محدود جداً</td><td class="c">✓ كامل</td></tr>
+        <tr><td>لو اتحذف حساب العميل الشخصي</td><td class="x">✗ الصفحة في خطر</td><td class="c">✓ محفوظة</td></tr>
+        <tr><td>إدارة أكثر من حساب</td><td class="x">✗ مش ممكن</td><td class="c">✓ كل العملاء في مكان</td></tr>
+        <tr><td>Facebook Pixel</td><td class="x">✗ ما ينفعش</td><td class="c">✓ مع كامل الإمكانيات</td></tr>
+        <tr><td>Custom Audiences</td><td class="x">✗ محدود</td><td class="c">✓ كامل</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">إضافة شركتك كـ Partner على بيزنسه</div>
+    <div class="info" style="margin-bottom:12px;margin-top:0">
+      ده الأفضل — بدل ما تبقى موظف عنده، بتبقى Partner. كده لو خلصت شغلكوا تتفصل بسهولة
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">١</div><div><h4>اطلب منه يفتح business.facebook.com</h4></div></div>
+      <div class="step"><div class="step-num">٢</div><div><h4>Settings → Partners → Add → Give a Partner Access</h4></div></div>
+      <div class="step"><div class="step-num s-gold">٣</div><div><h4>ادخل Business ID بتاعتك</h4><p>الـ Business ID بتاعك موجود في: Business Manager بتاعك → Settings → Business Info</p></div></div>
+      <div class="step"><div class="step-num">٤</div><div><h4>خليه يختار الأصول اللي تضيفها:</h4><p>✓ الصفحة &nbsp; ✓ الأد أكاونت &nbsp; ✓ إنستجرام &nbsp; ✓ Pixel (لو موجود)</p></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">العميل مش عنده Business Manager خالص <span class="badge badge-red">الأكثر شيوعاً</span></div>
+    <div class="warn" style="margin-bottom:12px;margin-top:0">متقوله "اعمله بنفسك" — هيضيع أسبوع. اعمله معاه في 10 دقائق</div>
+    <div class="steps">
+      <div class="step s-gold"><div class="step-num gold">١</div><div><h4>رتب Zoom أو حضوري لمدة 15 دقيقة</h4><p>أو اطلب Screen Share على واتساب</p></div></div>
+      <div class="step s-gold"><div class="step-num gold">٢</div><div><h4>business.facebook.com → Create Account</h4><p>الاسم: اسم الشركة / الإيميل: إيميل الشركة / هو بيملأه هو</p></div></div>
+      <div class="step s-gold"><div class="step-num gold">٣</div><div><h4>ربط الصفحة: Add Page → Add a Page</h4><p>يختار صفحته من القايمة — بيتضاف تلقائي لأنه Admin عليها</p></div></div>
+      <div class="step s-gold"><div class="step-num gold">٤</div><div><h4>إنشاء Ads Account: Create Ad Account</h4><p>يختار العملة والبلد — مهم لأنه ما بيتغيرش بعدين</p></div></div>
+      <div class="step s-gold"><div class="step-num gold">٥</div><div><h4>ربط إنستجرام: Accounts → Instagram → Add</h4></div></div>
+      <div class="step s-gold"><div class="step-num gold">٦</div><div><h4>إضافتك كـ Partner: Partners → Add → Give Partner Access</h4></div></div>
+    </div>
+    <div class="success">بعد كده: انت عندك Access على كل الأصول من business.facebook.com بتاعك أنت</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- INSTAGRAM -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="instagram">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fce8f3">📷</div>
+    <div><h2>إنستجرام — الحالات والحلول</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">الفرق بين أنواع الحسابات</div>
+    <table class="dtable">
+      <thead><tr><th>النوع</th><th>الـ Insights</th><th>الإعلانات</th><th>Business Manager</th><th>الحل</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Personal</strong></td><td class="x">✗</td><td class="x">✗</td><td class="x">✗</td><td>لازم يتحول</td></tr>
+        <tr><td><strong>Creator</strong></td><td class="c">✓</td><td>محدود</td><td class="x">✗</td><td>حوله لـ Business</td></tr>
+        <tr><td><strong>Business</strong></td><td class="c">✓</td><td class="c">✓</td><td class="c">✓</td><td>تمام ✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">تحويل الحساب لـ Business Account</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">١</div><div><h4>الإعدادات → Account → Switch to Professional Account</h4></div></div>
+      <div class="step"><div class="step-num">٢</div><div><h4>اختار: Business (مش Creator)</h4><p>Creator كويس للمؤثرين — Business للشركات والمحلات والخدمات</p></div></div>
+      <div class="step"><div class="step-num">٣</div><div><h4>اختار Category المناسبة لنشاطه</h4></div></div>
+      <div class="step s-green"><div class="step-num green">٤</div><div><h4>ربطه بالفيسبوك بيدج</h4><p>Edit Profile → Page → اختار الصفحة المرتبطة</p></div></div>
+    </div>
+    <div class="success">بعد الربط بالصفحة: هيظهر تلقائياً في Business Manager تحت Instagram Accounts</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- ADS ACCOUNT -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="ads-account">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fce8e8">📊</div>
+    <div><h2>الأد أكاونت — إزاي تنظم الإعلانات صح</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">أهم قاعدة في الإعلانات</div>
+    <div class="warn" style="margin-top:0">
+      ❌ <strong>مش هتدفع إعلانات من جيبك أبداً</strong> — حتى لو قالك "هردلك" أو "من حسابك واحنا بندفعك" — ده بيفتح مشاكل مالية وقانونية
+    </div>
+    <div class="success">
+      ✅ <strong>الطريقة الصح:</strong> الميزانية من Ads Account بتاعه هو — انت بس بتدير الحملات
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">طريقتين لإدارة الإعلانات — اختار المناسبة</div>
+    <div class="g2">
+      <div style="background:#f0fdf4;border-radius:10px;padding:14px;border:1.5px solid #a8e0bc">
+        <h4 style="color:#1a5c35;font-size:13.5px;margin-bottom:8px">✅ الأفضل — Ad Account تحت بيزنسه</h4>
+        <ul style="font-size:12.5px;color:#555;padding-right:16px;line-height:1.8">
+          <li>هو بيضيف Payment Method</li>
+          <li>انت بتدير الحملات من عنده كـ Advertiser</li>
+          <li>الأد أكاونت بيفضل عنده لو خلصتوا</li>
+          <li>البيانات التاريخية بتفضل عنده</li>
+        </ul>
+      </div>
+      <div style="background:#FFF9E6;border-radius:10px;padding:14px;border:1.5px solid #f0dba0">
+        <h4 style="color:#856404;font-size:13.5px;margin-bottom:8px">⚠️ البديل — Ad Account تحت بيزنسك</h4>
+        <ul style="font-size:12.5px;color:#555;padding-right:16px;line-height:1.8">
+          <li>هو بيضيف Payment Method على أكاونتك</li>
+          <li>مناسب لو مش عنده معرفة تقنية</li>
+          <li>لو خلصتوا — الأد أكاونت يفضل عندك أنت</li>
+          <li>ممكن يبقى مشكلة لو طلب البيانات</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">💡 مستوى الصلاحية المطلوب كـ Media Buyer: <code>Advertiser</code> على الأقل — مش View Only</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- LOGO -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="logo">
+  <div class="section-header">
+    <div class="section-icon" style="background:#f5f0ff">🖼️</div>
+    <div><h2>اللوجو — كل سيناريو وحله</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">إيه النسخ اللي المفروض يبقى عندك من كل لوجو</div>
+    <div class="tree">
+      <span class="folder">📁 Logo/</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">logo_original.ai</span> <span class="comment">← الملف الأصلي لو موجود</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">logo_transparent.png</span> <span class="comment">← الأساسي — بخلفية شفافة</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">logo_white.png</span> <span class="comment">← للخلفيات الداكنة</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">logo_dark.png</span> <span class="comment">← للخلفيات الفاتحة</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">logo_square.png</span> <span class="comment">← لـ Profile Pictures (1:1)</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">logo_favicon.png</span> <span class="comment">← 32x32 للموقع</span>
+    </div>
+    <div class="note">الديزاينر بيعمل النسخ دي في أول يوم من اللوجو الأصلي — ويحطها في Drive العميل</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">السيناريوهات الصعبة</div>
+    <div class="scenario-group">
+
+      <div class="scenario sc-bad">
+        <div class="scenario-head" onclick="toggleScenario(this)">
+          <div class="scenario-icon">🖼️</div>
+          <h4>بعتلك PNG بخلفية بيضاء</h4>
+          <div class="arrow">▼</div>
+        </div>
+        <div class="scenario-body">
+          <div class="steps">
+            <div class="step s-green"><div class="step-num green">١</div><div><h4>جرب Remove.bg أولاً</h4><p>ارفع الصورة — بتشيل الخلفية البيضاء تلقائياً في ثواني. شغال كويس مع لوجوهات بسيطة</p></div></div>
+            <div class="step s-green"><div class="step-num green">٢</div><div><h4>لو لوجو معقد أو فيه تفاصيل دقيقة</h4><p>Photoshop → Select → Color Range → اختار الأبيض → Delete — ثم Save as PNG</p></div></div>
+            <div class="step s-red"><div class="step-num red">٣</div><div><h4>لو الجودة رديئة جداً أو مكسورة الحواف</h4><p>محتاج Redraw كامل — الديزاينر بيرسمه Vector من الصفر (30 دقيقة تقريباً)</p></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario sc-bad">
+        <div class="scenario-head" onclick="toggleScenario(this)">
+          <div class="scenario-icon">📱</div>
+          <h4>بعتلك صورة من واتساب — جودة رديئة</h4>
+          <div class="arrow">▼</div>
+        </div>
+        <div class="scenario-body">
+          <p style="font-size:13px;color:#555;margin-bottom:10px">واتساب بيضغط الصور تلقائياً — الجودة بتنزل 80%. الحل:</p>
+          <div class="msg-box" style="margin-top:0">
+            <div class="msg-label">ابعتله الرسالة دي</div>
+            <p>"لو عندك اللوجو على الموبايل، ابعته عبر واتساب بالطريقة دي:
+اضغط على الملصق (📎) → اختار Document (مش Photo)
+كده بيوصلنا بأعلى جودة ممكنة 🙏"</p>
+          </div>
+          <div class="note" style="margin-top:8px">بديل: ابعتله لينك Google Drive أو WeTransfer وارفع هو الملف عليه</div>
+        </div>
+      </div>
+
+      <div class="scenario sc-bad">
+        <div class="scenario-head" onclick="toggleScenario(this)">
+          <div class="scenario-icon">❓</div>
+          <h4>مش عنده اللوجو خالص — "المصمم القديم مش بيرد"</h4>
+          <div class="arrow">▼</div>
+        </div>
+        <div class="scenario-body">
+          <div class="steps">
+            <div class="step s-gold"><div class="step-num gold">١</div><div><h4>دور على أي صورة فيها اللوجو</h4><p>بوست قديم على الفيسبوك / كارت شخصي ممسوح / صورة من محله / واجهة المتجر</p></div></div>
+            <div class="step s-gold"><div class="step-num gold">٢</div><div><h4>الديزاينر بيعمل Redraw</h4><p>يرسم نفس اللوجو Vector من الصورة — يتفق مع العميل على موافقته قبل ما يخلص</p></div></div>
+            <div class="step s-gold"><div class="step-num gold">٣</div><div><h4>لو مفيش أي صورة خالص</h4><p>فرصة Upsell: عرض تصميم لوجو جديد بسعر إضافي — وده أفضل من الشغل بدون هوية</p></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- COLORS -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="colors">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fff0e8">🎨</div>
+    <div><h2>الألوان — استخراجها وتوثيقها</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">أدوات استخراج الألوان من اللوجو</div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-icon">🎨</div>
+        <h4>Adobe Color</h4>
+        <p>ارفع صورة اللوجو — بيطلعلك فورًا كل الألوان بكودات Hex و RGB</p>
+        <div class="tool-link">color.adobe.com</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🖌️</div>
+        <h4>Coolors</h4>
+        <p>Image Picker — ارفع صورة وانقر على أي نقطة تعطيك الـ Hex فوراً</p>
+        <div class="tool-link">coolors.co/image-picker</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🔍</div>
+        <h4>Photoshop Eyedropper</h4>
+        <p>افتح اللوجو، اختار Eyedropper Tool، انقر على أي لون — الـ Hex يظهر في Color Picker</p>
+        <div class="tool-link">داخل Adobe PS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">العميل مش عنده ألوان رسمية خالص</div>
+    <div class="steps">
+      <div class="step s-gold"><div class="step-num gold">١</div><div><h4>استخرج الألوان الموجودة في لوجوه فعلاً</h4><p>دول بيبقوا ألوانه حتى لو هو مش عارف — ابدأ منهم</p></div></div>
+      <div class="step s-gold"><div class="step-num gold">٢</div><div><h4>ابني Palette متكاملة من اللوجو</h4><p>اللون الرئيسي من اللوجو + لون ثانوي مكمل + لون محايد (رمادي أو كريمي)</p></div></div>
+      <div class="step s-gold"><div class="step-num gold">٣</div><div><h4>ابعتهاله في رسالة للموافقة</h4><p>"دي الألوان الرسمية اللي هنستخدمها في كل المحتوى — لو في تعديل قولنا قبل ما نبدأ التصاميم"</p></div></div>
+    </div>
+    <div class="note">بعد موافقته: حطها في ملف Brand Assets وأي تصميم بيعمله الفريق بيبدأ منها</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">ملف توثيق الألوان — ابعته لكل الفريق</div>
+    <div class="tree">
+      <span class="comment">// ملف Colors.txt داخل Brand Assets</span><br><br>
+      <span class="folder">الألوان الرسمية — [اسم العميل]</span><br><br>
+      اللون الرئيسي:&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">HEX: #1E3A5F</span>&nbsp;&nbsp;RGB: 30, 58, 95<br>
+      اللون الثانوي:&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">HEX: #F4A923</span>&nbsp;&nbsp;RGB: 244, 169, 35<br>
+      خلفية فاتحة:&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">HEX: #F0F4F8</span>&nbsp;&nbsp;RGB: 240, 244, 248<br>
+      نص داكن:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">HEX: #2C3E50</span>&nbsp;&nbsp;RGB: 44, 62, 80<br>
+      نص فاتح:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">HEX: #95A5A6</span>&nbsp;&nbsp;RGB: 149, 165, 166
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- FONTS -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="fonts">
+  <div class="section-header">
+    <div class="section-icon" style="background:#f0f8ff">🔤</div>
+    <div><h2>الفونتات — إزاي تعرفها وتتعامل معاها</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">إزاي تكتشف الفونت اللي في اللوجو</div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-icon">🔍</div>
+        <h4>WhatTheFont</h4>
+        <p>ارفع صورة النص — بيتعرف على الفونت بدقة عالية</p>
+        <div class="tool-link">myfonts.com/whatthefont</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🧠</div>
+        <h4>Font Squirrel</h4>
+        <p>بديل قوي لـ WhatTheFont — نتائج أكتر أحياناً</p>
+        <div class="tool-link">fontsquirrel.com/matcherator</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🤖</div>
+        <h4>Adobe Fonts</h4>
+        <p>لو بتشتغل بـ Adobe CC — كل الفونتات متاحة بالاشتراك</p>
+        <div class="tool-link">fonts.adobe.com</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">الفونتات العربية الموصى بيها لو مش عارف بتاعه</div>
+    <table class="dtable">
+      <thead><tr><th>الفونت</th><th>الشخصية</th><th>مناسب لـ</th><th>مجاني؟</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cairo</strong></td><td>متعدد، احترافي، مقروء</td><td>معظم المشاريع</td><td class="c">✓</td></tr>
+        <tr><td><strong>Tajawal</strong></td><td>عصري، خفيف، شبابي</td><td>Fashion, Tech, Startups</td><td class="c">✓</td></tr>
+        <tr><td><strong>El Messiri</strong></td><td>كلاسيكي، راقي، قوي</td><td>مطاعم راقية، عيادات، محلات تراثية</td><td class="c">✓</td></tr>
+        <tr><td><strong>Noto Kufi Arabic</strong></td><td>رسمي، أنيق، هادئ</td><td>شركات، مكاتب، B2B</td><td class="c">✓</td></tr>
+        <tr><td><strong>Almarai</strong></td><td>عصري، واضح جداً</td><td>محلات، Retail, FMCG</td><td class="c">✓</td></tr>
+      </tbody>
+    </table>
+    <div class="note">كل الفونتات دي موجودة على Google Fonts مجاناً — الديزاينر بيحملها مرة واحدة</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- PHOTOS -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="photos">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fff8e8">📸</div>
+    <div><h2>الصور والفيديو — إزاي تستلمها وتتعامل معاها</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">إيه اللي تطلبه بالضبط لكل مجال</div>
+    <table class="dtable">
+      <thead><tr><th>المجال</th><th>الصور الأساسية</th><th>Bonus</th></tr></thead>
+      <tbody>
+        <tr><td><strong>مطعم / كافيه</strong></td><td>أطباق من فوق + من الجانب، المكان داخل وبره</td><td>لحظة تقديم الطلب، شيف في العمل</td></tr>
+        <tr><td><strong>عيادة / طب</strong></td><td>المكان نظيف ومرتب، الأجهزة الحديثة</td><td>الدكتور بالبالطو (بدون مرضى)</td></tr>
+        <tr><td><strong>محل ملابس / أكسسوار</strong></td><td>المنتجات على خلفية بيضاء، من زوايا مختلفة</td><td>Lifestyle shots — شخص بيلبس المنتج</td></tr>
+        <tr><td><strong>خدمات (محاسبة، قانون)</strong></td><td>مكتب ونظافة وترتيب، الفريق في العمل</td><td>صور مفاهيمية من Unsplash</td></tr>
+        <tr><td><strong>تجارة إلكترونية</strong></td><td>المنتجات على خلفية بيضاء + على خلفية ملونة</td><td>Unboxing shots، مقارنات</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">إزاي تستلم الصور بجودة كويسة</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">١</div><div><h4>مش واتساب — Google Drive أو WeTransfer</h4><p>واتساب بيضغط الصور من 5MB لـ 500KB — تفقد معظم الجودة</p></div></div>
+      <div class="step"><div class="step-num">٢</div><div><h4>الحد الأدنى المقبول</h4><p>عرض 1080px فأكتر — لو أقل من كده، التصميم هيبان Pixelated على الشاشات الكبيرة</p></div></div>
+      <div class="step"><div class="step-num">٣</div><div><h4>افتح له Folder مشترك على Drive</h4><p>وابعتله الرابط — هو بيرفع، انت بتاخد مباشرة. أسهل من المراسلة جيه وجيه</p></div></div>
+    </div>
+    <div class="warn">لو الصور رديئة ومش ممكن تتحسن — وضح له في التقرير الأول إن الجودة بتأثر على التصاميم وشجعه على جلسة تصوير</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">لو مش عنده صور كافية — البديل الاحترافي</div>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-icon">🌊</div>
+        <h4>Unsplash</h4>
+        <p>صور مجانية عالية الجودة — مناسبة كـ Background أو تعبيرية</p>
+        <div class="tool-link">unsplash.com</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🎯</div>
+        <h4>Pexels</h4>
+        <p>مجاني — متنوع جداً ومفيش حقوق ملكية</p>
+        <div class="tool-link">pexels.com</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🎨</div>
+        <h4>Freepik</h4>
+        <p>تصاميم وعناصر جاهزة — بعضها مجاني وبعضه Premium</p>
+        <div class="tool-link">freepik.com</div>
+      </div>
+    </div>
+    <div class="note">مهم: الـ Stock Photos بتستخدمها كـ Placeholder مؤقت — مش بديل دائم لصور العميل الحقيقية</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- FOLDER STRUCTURE -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="folder">
+  <div class="section-header">
+    <div class="section-icon" style="background:#f0fff4">📁</div>
+    <div><h2>هيكل Google Drive — نظام موحد لكل العملاء</h2><p>نفس الهيكل لكل عميل — أي فرد في الفريق يلاقي أي حاجة في ثواني</p></div>
+  </div>
+
+  <div class="card">
+    <div class="tree">
+<span class="folder">📁 CLIENTS/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">📁 [اسم العميل] — [MM-YYYY]/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">├── 00_Admin/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;العقد_موقع.pdf</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Onboarding_Form.pdf</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Brand_Voice_Document.pdf</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Assets_Checklist.pdf</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">├── 01_Brand_Assets/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Logo/ &nbsp;&nbsp;Colors.txt &nbsp;&nbsp;Fonts/ &nbsp;&nbsp;Photos/ &nbsp;&nbsp;Videos/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">├── 02_Strategy/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Competitor_Analysis.pdf</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Content_Strategy_M01.pdf</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">├── 03_Content/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Month_01/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Content_Calendar.xlsx</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="folder">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Designs/ &nbsp;&nbsp;Captions/ &nbsp;&nbsp;Approved/ &nbsp;&nbsp;Published/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">└── 04_Reports/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Report_Month_01.pdf</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Report_Month_02.pdf</span>
+    </div>
+    <div class="note" style="margin-top:12px">📌 الفولدر ده بيتعمل في أول يوم — قبل ما تيجي أي أصول. وبتحط فيه الحاجات دي بالترتيب</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- CLIENT TYPES -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="client-types">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fef3e8">👥</div>
+    <div><h2>أنواع العملاء في الاستجابة</h2><p>كل نوع محتاج أسلوب مختلف</p></div>
+  </div>
+
+  <div class="card">
+    <table class="dtable">
+      <thead><tr><th>النوع</th><th>علامته</th><th>الأسلوب الصح</th><th>اتجنب</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>⚡ السريع</strong></td>
+          <td>بيرد في ساعات ويبعت كل حاجة</td>
+          <td>ابعتله Checklist كامل في رسالة واحدة — هيجمع كل حاجة</td>
+          <td>متجزأش الطلبات — هتضيعه</td>
+        </tr>
+        <tr>
+          <td><strong>🐢 البطيء</strong></td>
+          <td>بيرد بعد أيام وبيبعت ناقص</td>
+          <td>تليفون واحد بيحل ما بتحله 10 رسائل — اتصل وخذ منه بالصوت</td>
+          <td>متستنيش 3 أيام تبعت Reminder</td>
+        </tr>
+        <tr>
+          <td><strong>❓ اللي مش فاهم</strong></td>
+          <td>بيسأل "إيه يعني PNG؟"</td>
+          <td>Screen Share أو فيديو قصير — الشرح بالصوت أسرع 10 مرات</td>
+          <td>متبعتوش instructions كتابية طويلة</td>
+        </tr>
+        <tr>
+          <td><strong>🗃️ اللي مش عنده حاجة</strong></td>
+          <td>"المصمم القديم مش بيرد"</td>
+          <td>ابدأ بالموجود وخطط لجلسة تجهيز الأصول الناقصة</td>
+          <td>متوقفش الشغل لحد ما يجيب الكامل</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- MESSAGES -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="messages">
+  <div class="section-header">
+    <div class="section-icon" style="background:#e8f4ff">💬</div>
+    <div><h2>رسائل جاهزة للنسخ والإرسال</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">رسالة ما بعد التوقيع مباشرة</div>
+    <div class="msg-box" style="margin-top:8px">
+      <div class="msg-label">ابعتها على واتساب خلال ساعة من التوقيع</div>
+      <button class="copy-btn" onclick="copyMsg(this)">نسخ</button>
+      <p>أهلاً [الاسم] 🙏
+
+يسعدنا تعاملنا معاك — هنبدأ شغلنا في [تاريخ البداية].
+
+عشان نبدأ في الوقت المتفق عليه، محتاجين منك خلال 48 ساعة:
+
+🔑 مطلوب فوراً:
+١. إضافتنا Admin على صفحة الفيسبوك
+   (هنبعتلك الخطوات دلوقتي)
+٢. اللوجو PNG بخلفية شفافة
+٣. الألوان الرسمية (كودات Hex لو عندك)
+
+📦 خلال أسبوع:
+٤. صور المنتجات على Google Drive
+٥. رقم التواصل اللي ينتشر للعملاء
+٦. استمارة الـ Onboarding (هنبعتهالك)
+
+في أي سؤال أنا موجود ✅</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">رسالة Reminder بعد 3 أيام بدون رد</div>
+    <div class="msg-box" style="margin-top:8px">
+      <div class="msg-label">مش "إزيك؟ في أي جديد؟"</div>
+      <button class="copy-btn" onclick="copyMsg(this)">نسخ</button>
+      <p>[الاسم]، موعد البداية [التاريخ] بعد X أيام 📅
+
+الـ Access والأصول لازم تبقى جاهزة قبل بيومين عشان الفريق يبدأ في الوقت.
+
+لو في حاجة مش واضحة أو محتاج مساعدة في أي خطوة — قولي وأرتب معاك كول سريع 10 دقائق 🙏</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">رسالة طلب الصلاحية خطوة بخطوة</div>
+    <div class="msg-box" style="margin-top:8px">
+      <div class="msg-label">ابعتها لو كان محتاج مساعدة في إضافة الصلاحية</div>
+      <button class="copy-btn" onclick="copyMsg(this)">نسخ</button>
+      <p>لإضافتنا Admin على صفحة الفيسبوك:
+
+١. افتح الصفحة على الكمبيوتر (مش التطبيق)
+٢. Settings → Page Roles (أو Page Access في النسخ الجديدة)
+٣. Add New → ادخل: [إيميلنا أو اسم الحساب]
+٤. اختار: Admin (أو Full Control)
+٥. اضغط Add وأدخل كلمة سرك للتأكيد
+
+لو في أي مشكلة — بعتلي Screenshot وهحلها معاك فوراً 🙏</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">رسالة طلب الصور بجودة كويسة</div>
+    <div class="msg-box" style="margin-top:8px">
+      <button class="copy-btn" onclick="copyMsg(this)">نسخ</button>
+      <p>محتاجين الصور بجودة عالية عشان التصاميم تطلع احترافية 📸
+
+الطريقة الأفضل:
+— مش واتساب (بيضغط الصور ويقلل الجودة)
+— ابعتها عبر Google Drive على الرابط ده: [رابط الفولدر]
+— أو WeTransfer: wetransfer.com
+
+لو هتبعت من الموبايل عبر واتساب:
+اضغط 📎 → اختار Document بدل Photo
+كده بتوصل بأعلى جودة ✅</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- PARALLEL WORK -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="parallel">
+  <div class="section-header">
+    <div class="section-icon" style="background:#f0fff4">⚡</div>
+    <div><h2>الشغل الموازي — مش هتستنى كل حاجة تكتمل</h2><p>خد ما عندك وابدأ — الباقي بييجي بالتوازي</p></div>
+  </div>
+
+  <div class="card">
+    <table class="dtable">
+      <thead><tr><th>الوقت</th><th>المتوفر</th><th>الفريق اللي يشتغل</th><th>المخرج</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>يوم ١-٢</strong></td>
+          <td>معلومات العميل فقط</td>
+          <td>Manager + Copywriter</td>
+          <td>Competitor Analysis — Audience Research — Strategy Draft</td>
+        </tr>
+        <tr>
+          <td><strong>يوم ٢-٣</strong></td>
+          <td>لوجو + ألوان</td>
+          <td>Designer</td>
+          <td>Templates للبوستات والستوريز — نسخ اللوجو المختلفة</td>
+        </tr>
+        <tr>
+          <td><strong>يوم ٣-٥</strong></td>
+          <td>Onboarding Form مكتمل</td>
+          <td>Manager</td>
+          <td>Brand Voice Document — Content Strategy نهائي</td>
+        </tr>
+        <tr>
+          <td><strong>يوم ٥-٧</strong></td>
+          <td>صور المنتجات</td>
+          <td>Designer + Copywriter</td>
+          <td>Content Calendar الشهر الأول — أول دفعة بوستات</td>
+        </tr>
+        <tr>
+          <td><strong>يوم ٧+</strong></td>
+          <td>كل الأصول</td>
+          <td>الفريق كله</td>
+          <td>تنفيذ كامل + بداية النشر الجاد</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="success">🎯 الهدف: في اليوم السابع يبقى عندك Content Calendar للشهر الأول جاهز حتى لو مش كل الأصول وصلت</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- BLOCKERS PER TEAM -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="blockers">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fef3f2">🛑</div>
+    <div><h2>البلوكرز لكل فريق — مرجع سريع</h2></div>
+  </div>
+
+  <div class="card">
+    <table class="dtable">
+      <thead><tr><th>الفريق</th><th>🔴 بيوقفه كامل</th><th>🟡 بيأثر على الجودة</th><th>🟢 شغال من غيره</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Designer</strong></td>
+          <td>لوجو مفيش / صور مفيش</td>
+          <td>ألوان غلط / فونت مجهول</td>
+          <td>Strategy / Competitor Analysis</td>
+        </tr>
+        <tr>
+          <td><strong>Copywriter</strong></td>
+          <td>Onboarding Form فاضي / ما عرفش الجمهور</td>
+          <td>ألوان مش معروفة / Tone مش محدد</td>
+          <td>Competitor Analysis / Draft Strategy</td>
+        </tr>
+        <tr>
+          <td><strong>Media Buyer</strong></td>
+          <td>Meta BM Access مش موجود / Ads Account مش متاح</td>
+          <td>Pixel مش متبت / Custom Audiences فاضية</td>
+          <td>Research جمهور / Draft Campaigns</td>
+        </tr>
+        <tr>
+          <td><strong>Account Manager</strong></td>
+          <td>Facebook Admin مش موجود / دفعة مش مستلمة</td>
+          <td>Onboarding Form ناقص</td>
+          <td>Competitor Analysis / Strategy</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ -->
+<!-- TOOLS -->
+<!-- ═══════════════════════════════ -->
+<div class="section" id="tools">
+  <div class="section-header">
+    <div class="section-icon" style="background:#f5f0ff">🛠️</div>
+    <div><h2>الأدوات المفيدة — مرتبة حسب الاستخدام</h2></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">أدوات يومية لازم تبقى عند كل الفريق</div>
+    <div class="tool-grid">
+      <div class="tool-card"><div class="tool-icon">🎨</div><h4>Remove.bg</h4><p>إزالة خلفية الصور في ثانية واحدة — مجاني</p><div class="tool-link">remove.bg</div></div>
+      <div class="tool-card"><div class="tool-icon">🔍</div><h4>WhatTheFont</h4><p>معرفة اسم الفونت من صورة</p><div class="tool-link">myfonts.com/whatthefont</div></div>
+      <div class="tool-card"><div class="tool-icon">🎨</div><h4>Adobe Color</h4><p>استخراج الألوان من صورة</p><div class="tool-link">color.adobe.com</div></div>
+      <div class="tool-card"><div class="tool-icon">📁</div><h4>WeTransfer</h4><p>إرسال ملفات كبيرة بدون إيميل</p><div class="tool-link">wetransfer.com</div></div>
+      <div class="tool-card"><div class="tool-icon">🖼️</div><h4>Squoosh</h4><p>ضغط الصور من غير فقدان جودة</p><div class="tool-link">squoosh.app</div></div>
+      <div class="tool-card"><div class="tool-icon">📐</div><h4>Canva Resize</h4><p>تحويل أبعاد البوست لأي منصة بضغطة</p><div class="tool-link">canva.com</div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+</div><!-- end layout -->
+
+<script>
+// NAV ACTIVE STATE
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+// SCENARIOS TOGGLE
+function toggleScenario(head) {
+  const body = head.nextElementSibling;
+  const arrow = head.querySelector('.arrow');
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+// COPY MSG
+function copyMsg(btn) {
+  const text = btn.nextElementSibling.textContent.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ تم النسخ';
+    btn.style.background = '#27AE60';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = '#1E3A5F'; }, 2000);
+  });
+}
+
+// SCROLL SPY
+const sections = document.querySelectorAll('.section[id]');
+const navItems = document.querySelectorAll('.nav-item');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navItems.forEach(n => {
+    n.classList.remove('active');
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(current)) {
+      n.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
