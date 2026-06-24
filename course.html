@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كورس كتابة المحتوى والكوبي رايتنج</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #6366f1;
+    --primary-dark: #3730a3;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --purple: #8b5cf6;
+    --pink: #ec4899;
+    --teal: #14b8a6;
+    --orange: #f97316;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --sidebar-width: 280px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Cairo', 'Tajawal', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ===== HEADER ===== */
+  .site-header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+  .site-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    position: relative;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  .site-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    position: relative;
+  }
+  .badge-row {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .badge {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* ===== LAYOUT ===== */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 200px);
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .sidebar-title {
+    padding: 1.25rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    border-right: 3px solid transparent;
+    cursor: pointer;
+  }
+  .nav-item:hover, .nav-item.active {
+    background: #f1f5f9;
+    color: var(--primary);
+    border-right-color: var(--primary);
+  }
+  .nav-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .nav-num {
+    background: var(--border);
+    color: var(--text-muted);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-right: auto;
+    flex-shrink: 0;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content {
+    flex: 1;
+    padding: 2.5rem;
+    max-width: 900px;
+    overflow-x: hidden;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+  .section-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .section-header .subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  /* ===== CARDS GRID ===== */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-color: var(--primary-light);
+  }
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+  .card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+  .card p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 0 12px 12px 0;
+  }
+
+  /* ===== CONTENT TYPES COLORS ===== */
+  .type-marketing .card::before { background: var(--primary); }
+  .type-media .card::before { background: var(--info); }
+  .type-technical .card::before { background: var(--teal); }
+  .type-literary .card::before { background: var(--purple); }
+
+  /* ===== COMPARISON TABLE ===== */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 10px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+  }
+  .compare-table th {
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: right;
+  }
+  .compare-table th:nth-child(2) { background: #ede9fe; color: var(--primary-dark); }
+  .compare-table th:nth-child(3) { background: #fef3c7; color: #92400e; }
+  .compare-table td {
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+    text-align: right;
+    vertical-align: top;
+  }
+  .compare-table tr:hover td { background: var(--bg); }
+  .compare-table .label-col {
+    font-weight: 600;
+    color: var(--text-muted);
+    background: #f8fafc;
+    width: 120px;
+  }
+
+  /* ===== JOURNEY STEPS ===== */
+  .journey {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .journey-step {
+    display: flex;
+    gap: 1.25rem;
+    position: relative;
+  }
+  .journey-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 24px;
+    top: 48px;
+    width: 2px;
+    height: calc(100% - 12px);
+    background: linear-gradient(180deg, var(--primary-light), var(--border));
+  }
+  .step-dot {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    color: white;
+    margin-bottom: 1.5rem;
+  }
+  .step-content {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .step-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+  .step-content p { font-size: 0.85rem; color: var(--text-muted); }
+  .step-content .example {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #f1f5f9;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* ===== AIDA CARDS ===== */
+  .aida-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .aida-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 1.25rem 0.75rem;
+    text-align: center;
+    border: 2px solid var(--border);
+    transition: all 0.2s;
+  }
+  .aida-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+  .aida-letter {
+    font-size: 2.5rem;
+    font-weight: 900;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .aida-name { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+  .aida-desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+  /* ===== TIPS/NOTES ===== */
+  .tip-box {
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .tip-box.info { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .tip-box.success { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .tip-box.warning { background: #fffbeb; border: 1px solid #fde68a; }
+  .tip-box.purple { background: #faf5ff; border: 1px solid #ddd6fe; }
+  .tip-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .tip-body h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .tip-body p, .tip-body li { font-size: 0.85rem; line-height: 1.6; }
+  .tip-body ul { padding-right: 1.25rem; }
+  .tip-body li { margin-bottom: 0.25rem; }
+
+  /* ===== EMOTION TRIGGERS ===== */
+  .emotions-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .emotion-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .emotion-card:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+  .emotion-emoji { font-size: 2rem; display: block; margin-bottom: 0.4rem; }
+  .emotion-name { font-size: 0.75rem; font-weight: 700; }
+
+  /* ===== FEATURES VS BENEFITS ===== */
+  .fab-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .fab-card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .fab-card.features { background: #eff6ff; border: 2px solid #bfdbfe; }
+  .fab-card.functional { background: #f0fdf4; border: 2px solid #bbf7d0; }
+  .fab-card.emotional { background: #fdf4ff; border: 2px solid #e9d5ff; }
+  .fab-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .fab-card .question { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem; font-style: italic; }
+  .fab-card p { font-size: 0.83rem; }
+
+  /* ===== HEADLINE FACTORS ===== */
+  .factors-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .factor-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: all 0.2s;
+  }
+  .factor-item:hover { border-color: var(--primary-light); box-shadow: 0 2px 10px rgba(99,102,241,0.1); }
+  .factor-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .factor-body h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .factor-body p { font-size: 0.83rem; color: var(--text-muted); }
+  .factor-examples {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+  .example-tag {
+    background: #f1f5f9;
+    border-radius: 50px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ===== WRITING MODELS ===== */
+  .model-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .model-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .model-badge {
+    font-size: 1.5rem;
+    font-weight: 900;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: white;
+    letter-spacing: 2px;
+  }
+  .model-header h3 { font-size: 1.1rem; font-weight: 700; }
+  .model-header p { font-size: 0.83rem; color: var(--text-muted); }
+  .model-steps {
+    padding: 0 1.5rem 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+  .model-step {
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .model-step-letter {
+    font-size: 1.75rem;
+    font-weight: 900;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .model-step-name { font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem; }
+  .model-step-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* ===== PERSONA CARD ===== */
+  .persona-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+  }
+  .persona-header {
+    padding: 1rem 1.5rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .persona-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+  .persona-body {
+    padding: 1.25rem 1.5rem;
+  }
+  .persona-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  .persona-field {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 0.75rem;
+  }
+  .persona-field .label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.25rem; display: block; }
+  .persona-field .value { font-size: 0.83rem; font-weight: 600; }
+
+  /* ===== STP TABLE ===== */
+  .stp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .stp-card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .stp-card.seg { background: #eff6ff; border: 2px solid #bfdbfe; }
+  .stp-card.tgt { background: #fff7ed; border: 2px solid #fed7aa; }
+  .stp-card.pos { background: #f0fdf4; border: 2px solid #bbf7d0; }
+  .stp-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.4rem; }
+  .stp-card .stp-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .stp-card ul { text-align: right; padding-right: 1rem; font-size: 0.83rem; }
+  .stp-card li { margin-bottom: 0.3rem; }
+
+  /* ===== INTRO ELEMENTS ===== */
+  .intro-elements {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .intro-el {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+  .intro-el h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .intro-el p { font-size: 0.8rem; color: var(--text-muted); }
+
+  /* ===== CONTENT ELEMENTS ===== */
+  .content-el-grid {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .content-el {
+    flex: 1;
+    padding: 1.25rem;
+    text-align: center;
+    border-left: 1px solid var(--border);
+  }
+  .content-el:last-child { border-left: none; }
+  .content-el .el-icon { font-size: 1.5rem; display: block; margin-bottom: 0.5rem; }
+  .content-el h4 { font-size: 0.88rem; font-weight: 700; }
+  .content-el p { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+
+  /* ===== SUMMARY BOX ===== */
+  .summary-box {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    border-radius: 14px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .summary-box h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; opacity: 0.9; }
+  .summary-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .summary-item {
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* ===== B2C vs B2B ===== */
+  .b2x-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .b2x-card {
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+  .b2x-card.b2c { background: linear-gradient(135deg, #ede9fe, #ddd6fe); border: 2px solid #c4b5fd; }
+  .b2x-card.b2b { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 2px solid #fbbf24; }
+  .b2x-card h3 { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.25rem; }
+  .b2x-card .sub { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; }
+  .b2x-card ul { padding-right: 1.25rem; }
+  .b2x-card li { font-size: 0.85rem; margin-bottom: 0.4rem; }
+
+  /* ===== QUOTE ===== */
+  .quote-box {
+    background: var(--bg);
+    border-right: 4px solid var(--primary);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main-content { padding: 1.5rem; }
+    .aida-grid { grid-template-columns: repeat(3, 1fr); }
+    .emotions-grid { grid-template-columns: repeat(3, 1fr); }
+    .fab-row, .stp-grid, .persona-row { grid-template-columns: 1fr 1fr; }
+    .b2x-grid, .intro-elements { grid-template-columns: 1fr; }
+    .content-el-grid { flex-wrap: wrap; }
+    .content-el { min-width: 50%; }
+    .summary-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 600px) {
+    .site-header h1 { font-size: 1.75rem; }
+    .aida-grid { grid-template-columns: repeat(2, 1fr); }
+    .emotions-grid { grid-template-columns: repeat(2, 1fr); }
+    .fab-row, .stp-grid, .persona-row { grid-template-columns: 1fr; }
+    .model-steps { grid-template-columns: 1fr 1fr; }
+    .cards-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Color utilities */
+  .bg-blue { background: #eff6ff; }
+  .bg-purple { background: #faf5ff; }
+  .bg-green { background: #f0fdf4; }
+  .bg-orange { background: #fff7ed; }
+  .bg-pink { background: #fdf2f8; }
+  .bg-yellow { background: #fffbeb; }
+  .bg-teal { background: #f0fdfa; }
+  .bg-red { background: #fef2f2; }
+
+  .text-blue { color: #2563eb; }
+  .text-purple { color: #7c3aed; }
+  .text-green { color: #059669; }
+  .text-orange { color: #d97706; }
+  .text-pink { color: #db2777; }
+  .text-teal { color: #0d9488; }
+  .text-red { color: #dc2626; }
+
+  .divider { height: 1px; background: var(--border); margin: 2rem 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="site-header">
+  <h1>✍️ كورس كتابة المحتوى والكوبي رايتنج</h1>
+  <p>دليلك الشامل من الصفر لاحتراف كتابة المحتوى التسويقي</p>
+  <div class="badge-row">
+    <span class="badge">📄 95 صفحة</span>
+    <span class="badge">🎯 15 درس</span>
+    <span class="badge">💡 أمثلة عملية</span>
+    <span class="badge">📊 نماذج احترافية</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-title">محتوى الكورس</div>
+    <a class="nav-item" href="#types"><span class="nav-icon">📋</span> أنواع المحتوى <span class="nav-num">1</span></a>
+    <a class="nav-item" href="#writing-types"><span class="nav-icon">✍️</span> أنواع الكتابة <span class="nav-num">2</span></a>
+    <a class="nav-item" href="#content-vs-copy"><span class="nav-icon">⚖️</span> Content vs Copywriting <span class="nav-num">3</span></a>
+    <a class="nav-item" href="#elements"><span class="nav-icon">🔧</span> عناصر المحتوى <span class="nav-num">4</span></a>
+    <a class="nav-item" href="#buyer-journey"><span class="nav-icon">🗺️</span> رحلة المشتري <span class="nav-num">5</span></a>
+    <a class="nav-item" href="#aida"><span class="nav-icon">📈</span> نموذج AIDA-R <span class="nav-num">6</span></a>
+    <a class="nav-item" href="#segmentation"><span class="nav-icon">🎯</span> تقسيم السوق <span class="nav-num">7</span></a>
+    <a class="nav-item" href="#b2c-b2b"><span class="nav-icon">🏪</span> B2C vs B2B <span class="nav-num">8</span></a>
+    <a class="nav-item" href="#stp"><span class="nav-icon">📍</span> نموذج STP <span class="nav-num">9</span></a>
+    <a class="nav-item" href="#persona"><span class="nav-icon">👤</span> الشخصية الافتراضية <span class="nav-num">10</span></a>
+    <a class="nav-item" href="#features-benefits"><span class="nav-icon">⚡</span> تافصاوم vs عفانم <span class="nav-num">11</span></a>
+    <a class="nav-item" href="#emotions"><span class="nav-icon">❤️</span> المشاعر المحفزة <span class="nav-num">12</span></a>
+    <a class="nav-item" href="#headline"><span class="nav-icon">🎣</span> عوامل العنوان <span class="nav-num">13</span></a>
+    <a class="nav-item" href="#intro"><span class="nav-icon">📝</span> كتابة المقدمة <span class="nav-num">14</span></a>
+    <a class="nav-item" href="#models"><span class="nav-icon">🏗️</span> نماذج الكتابة <span class="nav-num">15</span></a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- ===== SECTION 1: TYPES ===== -->
+    <section class="section" id="types">
+      <div class="section-header">
+        <div class="section-icon" style="background:#ede9fe">📋</div>
+        <div>
+          <h2>أنواع المحتوى</h2>
+          <div class="subtitle">كل أشكال المحتوى اللي ممكن تنتجها</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <span class="card-icon">🎯</span>
+          <h3>صفحات الهبوط</h3>
+          <p>Landing Pages – صفحات مخصصة لحملة إعلانية، هدفها الرئيسي عمل CTA (تسجيل أو شراء)</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📘</span>
+          <h3>البوستات على فيسبوك</h3>
+          <p>محتوى قصير أو متوسط ينشر على صفحة الشركة ويشمل: نص، صورة، فيديو، استفتاء</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🐦</span>
+          <h3>التغريدات على X</h3>
+          <p>محتوى قصير جداً (أقصى 280 حرف) يستخدم للأخبار السريعة والتصريحات</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📰</span>
+          <h3>منشورات المدونة</h3>
+          <p>مقالات طويلة أو متوسطة تقدم معلومات تفصيلية، تساعد في ظهور الموقع في SEO</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🖼️</span>
+          <h3>الصور</h3>
+          <p>محتوى بصري سريع الجذب: صور منتجات، إنفوجرافيك، أو صور من داخل الشركة</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🎬</span>
+          <h3>مقاطع الفيديو</h3>
+          <p>أكثر نوع محتوى تفاعلي – يشتغل كويس على فيسبوك، إنستجرام، ويوتيوب</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📊</span>
+          <h3>الرسوم البيانية</h3>
+          <p>Charts & Graphs – تعرض بيانات معقدة بطريقة بسيطة وسريعة الفهم</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🗂️</span>
+          <h3>الإنفوجرافيك</h3>
+          <p>دمج رسوم + نصوص قصيرة لشرح موضوع كامل بشكل بصري في صورة واحدة منظمة</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">💰</span>
+          <h3>النصوص الإعلانية</h3>
+          <p>Copywriting – عبارات قصيرة ومقنعة هدفها البيع أو جذب العميل</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📖</span>
+          <h3>الكتالوجات والبانرات</h3>
+          <p>كتالوج: PDF يعرض المنتجات والخدمات. بانر: إعلان بصري قصير يظهر في المواقع</p>
+        </div>
+        <div class="card">
+          <span class="card-icon">📚</span>
+          <h3>تثبيتات الاستخدام</h3>
+          <p>User Guides – كتيبات أو مقالات تعليمية توضح للعميل كيف يستخدم المنتج</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 2: WRITING TYPES ===== -->
+    <section class="section" id="writing-types">
+      <div class="section-header">
+        <div class="section-icon" style="background:#dcfce7">✍️</div>
+        <div>
+          <h2>أنواع المحتوى حسب الهدف</h2>
+          <div class="subtitle">كل نوع ليه هدف مختلف وطريقة كتابة مختلفة</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card" style="border-top: 4px solid #6366f1;">
+          <span class="card-icon">📣</span>
+          <h3 class="text-purple">المحتوى التسويقي</h3>
+          <p style="margin-bottom:0.5rem">هدفه: يبيع أو يقرب العميل من الشراء</p>
+          <div class="tip-box info" style="margin:0;padding:0.5rem">
+            <span>💡</span>
+            <small>استخدمه لو عايز تبيع</small>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid #3b82f6;">
+          <span class="card-icon">📰</span>
+          <h3 class="text-blue">المحتوى الإعلامي</h3>
+          <p style="margin-bottom:0.5rem">هدفه: ينقل خبر ويخلي الجمهور يعرف الجديد في السوق</p>
+          <div class="tip-box info" style="margin:0;padding:0.5rem">
+            <span>💡</span>
+            <small>استخدمه لو عايز تخبر الناس</small>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid #14b8a6;">
+          <span class="card-icon">🔧</span>
+          <h3 class="text-teal">المحتوى التقني</h3>
+          <p style="margin-bottom:0.5rem">هدفه: شرح وتوضيح تفصيلي وعملي (How-To)</p>
+          <div class="tip-box info" style="margin:0;padding:0.5rem">
+            <span>💡</span>
+            <small>استخدمه لو عايز تشرح وتوصّل</small>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid #8b5cf6;">
+          <span class="card-icon">📖</span>
+          <h3 class="text-purple">المحتوى الأدبي</h3>
+          <p style="margin-bottom:0.5rem">هدفه: يخاطب المشاعر والخيال ويحكي قصة</p>
+          <div class="tip-box info" style="margin:0;padding:0.5rem">
+            <span>💡</span>
+            <small>استخدمه لو عايز تلهم أو تحرك مشاعر</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <h3>🎯 الخلاصة</h3>
+        <div class="summary-row">
+          <div class="summary-item">💰 لو عايز تبيع → المحتوى التسويقي</div>
+          <div class="summary-item">📰 لو عايز تخبر الناس → المحتوى الإعلامي</div>
+          <div class="summary-item">🔧 لو عايز تشرح وتوصّل → المحتوى التقني</div>
+          <div class="summary-item">💜 لو عايز تلهم أو تحرك مشاعر → المحتوى الأدبي</div>
+        </div>
+      </div>
+
+      <div class="tip-box success">
+        <span class="tip-icon">✨</span>
+        <div class="tip-body">
+          <h4>القوة في الدمج!</h4>
+          <p>تقسيم السوق من كل نوع مع المحتوى التسويقي:</p>
+          <ul>
+            <li>تسويقي + إعلامي = تسويق بالخبر (News Marketing)</li>
+            <li>تسويقي + تقني = تسويق بالخصائص (Feature Marketing)</li>
+            <li>تسويقي + أدبي = تسويق بالقصة (Storytelling)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 3: CONTENT VS COPYWRITING ===== -->
+    <section class="section" id="content-vs-copy">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fef3c7">⚖️</div>
+        <div>
+          <h2>Content Writing vs Copywriting</h2>
+          <div class="subtitle">الفرق الجوهري بين الاتنين</div>
+        </div>
+      </div>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>العنصر</th>
+            <th>📝 Content Writing</th>
+            <th>💰 Copywriting</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label-col">الهدف</td>
+            <td>التفاعل مع الجمهور، بناء علاقة، تثقيف</td>
+            <td>البيع المباشر، إقناع العميل، التحويل</td>
+          </tr>
+          <tr>
+            <td class="label-col">الأسلوب</td>
+            <td>طويل نسبياً – شرح، معلومات، تفاصيل</td>
+            <td>قصير – مباشر – مقنع</td>
+          </tr>
+          <tr>
+            <td class="label-col">الأماكن</td>
+            <td>المدونات، المقالات، البوستات التعليمية</td>
+            <td>الإعلانات، صفحات الهبوط، CTAs</td>
+          </tr>
+          <tr>
+            <td class="label-col">المحتوى</td>
+            <td>يركز على الفائدة + القيمة للجمهور</td>
+            <td>يركز على الحافز + الإقناع + CTA</td>
+          </tr>
+          <tr>
+            <td class="label-col">النتيجة</td>
+            <td>زيادة الثقة والمصداقية على المدى الطويل</td>
+            <td>مبيعات سريعة ونتائج ملموسة</td>
+          </tr>
+          <tr>
+            <td class="label-col">مثال</td>
+            <td>"5 طرق للحفاظ على بطارية اللابتوب"</td>
+            <td>"احصل على خصم 30% على لابتوبك الجديد الآن – اشترِ قبل انتهاء العرض"</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="summary-box">
+        <h3>🧠 متى تستخدم إيه؟</h3>
+        <div class="summary-row">
+          <div class="summary-item">📚 لو عايز تربّي جمهورك وتكسب ثقتهم → Content Writing</div>
+          <div class="summary-item">💳 لو عايز تحقق مبيعات أو تحويلات فورية → Copywriting</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 4: ELEMENTS ===== -->
+    <section class="section" id="elements">
+      <div class="section-header">
+        <div class="section-icon" style="background:#f0fdf4">🔧</div>
+        <div>
+          <h2>عناصر المحتوى الخمسة</h2>
+          <div class="subtitle">لو فقدنا أي عنصر، المحتوى بيبقى ناقص ومش بيحقق هدفه</div>
+        </div>
+      </div>
+
+      <div class="content-el-grid">
+        <div class="content-el" style="background:#eff6ff">
+          <span class="el-icon">🎣</span>
+          <h4>العنوان (Hook)</h4>
+          <p>يجذب الانتباه ويخلي الجمهور يوقف عند المحتوى</p>
+        </div>
+        <div class="content-el" style="background:#f0fdf4">
+          <span class="el-icon">🚪</span>
+          <h4>المقدمة</h4>
+          <p>تمهّد للموضوع وتوضح للقارئ ليه يكمل القراءة</p>
+        </div>
+        <div class="content-el" style="background:#faf5ff">
+          <span class="el-icon">📋</span>
+          <h4>الجسم (Body)</h4>
+          <p>الجزء الأساسي اللي بيحمل التفاصيل والمحتوى الفعلي</p>
+        </div>
+        <div class="content-el" style="background:#fff7ed">
+          <span class="el-icon">📌</span>
+          <h4>الخلاصة</h4>
+          <p>إعادة صياغة سريعة لأهم النقاط اللي اتقالت</p>
+        </div>
+        <div class="content-el" style="background:#fdf2f8">
+          <span class="el-icon">⚡</span>
+          <h4>طلب الإجراء (CTA)</h4>
+          <p>الجزء اللي بيحوّل المحتوى من معلومة إلى خطوة عملية</p>
+        </div>
+      </div>
+
+      <div class="tip-box warning">
+        <span class="tip-icon">⚠️</span>
+        <div class="tip-body">
+          <h4>الـ CTA هو المفتاح!</h4>
+          <p>لازم يكون واضح وصريح: "سجّل دلوقتي"، "احجز استشارتك المجانية"، "اشترِ بخصم 20%" — ده اللي بيحوّل الزائر لعميل فعلي.</p>
+        </div>
+      </div>
+
+      <div class="tip-box purple">
+        <span class="tip-icon">💡</span>
+        <div class="tip-body">
+          <h4>الفكرة الأساسية</h4>
+          <p>العنوان يجذب ← المقدمة تهيّئ ← الجسم يشرح ← الخلاصة تلخّص ← الـ CTA يحوّل</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 5: BUYER JOURNEY ===== -->
+    <section class="section" id="buyer-journey">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fff7ed">🗺️</div>
+        <div>
+          <h2>رحلة المشتري (Buyer Journey)</h2>
+          <div class="subtitle">المسار اللي بيمر بيه العميل من ما يعرف المنتج لحد ما يشتريه</div>
+        </div>
+      </div>
+
+      <div class="journey">
+        <div class="journey-step">
+          <div class="step-dot" style="background:linear-gradient(135deg,#6366f1,#818cf8)">1</div>
+          <div class="step-content">
+            <h4 class="text-purple">الإدراك (Awareness)</h4>
+            <p>العميل بيعرف لأول مرة إن المنتج موجود</p>
+            <div class="example">مثال: عميل شاف إعلان على يوتيوب أو فيسبوك عن "سامسونج جالاكسي الجديد"</div>
+          </div>
+        </div>
+        <div class="journey-step">
+          <div class="step-dot" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">2</div>
+          <div class="step-content">
+            <h4 class="text-blue">الاهتمام (Interest)</h4>
+            <p>العميل بدأ يهتم ويبحث أكتر</p>
+            <div class="example">مثال: دخل يشوف فيديو مراجعة "مراجعة شاملة لموبايل سامسونج الجديد"</div>
+          </div>
+        </div>
+        <div class="journey-step">
+          <div class="step-dot" style="background:linear-gradient(135deg,#14b8a6,#2dd4bf)">3</div>
+          <div class="step-content">
+            <h4 class="text-teal">التفكير (Consideration)</h4>
+            <p>بدأ يقارن بين اختيارات مختلفة</p>
+            <div class="example">مثال: بيقارن بين سامسونج وآيفون: الكاميرا، البطارية، السعر</div>
+          </div>
+        </div>
+        <div class="journey-step">
+          <div class="step-dot" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">4</div>
+          <div class="step-content">
+            <h4 class="text-orange">النية (Intent)</h4>
+            <p>واضح إنه ناوي يشتري، بس لسه ماخدش القرار النهائي</p>
+            <div class="example">مثال: ضاف الموبايل لعربة التسوق على أمازون أو راح محل يسأل عن السعر</div>
+          </div>
+        </div>
+        <div class="journey-step">
+          <div class="step-dot" style="background:linear-gradient(135deg,#f97316,#fb923c)">5</div>
+          <div class="step-content">
+            <h4 class="text-orange">التقييم (Evaluation)</h4>
+            <p>مرحلة الحسم، العميل بيقيّم المنتج بشكل أعمق قبل الدفع</p>
+            <div class="example">مثال: بيسأل أصحابه أو بيقرأ تقييمات وتجارب مستخدمين</div>
+          </div>
+        </div>
+        <div class="journey-step">
+          <div class="step-dot" style="background:linear-gradient(135deg,#ef4444,#f87171)">6</div>
+          <div class="step-content">
+            <h4 class="text-red">الشراء (Purchase)</h4>
+            <p>العميل اتخد القرار ودفع!</p>
+            <div class="example">مثال: اشترى الموبايل من المتجر أو أونلاين</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box success">
+        <span class="tip-icon">🎯</span>
+        <div class="tip-body">
+          <h4>الخلاصة الاستراتيجية</h4>
+          <p>التسويق هو اللي بينزّل العميل خطوة خطوة في القمع (إعلانات، محتوى، مقارنات، تقييمات)، بينما المبيعات بتتدخل في الأخير علشان تقفل الصفقة وتحوّل المشتري المحتمل لمشترٍ فعلي.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 6: AIDA-R ===== -->
+    <section class="section" id="aida">
+      <div class="section-header">
+        <div class="section-icon" style="background:#ede9fe">📈</div>
+        <div>
+          <h2>نموذج AIDA-R</h2>
+          <div class="subtitle">4 مراحل أساسية + مرحلة خامسة للاحتفاظ بالعميل بعد الشراء</div>
+        </div>
+      </div>
+
+      <div class="aida-grid">
+        <div class="aida-card" style="border-color:#6366f1">
+          <span class="aida-letter text-purple">A</span>
+          <div class="aida-name">Awareness</div>
+          <div class="aida-desc">الإدراك – العميل يعرف وجودك لأول مرة</div>
+        </div>
+        <div class="aida-card" style="border-color:#3b82f6">
+          <span class="aida-letter text-blue">I</span>
+          <div class="aida-name">Interest</div>
+          <div class="aida-desc">الاهتمام – يبدأ يهتم ويبحث أكتر</div>
+        </div>
+        <div class="aida-card" style="border-color:#f59e0b">
+          <span class="aida-letter text-orange">D</span>
+          <div class="aida-name">Desire</div>
+          <div class="aida-desc">الرغبة – يحس إنه محتاج المنتج فعلاً</div>
+        </div>
+        <div class="aida-card" style="border-color:#ef4444">
+          <span class="aida-letter text-red">A</span>
+          <div class="aida-name">Action</div>
+          <div class="aida-desc">الإجراء – لحظة القرار والخطوة النهائية</div>
+        </div>
+        <div class="aida-card" style="border-color:#10b981">
+          <span class="aida-letter text-green">R</span>
+          <div class="aida-name">Retention</div>
+          <div class="aida-desc">الاحتفاظ – تحافظ على العميل بعد الشراء</div>
+        </div>
+      </div>
+
+      <div class="tip-box warning">
+        <span class="tip-icon">📊</span>
+        <div class="tip-body">
+          <h4>ملاحظات مهمة في تطبيق AIDA</h4>
+          <ul>
+            <li>في كل مرحلة بنكتب من 5 إلى 8 قطع محتوى</li>
+            <li>في المرحلة الأخيرة (Action)، العميل المستهدف بيكون شافنا من 15 إلى 25 مرة خلال تعدادات الإعلان الممول</li>
+            <li>بنعمل 4 إعلانات مع بعض لكل مرحلة فيها إعلان</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 7: SEGMENTATION ===== -->
+    <section class="section" id="segmentation">
+      <div class="section-header">
+        <div class="section-icon" style="background:#dcfce7">🎯</div>
+        <div>
+          <h2>تقسيم السوق (Market Segmentation)</h2>
+          <div class="subtitle">بدل ما تكلم الكل بنفس الرسالة، قسّم عملاءك لمجموعات أصغر متشابهة</div>
+        </div>
+      </div>
+
+      <div class="tip-box info">
+        <span class="tip-icon">🎯</span>
+        <div class="tip-body">
+          <h4>ليه تقسّم السوق؟</h4>
+          <ul>
+            <li><strong>تفهم عميلك أكتر</strong> وتعرف احتياجاته الحقيقية</li>
+            <li><strong>تركّز</strong> على اللي هيشتري منك فعلاً</li>
+            <li><strong>توصّل</strong> رسالة مقنعة بدل كلام عام لا يفيد ولا يضر</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="quote-box">
+        "لو حاولت تكلم الكل بنفس الرسالة، بتضيّع جهودك. حدد رسالتك التسويقية بتاعتك على حسب كل عميل أو فئة."
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 8: B2C vs B2B ===== -->
+    <section class="section" id="b2c-b2b">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fef3c7">🏪</div>
+        <div>
+          <h2>B2C vs B2B</h2>
+          <div class="subtitle">نوعان مختلفان تماماً من الكتابة والتسويق</div>
+        </div>
+      </div>
+
+      <div class="b2x-grid">
+        <div class="b2x-card b2c">
+          <h3>B2C</h3>
+          <div class="sub">من شركة إلى عميل فرد</div>
+          <ul>
+            <li>🎯 التركيز على: المشاعر والعاطفة</li>
+            <li>💜 العميل العادي بيشتري بعاطفته</li>
+            <li>🛍️ يحب يحس إنه مميز، أحلى، أوفر</li>
+            <li>🔧 الأداة: Marketing Persona (رسم صورة للعميل المثالي)</li>
+            <li>📱 أمثلة: إعلان رعايا، موضة، طعام، هواتف</li>
+          </ul>
+        </div>
+        <div class="b2x-card b2b">
+          <h3>B2B</h3>
+          <div class="sub">من شركة إلى شركة أو مؤسسة</div>
+          <ul>
+            <li>🎯 التركيز على: المواصفات والمنطق</li>
+            <li>📊 الشركات بتفكر بشكل عملي</li>
+            <li>💰 هل المنتج ده بيقلل التكاليف؟ بيسرّع الشغل؟</li>
+            <li>🔧 الأداة: STP Model لتحديد الشركات المناسبة</li>
+            <li>🏢 أمثلة: برامج ERP، مواد خام، خدمات B2B</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <h3>📌 الخلاصة في سطر</h3>
+        <div class="summary-row">
+          <div class="summary-item">B2C للأفراد: لغة عاطفية تخاطب المشاعر</div>
+          <div class="summary-item">B2B للشركات: لغة منطقية تخاطب الأرقام والمواصفات</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 9: STP ===== -->
+    <section class="section" id="stp">
+      <div class="section-header">
+        <div class="section-icon" style="background:#f0fdfa">📍</div>
+        <div>
+          <h2>نموذج STP</h2>
+          <div class="subtitle">الطريقة اللي بنستخدمها لتقسيم وتحديد السوق واختيار الرسالة الصح</div>
+        </div>
+      </div>
+
+      <div class="stp-grid">
+        <div class="stp-card seg">
+          <h3 class="text-blue">S</h3>
+          <div class="stp-label">Segmentation – التقسيم</div>
+          <ul>
+            <li>قسّم السوق لشرائح حسب:</li>
+            <li>📋 النشاط (مدارس، شركات، محلات)</li>
+            <li>📍 المكان الجغرافي</li>
+            <li>📏 حجم الشركة (صغيرة، متوسطة، كبيرة)</li>
+          </ul>
+        </div>
+        <div class="stp-card tgt">
+          <h3 class="text-orange">T</h3>
+          <div class="stp-label">Targeting – الاستهداف</div>
+          <ul>
+            <li>بعد التقسيم، اختار الشريحة اللي هتركز عليها</li>
+            <li>🎯 اختار حسب قدراتك وإمكانياتك</li>
+            <li>💡 مش لازم تستهدف الكل دفعة واحدة</li>
+          </ul>
+        </div>
+        <div class="stp-card pos">
+          <h3 class="text-green">P</h3>
+          <div class="stp-label">Positioning – التموضع</div>
+          <ul>
+            <li>اشتغل على الرسالة اللي بتثبتها في عقل العميل</li>
+            <li>⚡ هل أنت الأسرع؟</li>
+            <li>🏆 هل أنت الأعلى جودة؟</li>
+            <li>💰 هل أنت الأرخص سعراً؟</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 10: PERSONA ===== -->
+    <section class="section" id="persona">
+      <div class="section-header">
+        <div class="section-icon" style="background:#ede9fe">👤</div>
+        <div>
+          <h2>الشخصية الافتراضية (Buyer Persona)</h2>
+          <div class="subtitle">مش مجرد "شريحة عامة" – ده شخص حقيقي بخلفية وأهداف وتحديات ودوافع</div>
+        </div>
+      </div>
+
+      <div class="tip-box purple">
+        <span class="tip-icon">⭐</span>
+        <div class="tip-body">
+          <h4>القاعدة الذهبية</h4>
+          <p>معظم الشركات الناجحة بتشتغل على 3 إلى 5 بيرسونا أساسية تمثل أهم شرائح العملاء، وكل بيرسونا ليها رسائل تسويقية ومحتوى مخصص.</p>
+        </div>
+      </div>
+
+      <div class="tip-box info">
+        <span class="tip-icon">📝</span>
+        <div class="tip-body">
+          <h4>مكونات الـ Buyer Persona</h4>
+          <ul>
+            <li><strong>الخلفية:</strong> التعليم، الهوايات، الدور الوظيفي، طبيعة الحياة</li>
+            <li><strong>التركيبة السكانية:</strong> الجنس، العمر، الحالة الاجتماعية، الدخل، الموقع الجغرافي</li>
+            <li><strong>المحددات الشخصية:</strong> أسلوب اتخاذ القرار، الكلمات اللي بيستخدمها، طريقة التواصل المفضلة</li>
+            <li><strong>الأهداف:</strong> الهدف الأساسي والأهداف الثانوية</li>
+            <li><strong>التحديات:</strong> أكبر مشكلة وقفاها في طريقه</li>
+            <li><strong>كيفية المساعدة:</strong> كيف منتجك أو خدمتك تحل مشاكله</li>
+            <li><strong>الاعتراضات الشائعة:</strong> المخاوف اللي بتخليه يتردد في الشراء</li>
+            <li><strong>الرسالة التسويقية:</strong> صياغة ملخصة ليه يشتري منك</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Sample Persona -->
+      <div class="persona-card">
+        <div class="persona-header" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
+          <div class="persona-avatar">👨‍🎓</div>
+          <div>
+            <strong style="font-size:1rem">عباس – خريج تجارة</strong>
+            <div style="font-size:0.82rem;opacity:0.85">مثال تطبيقي على بيرسونا B2C</div>
+          </div>
+        </div>
+        <div class="persona-body">
+          <div class="persona-row">
+            <div class="persona-field">
+              <span class="label">العمر</span>
+              <span class="value">22 سنة</span>
+            </div>
+            <div class="persona-field">
+              <span class="label">الحالة</span>
+              <span class="value">خريج جديد</span>
+            </div>
+            <div class="persona-field">
+              <span class="label">الدخل</span>
+              <span class="value">1000 جنيه/شهر</span>
+            </div>
+          </div>
+          <div class="persona-row">
+            <div class="persona-field">
+              <span class="label">الهدف الأساسي</span>
+              <span class="value">وظيفة مرموقة في برمجة</span>
+            </div>
+            <div class="persona-field">
+              <span class="label">أكبر تحدي</span>
+              <span class="value">قلة الخبرة العملية والشهادة مش كافية</span>
+            </div>
+            <div class="persona-field">
+              <span class="label">التواصل</span>
+              <span class="value">يوتيوب + إنستجرام</span>
+            </div>
+          </div>
+          <div class="persona-row">
+            <div class="persona-field" style="grid-column: 1/-1">
+              <span class="label">الرسالة التسويقية المثالية له</span>
+              <span class="value">لو عايز تبدأ لغش بترتيب على وظيفة، ابدأ تعلم البرمجة من الصفر بتدريب عملي يفتحلك قوق سوق واسع ويزوّدك تدخل شركات محترمة</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 11: FEATURES vs BENEFITS ===== -->
+    <section class="section" id="features-benefits">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fff7ed">⚡</div>
+        <div>
+          <h2>المواصفات vs المنافع</h2>
+          <div class="subtitle">Features vs Functional Benefits vs Emotional Benefits</div>
+        </div>
+      </div>
+
+      <div class="fab-row">
+        <div class="fab-card features">
+          <h3 class="text-blue">المواصفات (Features)</h3>
+          <div class="question">سؤاله: إيه هو؟</div>
+          <p>بيوصف المنتج نفسه وتركيبته ومكوناته. حقائق عن المنتج.</p>
+          <br>
+          <p><strong>مثال:</strong> اللابتوب عنده RAM 16GB وشاشة 15.6 بوصة</p>
+        </div>
+        <div class="fab-card functional">
+          <h3 class="text-green">المنافع الوظيفية</h3>
+          <div class="question">سؤاله: بيعمل إيه؟</div>
+          <p>بيوصف تأثير المنتج على الواقع. تحويل المواصفة لنتيجة ملموسة.</p>
+          <br>
+          <p><strong>مثال:</strong> اللابتوب بيخليك تفتح برامج تقيلة وتشتغل بسرعة من غير تجنيط</p>
+        </div>
+        <div class="fab-card emotional">
+          <h3 class="text-purple">المنافع العاطفية</h3>
+          <div class="question">سؤاله: بيديني إحساس إيه؟</div>
+          <p>بيوصف الإحساس أو التجربة اللي العميل بياخدها من المنتج.</p>
+          <br>
+          <p><strong>مثال:</strong> اللابتوب بيخليك تحس إنك مسيطر ومحترف في شغلك</p>
+        </div>
+      </div>
+
+      <div class="tip-box success">
+        <span class="tip-icon">💡</span>
+        <div class="tip-body">
+          <h4>مثال عملي (موبايل)</h4>
+          <ul>
+            <li><strong>Feature:</strong> الموبايل عنده شاشة Super AMOLED ← بيقول وهو مصنوع من إيه</li>
+            <li><strong>Functional Benefit:</strong> الموبايل شاشته أوضح وألوانها أنقى ← بيقول بيعمل إيه فعلياً</li>
+            <li><strong>Emotional Benefit:</strong> الموبايل بيخليك تحس إنك بتتفرج على فيلم كأنك في السينما ← بيقول إيه الإحساس اللي بيديه للعميل</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 12: EMOTIONS ===== -->
+    <section class="section" id="emotions">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fdf2f8">❤️</div>
+        <div>
+          <h2>المشاعر العشرة المحفزة للشراء</h2>
+          <div class="subtitle">المشاعر اللي بتحرك العميل نحو القرار</div>
+        </div>
+      </div>
+
+      <div class="emotions-grid">
+        <div class="emotion-card">
+          <span class="emotion-emoji">😰</span>
+          <div class="emotion-name">الخوف (FOMO)</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">😊</span>
+          <div class="emotion-name">السعادة</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">😔</span>
+          <div class="emotion-name">الذنب</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">🏆</span>
+          <div class="emotion-name">الفخر</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">😤</span>
+          <div class="emotion-name">الغيرة</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">😳</span>
+          <div class="emotion-name">الخجل</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">😌</span>
+          <div class="emotion-name">الراحة</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">🔒</span>
+          <div class="emotion-name">الثقة</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">🤑</span>
+          <div class="emotion-name">الطمع (Greed)</div>
+        </div>
+        <div class="emotion-card">
+          <span class="emotion-emoji">🤝</span>
+          <div class="emotion-name">الانتماء</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card bg-red" style="border-color:#fca5a5">
+          <h3>😰 الخوف (Fear / FOMO)</h3>
+          <p>العميل بياخد قرار الشراء خوفاً من الخسارة مش طمعاً في الكسب</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">العرض ساري حتى الغد ⏰</div>
+        </div>
+        <div class="card bg-yellow" style="border-color:#fde68a">
+          <h3>😊 السعادة (Happiness)</h3>
+          <p>الإعلان بيربط المنتج بلحظة سعادة أو تجربة ممتعة</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">اتمتع بقهوة الصبح مع نسمة البحر 🌊</div>
+        </div>
+        <div class="card bg-purple" style="border-color:#ddd6fe">
+          <h3>😔 الذنب (Guilt)</h3>
+          <p>بعض الإعلانات بتخلي العميل يحس إن لو ما اشتراش المنتج ممكن يبقى مقصّر</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">كنتك مسئوليتك... ساعد طفلك على النمو 👶</div>
+        </div>
+        <div class="card bg-orange" style="border-color:#fed7aa">
+          <h3>🏆 الفخر (Pride)</h3>
+          <p>العميل بيشتري المنتج علشان يحس بمكانة أعلى أو يفتخر بنفسه أمام الناس</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">إنتِ الملكة مع إكسسوارات يملحي 👑</div>
+        </div>
+        <div class="card bg-pink" style="border-color:#fbcfe8">
+          <h3>😤 الغيرة (Jealousy)</h3>
+          <p>الناس أحياناً بتشتري علشان ماتبقاش أقل من غيرهم أو علشان تبقى زي أصحابهم</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">كل أصحابك اختاروا نفس القرار 🤔</div>
+        </div>
+        <div class="card bg-teal" style="border-color:#99f6e4">
+          <h3>😌 الراحة (Comfort)</h3>
+          <p>الإعلان بيركز على إزاي المنتج بيخلي حياة العميل أسهل وأبسط</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">وفّر وقتك وجهدك 🛁</div>
+        </div>
+        <div class="card bg-blue" style="border-color:#bfdbfe">
+          <h3>🔒 الثقة (Trust)</h3>
+          <p>العميل مش بيشتري بسهولة إلا لما يحس إن المنتج أو الخدمة موثوق فيها</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">شهادات العملاء + Reviews ⭐⭐⭐⭐⭐</div>
+        </div>
+        <div class="card bg-green" style="border-color:#bbf7d0">
+          <h3>🤑 الطمع (Greed)</h3>
+          <p>العميل بيحس إنه بياخد أكتر من اللي دفعه</p>
+          <div class="example-tag" style="margin-top:0.5rem;display:inline-block">اشترِ دلوقتي واحصل على 5 هدايا مجانية 🎁</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 13: HEADLINE FACTORS ===== -->
+    <section class="section" id="headline">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fffbeb">🎣</div>
+        <div>
+          <h2>العوامل السبعة لكتابة عنوان (Hook)</h2>
+          <div class="subtitle">80% من الجمهور بيقرأ العنوان فقط — العنوان هو اللي بيصطاد القارئ</div>
+        </div>
+      </div>
+
+      <div class="tip-box warning">
+        <span class="tip-icon">📌</span>
+        <div class="tip-body">
+          <h4>شرط الهوك</h4>
+          <p>العنوان الخاطف لازم يحتوي على واحد أو أكتر من: <strong>المشاعر العشرة المحفزة</strong> + واحد من <strong>العوامل السبعة</strong> التالية</p>
+        </div>
+      </div>
+
+      <div class="factors-list">
+        <div class="factor-item">
+          <div class="factor-num">1</div>
+          <div class="factor-body">
+            <h4>الخوف والتحذير (Warning)</h4>
+            <p>العناوين اللي فيها تحذير مباشر بتشد القارئ جداً لأنها بتخاطب خوفه أو قلقه</p>
+            <div class="factor-examples">
+              <span class="example-tag">رذّر لكل من يأكل الوجبات السريعة بعد الساعة 8</span>
+              <span class="example-tag">احترس من مشاهدة يوتيوب في الظلام</span>
+            </div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">2</div>
+          <div class="factor-body">
+            <h4>السؤال (Question)</h4>
+            <p>العناوين اللي بتبدأ بسؤال بتجذب القارئ لأنه تلقائياً بيحاول يجاوب في دماغه</p>
+            <div class="factor-examples">
+              <span class="example-tag">إزاي تكسب مليون جنيه في 20 يوم؟</span>
+              <span class="example-tag">امتى تعرف إنك لازم تغيّر وظيفتك؟</span>
+            </div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">3</div>
+          <div class="factor-body">
+            <h4>الأرقام (Numbers)</h4>
+            <p>الأرقام بتدي إحساس بالدقة والمصداقية وبتجذب العين</p>
+            <div class="factor-examples">
+              <span class="example-tag">7 أسرار لزيادة المبيعات</span>
+              <span class="example-tag">5 أخطاء بتعملها في الإعلانات</span>
+            </div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">4</div>
+          <div class="factor-body">
+            <h4>الندرة (Rarity)</h4>
+            <p>لما الحاجة تكون نادرة أو حصرية، الناس بتتسارع عليها</p>
+            <div class="factor-examples">
+              <span class="example-tag">سر لا يعرفه إلا 1% من المسوقين</span>
+              <span class="example-tag">أقوى أداة تسويقية اكتشفتها مصادفة</span>
+            </div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">5</div>
+          <div class="factor-body">
+            <h4>الوعد المباشر (Promise)</h4>
+            <p>وعد مباشر بنتيجة محددة يخلي القارئ يعرف ماذا سيستفيد</p>
+            <div class="factor-examples">
+              <span class="example-tag">ابدأ لغش بترتيب على وظيفة بتاعتك</span>
+              <span class="example-tag">اكسب أول 5000 جنيه أونلاين في 30 يوم</span>
+            </div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">6</div>
+          <div class="factor-body">
+            <h4>الفضول (Curiosity)</h4>
+            <p>العناوين اللي بتخلي القارئ فضولي ومحتاج يكمل القراءة</p>
+            <div class="factor-examples">
+              <span class="example-tag">إيه اللي مش بيعرفوك عنه البنوك؟</span>
+              <span class="example-tag">ده السبب الحقيقي اللي بيخليك فاشل في الادخار</span>
+            </div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">7</div>
+          <div class="factor-body">
+            <h4>إزاي يقوم... (How to)</h4>
+            <p>بتوعد القارئ بكشف خطوات عملية تتبعها مهمة ملهمة</p>
+            <div class="factor-examples">
+              <span class="example-tag">إزاي يصلح مشاهير السينما جسمهم في 10 أيام؟</span>
+              <span class="example-tag">كيف تكسب ثقة عملاءك بالأدلة والبراهين</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 14: INTRODUCTION ===== -->
+    <section class="section" id="intro">
+      <div class="section-header">
+        <div class="section-icon" style="background:#f0fdf4">📝</div>
+        <div>
+          <h2>كتابة المقدمة (9 عناصر)</h2>
+          <div class="subtitle">المقدمة هي أول فقرة بعد العنوان — هدفها تمهّد وتخلي القارئ يكمل</div>
+        </div>
+      </div>
+
+      <div class="quote-box">
+        "ليّخل كأنك بتضيف ضيف في بيتك — المقدمة هي الترحيب والتمهيد قبل ما تدخله على باقي الأوضة"
+      </div>
+
+      <div class="intro-elements">
+        <div class="intro-el">
+          <h4>1️⃣ لا تكرر العنوان</h4>
+          <p>القارئ عارف العنوان بالفعل — خلي المقدمة تضيف قيمة جديدة أو زاوية مختلفة</p>
+        </div>
+        <div class="intro-el">
+          <h4>2️⃣ تغيير التوقعات</h4>
+          <p>القارئ ممكن يدخل وهو متوقع كلام مكرر أو عادي — المقدمة الصح بتغير نظرته</p>
+        </div>
+        <div class="intro-el">
+          <h4>3️⃣ مكمّلة للعنوان</h4>
+          <p>العنوان يرمي الكرة، المقدمة تلتقطها — لو العنوان تكلم عن "طرق زيادة المبيعات"، المقدمة توضح ليه ده مهم</p>
+        </div>
+        <div class="intro-el">
+          <h4>4️⃣ قصيرة وواضحة</h4>
+          <p>من 3 إلى 5 جمل بتكفي — المقدمة الطويلة بتزهّق وبتخسر القارئ</p>
+        </div>
+        <div class="intro-el">
+          <h4>5️⃣ ليها قواعد صارمة</h4>
+          <p>لازم يكون فيها: ترابط مع العنوان، فكرة واضحة، وجملة بداية قوية</p>
+        </div>
+        <div class="intro-el">
+          <h4>6️⃣ بدون حشو</h4>
+          <p>ابعد عن الكلام الزائد زي "منذ قديم الأزل..." أو "موضوعنا اليوم رائع جداً..."</p>
+        </div>
+        <div class="intro-el">
+          <h4>7️⃣ أول جملة = الأهم</h4>
+          <p>الجملة الأولى هي اللي بتقرر مصير باقي المقال — ابدأ بجملة قوية أو سؤال أو حقيقة مدهشة</p>
+        </div>
+        <div class="intro-el">
+          <h4>8️⃣ وعد للقارئ</h4>
+          <p>المقدمة مش مجرد كلام افتتاحي — هي وعد: "لو كملت القراءة هتستفيد بكذا"</p>
+        </div>
+        <div class="intro-el">
+          <h4>9️⃣ اكتبها في الأخر</h4>
+          <p>أفضل وقت تكتب فيه المقدمة هو بعد ما تخلص المقال كله — علشان تعرف تلخصها صح</p>
+        </div>
+      </div>
+
+      <div class="tip-box warning">
+        <span class="tip-icon">⚠️</span>
+        <div class="tip-body">
+          <h4>ملاحظات مهمة</h4>
+          <ul>
+            <li>لو المقدمة أكتر من 30 كلمة، لازم تقصّرها</li>
+            <li>لا تكرر العنوان في المقدمة أو تطوّله — اللي ذكرته في العنوان لا يتم ذكره في المقدمة مرة ثانية</li>
+            <li>لا تكشف الحل كله في المقدمة — بس أشّر إليه</li>
+            <li>وجّه حديثك للقارئ مع ذكر كلمة "أنت" مرة واحدة على الأقل</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ===== SECTION 15: WRITING MODELS ===== -->
+    <section class="section" id="models">
+      <div class="section-header">
+        <div class="section-icon" style="background:#fff7ed">🏗️</div>
+        <div>
+          <h2>نماذج الكتابة الاحترافية</h2>
+          <div class="subtitle">قوالب جاهزة تساعدك تكتب محتوى تسويقي مقنع ومنظم</div>
+        </div>
+      </div>
+
+      <!-- PAS -->
+      <div class="model-card">
+        <div class="model-header" style="background:#fef2f2;border-bottom:1px solid #fecaca">
+          <div class="model-badge" style="background:linear-gradient(135deg,#ef4444,#f97316)">PAS</div>
+          <div>
+            <h3>Problem → Agitate → Solve</h3>
+            <p>قائم على اللعب على مشاعر الخوف. مناسب للإعلانات اللي عايزة تمس الألم بسرعة وتعرض الحل فوراً</p>
+          </div>
+        </div>
+        <div class="model-steps">
+          <div class="model-step" style="background:#fef2f2;border:1px solid #fecaca">
+            <span class="model-step-letter text-red">P</span>
+            <span class="model-step-name">Problem</span>
+            <span class="model-step-desc">صف المشكلة التي يعاني منها العميل بشكل مركّز (20 كلمة)</span>
+          </div>
+          <div class="model-step" style="background:#fff7ed;border:1px solid #fed7aa">
+            <span class="model-step-letter text-orange">A</span>
+            <span class="model-step-name">Agitate</span>
+            <span class="model-step-desc">كبّر حجم المشكلة ووضّح آثارها السلبية (50 كلمة)</span>
+          </div>
+          <div class="model-step" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <span class="model-step-letter text-green">S</span>
+            <span class="model-step-name">Solve</span>
+            <span class="model-step-desc">قدّم منتجك/خدمتك باعتباره الحل المنطقي (30 كلمة)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BAB -->
+      <div class="model-card">
+        <div class="model-header" style="background:#f0f9ff;border-bottom:1px solid #bae6fd">
+          <div class="model-badge" style="background:linear-gradient(135deg,#3b82f6,#06b6d4)">BAB</div>
+          <div>
+            <h3>Before → After → Bridge</h3>
+            <p>العنوان لازم يلعب على مشاعر السعادة. مناسب لأي منتج بيحل مشكلة واضحة عند العميل</p>
+          </div>
+        </div>
+        <div class="model-steps">
+          <div class="model-step" style="background:#fef2f2;border:1px solid #fecaca">
+            <span class="model-step-letter text-red">B</span>
+            <span class="model-step-name">Before</span>
+            <span class="model-step-desc">صف المشكلة والوضع الحالي اللي بيعاني منه العميل (30 كلمة)</span>
+          </div>
+          <div class="model-step" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <span class="model-step-letter text-green">A</span>
+            <span class="model-step-name">After</span>
+            <span class="model-step-desc">صف الحياة بعد استخدام المنتج / الخدمة (30 كلمة)</span>
+          </div>
+          <div class="model-step" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <span class="model-step-letter text-blue">B</span>
+            <span class="model-step-name">Bridge</span>
+            <span class="model-step-desc">قدّم المنتج باعتباره الجسر من "قبل" إلى "بعد" (40 كلمة)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PPPP -->
+      <div class="model-card">
+        <div class="model-header" style="background:#faf5ff;border-bottom:1px solid #e9d5ff">
+          <div class="model-badge" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">PPPP</div>
+          <div>
+            <h3>Picture → Promise → Proof → Push</h3>
+            <p>العنوان قائم على السعادة. مناسب للمنتجات اللي محتاجة إقناع اجتماعي (براند جديد أو خدمة جديدة)</p>
+          </div>
+        </div>
+        <div class="model-steps">
+          <div class="model-step" style="background:#faf5ff;border:1px solid #e9d5ff">
+            <span class="model-step-letter text-purple">P</span>
+            <span class="model-step-name">Picture</span>
+            <span class="model-step-desc">ارسم صورة خيالية للحياة بعد المنتج</span>
+          </div>
+          <div class="model-step" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <span class="model-step-letter text-blue">P</span>
+            <span class="model-step-name">Promise</span>
+            <span class="model-step-desc">قدّم الوعد الصريح: إيه اللي هيتغير لو اشترى؟</span>
+          </div>
+          <div class="model-step" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <span class="model-step-letter text-green">P</span>
+            <span class="model-step-name">Proof</span>
+            <span class="model-step-desc">قدّم دليل ملموس: أرقام، شهادات عملاء، إنجازات</span>
+          </div>
+          <div class="model-step" style="background:#fef2f2;border:1px solid #fecaca">
+            <span class="model-step-letter text-red">P</span>
+            <span class="model-step-name">Push</span>
+            <span class="model-step-desc">ادفع القارئ لاتخاذ قرار الشراء (CTA واضح)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAB -->
+      <div class="model-card">
+        <div class="model-header" style="background:#f0fdfa;border-bottom:1px solid #99f6e4">
+          <div class="model-badge" style="background:linear-gradient(135deg,#14b8a6,#0ea5e9)">FAB</div>
+          <div>
+            <h3>Features → Advantages → Benefits</h3>
+            <p>يعتمد على التدرج المنطقي في الإقناع. مناسب للمنتجات التقنية أو أي حاجة العميل بيدقق فيها على المواصفات</p>
+          </div>
+        </div>
+        <div class="model-steps">
+          <div class="model-step" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <span class="model-step-letter text-blue">F</span>
+            <span class="model-step-name">Features</span>
+            <span class="model-step-desc">اذكر الخصائص الفنية للمنتج (CPU، RAM، إلخ)</span>
+          </div>
+          <div class="model-step" style="background:#faf5ff;border:1px solid #e9d5ff">
+            <span class="model-step-letter text-purple">A</span>
+            <span class="model-step-name">Advantages</span>
+            <span class="model-step-desc">اشرح إيه اللي بيميزه عن غيره ولماذا هو أفضل</span>
+          </div>
+          <div class="model-step" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <span class="model-step-letter text-green">B</span>
+            <span class="model-step-name">Benefits</span>
+            <span class="model-step-desc">ركّز على الفائدة العائدة للعميل شخصياً (وقت، راحة، دخل)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-box">
+        <h3>📊 متى تستخدم أي نموذج؟</h3>
+        <div class="summary-row">
+          <div class="summary-item">🔴 PAS: إعلانات تريد تمس الألم بسرعة وتعرض الحل</div>
+          <div class="summary-item">🔵 BAB: منتجات بتحل مشكلة واضحة عند العميل</div>
+          <div class="summary-item">💜 PPPP: براند جديد أو خدمة محتاجة إقناع اجتماعي</div>
+          <div class="summary-item">🟢 FAB: منتجات تقنية أو بيدقق فيها على المواصفات</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Smooth scroll + active nav
+  document.querySelectorAll('.nav-item').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const id = link.getAttribute('href').slice(1);
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+      document.querySelectorAll('.nav-item').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  // Highlight active section on scroll
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        document.querySelectorAll('.nav-item').forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
